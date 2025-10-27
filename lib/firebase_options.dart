@@ -85,4 +85,5 @@ class DefaultFirebaseOptions {
     storageBucket: 'projektgrupowy-ba8f2.firebasestorage.app',
     measurementId: 'G-RC4MXVJHE5',
   );
+
 }
