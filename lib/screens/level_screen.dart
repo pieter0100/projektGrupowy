@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projekt_grupowy/widgets/level_widget.dart';
 
 class LevelScreen extends StatelessWidget{
   const LevelScreen({super.key});
@@ -8,10 +9,13 @@ class LevelScreen extends StatelessWidget{
     return Scaffold(
       appBar: AppBar(
         title: Text('Level screen'),
+        backgroundColor: Color(0xFFE5E5E5),
+        scrolledUnderElevation: 0.0,
       ),
-      body: Center(
-        child: Text('Level screen page')
-      ),
+      body: ListView.builder(
+        itemCount: 10,
+        itemBuilder: (BuildContext context, int index) => LevelWidget("x ${index + 1}")
+      )
     );
   }
 }
