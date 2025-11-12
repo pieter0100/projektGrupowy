@@ -1,20 +1,74 @@
+// main.dart
 import 'package:flutter/material.dart';
-import 'app_router.dart';
+import 'package:go_router/go_router.dart';
 
-void main() async {
-  runApp(MainApp());
+// Zaimportuj swoje pliki
+import 'widgets/scaffold_with_nav.dart';
+import 'screens/home_screen.dart';
+import 'screens/level_screen.dart';
+import 'screens/profile_screen.dart';
+
+void main() {
+  runApp(MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+// Stwórz konfigurację routera
+final GoRouter _router = GoRouter(
+  initialLocation: '/home', // Domyślna ścieżka
+  routes: [
+    // 🤖 To jest nasza główna trasa z zakładkami
+    StatefulShellRoute.indexedStack(
+      
+      // Budowniczy 'powłoki' (naszego widgetu z BottomNavBar)
+      builder: (context, state, navigationShell) {
+        return ScaffoldWithNav(navigationShell: navigationShell);
+      },
 
+      // Definicja "gałęzi" (branches), czyli naszych zakładek
+      branches: [
+        
+        // --- GAŁĄŹ 1: DOM ---
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/level', // Ścieżka URL
+              builder: (context, state) => const LevelScreen(),
+              // Możesz tu zagnieżdżać dalsze trasy, np. /home/details/1
+            ),
+          ],
+        ),
+
+        // --- GAŁĄŹ 2: SZUKAJ ---
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/home',
+              builder: (context, state) => const HomeScreen(),
+            ),
+          ],
+        ),
+
+        // --- GAŁĄŹ 3: PROFIL ---
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileScreen(),
+            ),
+          ],
+        ),
+      ],
+    ),
+  ],
+);
+
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Użyj .router() zamiast zwykłego MaterialApp
     return MaterialApp.router(
-      routerConfig: router,
-      debugShowCheckedModeBanner: false,
+      routerConfig: _router,
+      title: 'GoRouter Bottom Nav',
     );
   }
 }
-
-
