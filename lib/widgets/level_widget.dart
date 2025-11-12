@@ -16,14 +16,25 @@ class LevelWidget extends StatelessWidget {
       width: 140,
       height: 140,
       child: Center(
-        // child: Text(textInside),
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
             border: Border.all(color: Colors.white, width: 5),
             color: Color(0xFF72BFC7),
           ),
-          child: Center(
+          child: (textInside == 'lock') 
+          ? Center(
+            child: Opacity(
+              opacity: 0.5,
+              child: Icon(
+                Icons.lock,
+                color: Colors.black,
+                size: 50.0,
+              ),
+            )
+          )
+          :
+            Center(
             child: Text(
               textInside,
               style: TextStyle(
@@ -31,8 +42,9 @@ class LevelWidget extends StatelessWidget {
                 // fontWeight: FontWeight.bold,
                 fontSize: 40.0,
                 color: Colors.white 
-              ),),
-          ),
+                ),
+              ),
+            ),
         ),
       ),
     );

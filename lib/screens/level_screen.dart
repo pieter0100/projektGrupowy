@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
 
-class LevelScreen extends StatelessWidget{
+class LevelScreen extends StatelessWidget {
   const LevelScreen({super.key});
 
   @override
@@ -14,8 +14,14 @@ class LevelScreen extends StatelessWidget{
       ),
       body: ListView.builder(
         itemCount: 10,
-        itemBuilder: (BuildContext context, int index) => LevelWidget("x ${index + 1}")
-      )
+        itemBuilder: (BuildContext context, int index) {
+          if (index < 2) {
+            return LevelWidget("x ${index + 1}");
+          } else {
+            return LevelWidget("lock");
+          }
+        },
+      ),
     );
   }
 }
