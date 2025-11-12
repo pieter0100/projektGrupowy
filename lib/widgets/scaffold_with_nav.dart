@@ -13,25 +13,22 @@ class ScaffoldWithNav extends StatelessWidget {
   void _onTap(int index) {
     navigationShell.goBranch(
       index,
-      // 'initialLocation: true' oznacza, że jeśli wrócimy do zakładki,
-      // to zresetuje ona swoją historię nawigacji (opcjonalne)
       initialLocation: index == navigationShell.currentIndex,
     );
   }
 
   @override
-Widget build(BuildContext context) {
-  return Scaffold(
-    body: navigationShell,
-    
-    bottomNavigationBar: Padding(
-      padding: const EdgeInsets.only(bottom: 10.0),
-      
-      child: FractionallySizedBox(
-        widthFactor: 0.8, 
+  Widget build(BuildContext context) {
+    final double bottomSafeAreaPadding = MediaQuery.of(context).padding.bottom;
 
-        // Ten Container nadaje TŁO i KSZTAŁT
+    return Scaffold(
+      extendBody: true, // Kluczowe, by body szło pod pasek
+      body: navigationShell,
+      
+      bottomNavigationBar: FractionallySizedBox(
+        widthFactor: 0.8, 
         child: Container(
+          margin: EdgeInsets.only(bottom: bottomSafeAreaPadding),
           decoration: BoxDecoration(
             color: Color(0xFFE5E5E5), 
             borderRadius: BorderRadius.circular(45.0),
@@ -44,37 +41,81 @@ Widget build(BuildContext context) {
             ],
           ),
 
-          // ClipRRect WYMUSZA obcięcie rogów na dziecku
+          // Zamiast BottomNavigationBar, budujemy własny
           child: ClipRRect(
-            // Ważne: ten sam radius co w Container
             borderRadius: BorderRadius.circular(45.0), 
             
-            child: BottomNavigationBar(
-              // Ustaw tło paska na przezroczyste
-              backgroundColor: Colors.transparent,
-              elevation: 0, // Wyłącz domyślny cień paska
-              
-              currentIndex: navigationShell.currentIndex,
-              onTap: _onTap, 
-              items: const <BottomNavigationBarItem>[
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.home),
+            // ✅ KROK 1: Używamy Row, aby ułożyć elementy poziomo
+            child: Row(
+              // Rozkładamy elementy równomiernie
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                
+                // ✅ KROK 2: Budujemy każdy element ręcznie
+                _buildNavItem(
+                  icon: Icons.home,
                   label: 'Dom',
+                  isSelected: navigationShell.currentIndex == 0,
+                  onTap: () => _onTap(0),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.search),
+                _buildNavItem(
+                  icon: Icons.search,
                   label: 'Szukaj',
+                  isSelected: navigationShell.currentIndex == 1,
+                  onTap: () => _onTap(1),
                 ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
+                _buildNavItem(
+                  icon: Icons.person,
                   label: 'Profil',
+                  isSelected: navigationShell.currentIndex == 2,
+                  onTap: () => _onTap(2),
                 ),
               ],
             ),
           ),
         ),
       ),
-    ),
-  );
-}
+    );
+  }
+
+  // ✅ KROK 3: Funkcja pomocnicza do budowania pojedynczej ikonki
+  // (Umieść ją wewnątrz klasy ScaffoldWithNav, ale poza metodą build)
+  Widget _buildNavItem({
+    required IconData icon,
+    required String label,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    // Kolory z Twojego zrzutu ekranu
+    final Color selectedColor = Color(0xFF6A1B9A); // Fioletowy (zgaduję)
+    final Color unselectedColor = Colors.grey.shade600;
+    final Color itemColor = isSelected ? selectedColor : unselectedColor;
+
+    // InkWell daje efekt "plusku" przy kliknięciu
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(30.0), // Dopasuj do kształtu
+      
+      // Padding kontroluje wysokość paska
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 7.0),
+        child: Column(
+          // Ważne: aby kolumna była tak mała, jak to możliwe
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, color: itemColor, size: 28), // Większa ikona
+            SizedBox(height: 3), // Mały odstęp
+            Text(
+              label,
+              style: TextStyle(
+                color: itemColor, 
+                fontSize: 12,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
