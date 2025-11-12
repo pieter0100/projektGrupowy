@@ -3,10 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 class ScaffoldWithNav extends StatelessWidget {
-  const ScaffoldWithNav({
-    required this.navigationShell,
-    Key? key,
-  }) : super(key: key ?? const ValueKey('ScaffoldWithNav'));
+  const ScaffoldWithNav({required this.navigationShell, Key? key})
+    : super(key: key ?? const ValueKey('ScaffoldWithNav'));
 
   final StatefulNavigationShell navigationShell;
 
@@ -19,38 +17,42 @@ class ScaffoldWithNav extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double bottomSafeAreaPadding = MediaQuery.of(context).padding.bottom;
+    double bottomSafeAreaPadding = MediaQuery.of(context).padding.bottom;
+
+    // inne ekrany niz ios
+    if (bottomSafeAreaPadding == 0) {
+      bottomSafeAreaPadding = 10;
+    }
 
     return Scaffold(
       extendBody: true, // Kluczowe, by body szło pod pasek
       body: navigationShell,
-      
+
       bottomNavigationBar: FractionallySizedBox(
-        widthFactor: 0.8, 
+        widthFactor: 0.8,
         child: Container(
           margin: EdgeInsets.only(bottom: bottomSafeAreaPadding),
           decoration: BoxDecoration(
-            color: Color(0xFFE5E5E5), 
+            color: Color(0xFFE5E5E5),
             borderRadius: BorderRadius.circular(45.0),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
                 blurRadius: 10,
                 spreadRadius: 2,
-              )
+              ),
             ],
           ),
 
           // Zamiast BottomNavigationBar, budujemy własny
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(45.0), 
-            
+            borderRadius: BorderRadius.circular(45.0),
+
             // ✅ KROK 1: Używamy Row, aby ułożyć elementy poziomo
             child: Row(
               // Rozkładamy elementy równomiernie
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                
                 // ✅ KROK 2: Budujemy każdy element ręcznie
                 _buildNavItem(
                   icon: Icons.home,
@@ -95,7 +97,6 @@ class ScaffoldWithNav extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(30.0), // Dopasuj do kształtu
-      
       // Padding kontroluje wysokość paska
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7.0),
@@ -108,9 +109,9 @@ class ScaffoldWithNav extends StatelessWidget {
             Text(
               label,
               style: TextStyle(
-                color: itemColor, 
+                color: itemColor,
                 fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
               ),
             ),
           ],
