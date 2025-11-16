@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
 
 class LevelScreen extends StatelessWidget {
@@ -16,7 +17,10 @@ class LevelScreen extends StatelessWidget {
         itemCount: 10,
         itemBuilder: (BuildContext context, int index) {
           if (index < 2) {
-            return LevelWidget("x ${index + 1}");
+            return InkWell(
+              onTap: () => context.go('/learn'),
+              child: LevelWidget("x ${index + 1}"),
+            );
           } else {
             return LevelWidget("lock");
           }

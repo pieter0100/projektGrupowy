@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:projekt_grupowy/screens/home_screen.dart';
 import 'package:projekt_grupowy/screens/level_screen.dart';
 import 'package:projekt_grupowy/screens/profile_screen.dart';
+import 'package:projekt_grupowy/screens/learn_screen.dart';
 
 final GoRouter router = GoRouter(
   routes: <RouteBase>[
@@ -18,11 +19,18 @@ final GoRouter router = GoRouter(
             return ProfileScreen();
           },
         ),
-        GoRoute(path: 'level',
-        builder: (BuildContext context, GoRouterState state) {
+        GoRoute(
+          path: 'level',
+          builder: (BuildContext context, GoRouterState state) {
             return LevelScreen();
           },
-        )
+        ),
+        GoRoute(
+          path: 'learn',
+          builder: (BuildContext context, GoRouterState state) {
+            return LearnScreen();
+          },
+        ),
       ],
     ),
   ],

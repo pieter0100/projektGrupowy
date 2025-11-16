@@ -7,6 +7,7 @@ import 'widgets/scaffold_with_nav.dart';
 import 'screens/home_screen.dart';
 import 'screens/level_screen.dart';
 import 'screens/profile_screen.dart';
+import 'screens/learn_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -54,6 +55,16 @@ final GoRouter _router = GoRouter(
             GoRoute(
               path: '/profile',
               builder: (context, state) => const ProfileScreen(),
+            ),
+          ],
+        ),
+
+        // --- GAŁĄŹ 4: LEARN ---
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/learn',
+              builder: (context, state) => const LearnScreen(),
             ),
           ],
         ),
