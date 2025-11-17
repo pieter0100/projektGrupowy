@@ -75,8 +75,8 @@ class ScaffoldWithNav extends StatelessWidget {
                 _buildNavItem(
                   icon: Icons.settings,
                   label: 'Settings',
-                  isSelected: navigationShell.currentIndex == 2,
-                  onTap: () => _onTap(2),
+                  isSelected: navigationShell.currentIndex == 3,
+                  onTap: () => _onTap(3),
                 ),
               ],
             ),
