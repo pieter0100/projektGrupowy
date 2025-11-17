@@ -78,8 +78,8 @@ class ScaffoldWithNav extends StatelessWidget {
                 _buildNavItem(
                   icon: Icons.settings,
                   label: 'Settings',
-                  isSelected: navigationShell.currentIndex == 2,
-                  onTap: () => _onTap(2),
+                  isSelected: navigationShell.currentIndex == 4,
+                  onTap: () => _onTap(4),
                   selectedColor: Color.fromARGB(255, 114, 158, 216),
                 ),
               ],

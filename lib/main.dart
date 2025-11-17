@@ -8,6 +8,7 @@ import 'screens/home_screen.dart';
 import 'screens/level_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/learn_screen.dart';
+import 'screens/settings_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -65,6 +66,16 @@ final GoRouter _router = GoRouter(
             GoRoute(
               path: '/learn',
               builder: (context, state) => const LearnScreen(),
+            ),
+          ],
+        ),
+
+        // --- GAŁĄŹ 5: SETTINGS ---
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/settings',
+              builder: (context, state) => const SettingsScreen(),
             ),
           ],
         ),
