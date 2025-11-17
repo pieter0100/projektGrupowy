@@ -38,7 +38,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- GAŁĄŹ 2: SZUKAJ ---
+        // --- GAŁĄŹ 2: LEADERBOARD ---
         StatefulShellBranch(
           routes: [
             GoRoute(
