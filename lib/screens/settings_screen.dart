@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:projekt_grupowy/widgets/settings_data_widget.dart';
+import 'package:projekt_grupowy/widgets/settings_delete_widget.dart';
 
 class SettingsScreen extends StatelessWidget{
   const SettingsScreen({super.key});
@@ -24,7 +25,16 @@ class SettingsScreen extends StatelessWidget{
           Center(
             child: SettingsDataWidget("Personal data"),
           ),
+          SizedBox(height: 40),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SettingsDeleteWidget("Delete account"),
+              SizedBox(height: 8),
+            ],
+          ),
         ],
+        
       ),
     );
   }
