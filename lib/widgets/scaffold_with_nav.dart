@@ -59,18 +59,28 @@ class ScaffoldWithNav extends StatelessWidget {
                   label: 'Dom',
                   isSelected: navigationShell.currentIndex == 0,
                   onTap: () => _onTap(0),
+                  selectedColor: Color(0xFF41AC78),
                 ),
-                _buildNavItem(
-                  icon: Icons.search,
-                  label: 'Szukaj',
+                 _buildNavItem(
+                  icon: Icons.ads_click,
+                  label: 'Leaderboard',
                   isSelected: navigationShell.currentIndex == 1,
                   onTap: () => _onTap(1),
+                  selectedColor: Color(0xFFEB9F4A),
                 ),
                 _buildNavItem(
-                  icon: Icons.person,
-                  label: 'Profil',
+                  icon: Icons.people,
+                  label: 'Profile',
                   isSelected: navigationShell.currentIndex == 2,
                   onTap: () => _onTap(2),
+                  selectedColor: Color(0xFFAB70DF),
+                ),
+                _buildNavItem(
+                  icon: Icons.settings,
+                  label: 'Settings',
+                  isSelected: navigationShell.currentIndex == 2,
+                  onTap: () => _onTap(2),
+                  selectedColor: Color.fromARGB(255, 114, 158, 216),
                 ),
               ],
             ),
@@ -87,11 +97,22 @@ class ScaffoldWithNav extends StatelessWidget {
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
+    required Color selectedColor,
   }) {
     // Kolory z Twojego zrzutu ekranu
-    final Color selectedColor = Color(0xFF6A1B9A); // Fioletowy (zgaduję)
     final Color unselectedColor = Colors.grey.shade600;
     final Color itemColor = isSelected ? selectedColor : unselectedColor;
+
+    return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: itemColor),
+        Text(label, style: TextStyle(color: itemColor)),
+      ],
+    ),
+  );
 
     // InkWell daje efekt "plusku" przy kliknięciu
     return InkWell(
