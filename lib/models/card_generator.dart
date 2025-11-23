@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:projekt_grupowy/models/card_item.dart';
 
 class CardGenerator {
@@ -38,6 +36,7 @@ class CardGenerator {
   }
 
   void printCardDeck() {
+    // for debugging
     print("Print all cards from deck: \n");
     for (var card in cardsDeck) {
       print(card);
