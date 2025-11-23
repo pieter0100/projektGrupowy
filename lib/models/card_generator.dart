@@ -32,6 +32,11 @@ class CardGenerator {
     }
   }
 
+  void shuffleCardsDeck() {
+    // shuffle cards
+    cardsDeck.shuffle();
+  }
+
   void printCardDeck() {
     print("Print all cards from deck: \n");
     for (var card in cardsDeck) {
