@@ -5,7 +5,7 @@ import 'user_stats.dart';
 part 'user.g.dart';
 
 @HiveType(typeId: 3)
-class User{
+class User {
   @HiveField(0)
   final String userId;
 
@@ -24,16 +24,16 @@ class User{
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,
-      'profile': profile.toJson(),  // ← Calls UserProfile's toJson()
-      'stats': stats.toJson(),      // ← Calls UserStats's toJson()
+      'profile': profile.toJson(),
+      'stats': stats.toJson(),
     };
   }
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       userId: json['userId'] as String,
-      profile: UserProfile.fromJson(json['profile'] as Map<String, dynamic>),  // ← Calls UserProfile's fromJson()
-      stats: UserStats.fromJson(json['stats'] as Map<String, dynamic>),        // ← Calls UserStats's fromJson()
+      profile: UserProfile.fromJson(json['profile'] as Map<String, dynamic>),
+      stats: UserStats.fromJson(json['stats'] as Map<String, dynamic>),
     );
   }
 
