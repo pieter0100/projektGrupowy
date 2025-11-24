@@ -31,11 +31,12 @@ class UnlockRequirements {
 
   UnlockRequirements copyWith({
     int? minPoints,
+    bool updatePreviousLevelId = false,
     String? previousLevelId,
   }) {
     return UnlockRequirements(
       minPoints: minPoints ?? this.minPoints,
-      previousLevelId: previousLevelId ?? this.previousLevelId,
+      previousLevelId: updatePreviousLevelId ? previousLevelId : this.previousLevelId,
     );
   }
 

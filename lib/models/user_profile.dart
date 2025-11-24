@@ -12,7 +12,7 @@ class UserProfile {
 
   UserProfile({  // Constructor
     required this.displayName, 
-    required this.age
+    required this.age 
     });
 
   Map<String, dynamic> toJson() { // Method to convert to JSON

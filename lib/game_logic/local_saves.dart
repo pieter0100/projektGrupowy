@@ -1,12 +1,12 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import 'user.dart';
-import 'user_profile.dart';
-import 'user_stats.dart';
-import 'level_progress.dart';
-import 'level.dart';
-import 'unlock_requirements.dart';
-import 'leaderboard.dart';
-import 'leaderboard_entry.dart';
+import '../models/user.dart';
+import '../models/user_profile.dart';
+import '../models/user_stats.dart';
+import '../models/level_progress.dart';
+import '../models/level.dart';
+import '../models/unlock_requirements.dart';
+import '../models/leaderboard.dart';
+import '../models/leaderboard_entry.dart';
 
 class LocalSaves {
   // Box names
@@ -92,7 +92,8 @@ class LocalSaves {
     final box = Hive.box<LevelProgress>(levelProgressBoxName);
     return box.keys
         .where((key) => key.toString().startsWith('${userId}_'))
-        .map((key) => box.get(key)!)
+        .map((key) => box.get(key))
+        .whereType<LevelProgress>()
         .toList();
   }
 

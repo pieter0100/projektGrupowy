@@ -25,17 +25,17 @@
     attempts: 3,
     );
 
-    // ❌ This doesn't work - can't modify final fields!
+    // This doesn't work - can't modify final fields
     progress.highScore = 150; // ERROR!
     progress.attempts = 4;    // ERROR!
 
-    // ❌ You'd have to create a whole new object manually:
+    // You'd have to create a whole new object manually
     final updated = LevelProgress(
     levelId: progress.levelId,     // Copy old value
     highScore: 150,                // New value
     attempts: progress.attempts,   // Copy old value - OOPS, forgot to update!
     );
-    // ✅ Instead, use copyWith to create a modified copy:\
+    // Instead, use copyWith to create a modified copy:
     final updated = progress.copyWith(
     highScore: 150,  // Only specify fields to change
     );
@@ -87,7 +87,7 @@ levels/{levelId}  ← One document per level (e.g., "multiply-by-2")
 
 ---
 
-### 4. **`leaderboards`** Collection
+### 3. **`leaderboards`** Collection
 
 leaderboards/global  ← Single document for global leaderboard
 leaderboards/level_{levelId}  ← One document per level leaderboard
@@ -104,7 +104,7 @@ leaderboards/level_{levelId}  ← One document per level leaderboard
 
 ## **Subcollections**
 
-### 5. **`levelProgress`** Subcollection (under users)
+### 4. **`levelProgress`** Subcollection (under users)
 
 users/{userId}/levelProgress/{levelId}  ← One document per level attempt
 

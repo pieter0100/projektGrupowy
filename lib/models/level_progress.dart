@@ -69,7 +69,9 @@ class LevelProgress {
     int? bestTimeSeconds,
     int? attempts,
     bool? completed,
+    bool updateFirstCompletedAt = false,
     DateTime? firstCompletedAt,
+    bool updateLastPlayedAt = false,
     DateTime? lastPlayedAt,
   }) {
     return LevelProgress(
@@ -78,8 +80,8 @@ class LevelProgress {
       bestTimeSeconds: bestTimeSeconds ?? this.bestTimeSeconds,
       attempts: attempts ?? this.attempts,
       completed: completed ?? this.completed,
-      firstCompletedAt: firstCompletedAt ?? this.firstCompletedAt,
-      lastPlayedAt: lastPlayedAt ?? this.lastPlayedAt,
+      firstCompletedAt: updateFirstCompletedAt ? firstCompletedAt : this.firstCompletedAt,
+      lastPlayedAt: updateLastPlayedAt ? lastPlayedAt : this.lastPlayedAt,
     );
   }
 
