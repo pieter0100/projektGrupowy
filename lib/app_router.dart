@@ -20,7 +20,7 @@ final GoRouter router = GoRouter(
         ),
         GoRoute(path: 'level',
         builder: (BuildContext context, GoRouterState state) {
-            return LevelScreen();
+            return LevelScreen(levelsAmount: 10,);
           },
         )
       ],
