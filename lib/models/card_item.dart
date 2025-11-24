@@ -1,5 +1,3 @@
-import 'package:uuid/uuid.dart';
-
 class CardItem {
   String id;
   String pairId;
