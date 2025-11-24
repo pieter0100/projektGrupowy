@@ -1,6 +1,8 @@
+import 'package:uuid/uuid.dart';
+
 class CardItem {
-  int id;
-  int pairId;
+  String id;
+  String pairId;
   String value;
   bool isMatched = false;
 

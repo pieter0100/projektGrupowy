@@ -1,4 +1,5 @@
 import 'package:projekt_grupowy/models/card_item.dart';
+import 'package:uuid/uuid.dart';
 
 class CardGenerator {
   int pairsAmount;
@@ -8,20 +9,23 @@ class CardGenerator {
   CardGenerator(this.pairsAmount, this.typeOfMultiplication) {
     // create cards for the cardsDeck
     for (int i = 0; i < pairsAmount; i++) {
-      // card one
+      // generate uuid's for card pair
+      var uuid = Uuid();
+      var idOne = uuid.v4();
+      var idSecond = uuid.v4();
+
+      // first card from pair
       CardItem cardOne = CardItem(
-        i,
-        i + 10,
-        "$typeOfMultiplication x ${i + 1}",
-        false,
+        id: idOne,
+        pairId: idSecond,
+        value: "$typeOfMultiplication x ${i + 1}",
       );
 
-      // card one pair
+      // second card from pair
       CardItem cardTwo = CardItem(
-        i + 10,
-        i,
-        "${typeOfMultiplication * (i + 1)}",
-        false,
+        id: idSecond,
+        pairId: idOne,
+        value: "${typeOfMultiplication * (i + 1)}",
       );
 
       // add cards to deck
@@ -30,13 +34,13 @@ class CardGenerator {
     }
   }
 
+  // shuffle cards
   void shuffleCardsDeck() {
-    // shuffle cards
     cardsDeck.shuffle();
   }
 
+  // for debugging
   void printCardDeck() {
-    // for debugging
     print("Print all cards from deck: \n");
     for (var card in cardsDeck) {
       print(card);
