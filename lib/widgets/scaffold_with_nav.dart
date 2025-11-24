@@ -56,7 +56,7 @@ class ScaffoldWithNav extends StatelessWidget {
                 // ✅ KROK 2: Budujemy każdy element ręcznie
                 _buildNavItem(
                   icon: Icons.home,
-                  label: 'Dom',
+                  label: 'Home',
                   isSelected: navigationShell.currentIndex == 0,
                   onTap: () => _onTap(0),
                 ),
