@@ -2,10 +2,14 @@ class CardItem {
   int id;
   int pairId;
   String value;
-  bool isMatched;
+  bool isMatched = false;
 
   // constructor
-  CardItem(this.id, this.pairId, this.value, this.isMatched);
+  CardItem({
+    required this.id,
+    required this.pairId,
+    required this.value
+  });
 
   @override
   String toString() {
