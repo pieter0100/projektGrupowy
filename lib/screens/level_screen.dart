@@ -41,7 +41,7 @@ class LevelScreen extends StatelessWidget {
         itemCount: levelsAmount,
         itemBuilder: (BuildContext context, int index) {
           if (index < 2) {
-            return  LevelWidget(textInside: "x ${index + 1}", lock: false,);
+            return  LevelWidget(textInside: "× ${index + 1}", lock: false,);
           } else {
             return LevelWidget(lock: true,);
           }
