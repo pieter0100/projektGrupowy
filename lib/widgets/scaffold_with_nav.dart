@@ -19,13 +19,13 @@ class ScaffoldWithNav extends StatelessWidget {
   Widget build(BuildContext context) {
     double bottomSafeAreaPadding = MediaQuery.of(context).padding.bottom;
 
-    // inne ekrany niz ios
+    // devices that are not IOS
     if (bottomSafeAreaPadding == 0) {
       bottomSafeAreaPadding = 10;
     }
 
     return Scaffold(
-      extendBody: true, // Kluczowe, by body szło pod pasek
+      extendBody: true, 
       body: navigationShell,
 
       bottomNavigationBar: FractionallySizedBox(
@@ -44,16 +44,13 @@ class ScaffoldWithNav extends StatelessWidget {
             ],
           ),
 
-          // Zamiast BottomNavigationBar, budujemy własny
           child: ClipRRect(
             borderRadius: BorderRadius.circular(45.0),
 
-            // ✅ KROK 1: Używamy Row, aby ułożyć elementy poziomo
             child: Row(
-              // Rozkładamy elementy równomiernie
+              // spaces between elements are even
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // ✅ KROK 2: Budujemy każdy element ręcznie
                 _buildNavItem(
                   icon: Icons.home,
                   label: 'Home',
@@ -86,32 +83,28 @@ class ScaffoldWithNav extends StatelessWidget {
     );
   }
 
-  // ✅ KROK 3: Funkcja pomocnicza do budowania pojedynczej ikonki
-  // (Umieść ją wewnątrz klasy ScaffoldWithNav, ale poza metodą build)
+  // function that builds single icon in navbar
   Widget _buildNavItem({
     required IconData icon,
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
   }) {
-    // Kolory z Twojego zrzutu ekranu
-    final Color selectedColor = Color(0xFF6A1B9A); // Fioletowy (zgaduję)
+    final Color selectedColor = Color(0xFF6A1B9A); 
     final Color unselectedColor = Colors.grey.shade600;
     final Color itemColor = isSelected ? selectedColor : unselectedColor;
 
-    // InkWell daje efekt "plusku" przy kliknięciu
+    // click effect
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(30.0), // Dopasuj do kształtu
-      // Padding kontroluje wysokość paska
+      borderRadius: BorderRadius.circular(30.0), 
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7.0),
         child: Column(
-          // Ważne: aby kolumna była tak mała, jak to możliwe
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: itemColor, size: 28), // Większa ikona
-            SizedBox(height: 3), // Mały odstęp
+            Icon(icon, color: itemColor, size: 28), 
+            SizedBox(height: 3), 
             Text(
               label,
               style: TextStyle(
