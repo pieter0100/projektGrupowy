@@ -6,7 +6,10 @@ class CardGenerator {
   List<CardItem> cardsDeck = List.empty(growable: true);
   int typeOfMultiplication;
 
-  CardGenerator({required this.pairsAmount, required this.typeOfMultiplication}) {
+  CardGenerator({
+    required this.pairsAmount,
+    required this.typeOfMultiplication,
+  }) {
     // create cards for the cardsDeck
     for (int i = 0; i < pairsAmount; i++) {
       // generate uuid's for card pair
@@ -32,6 +35,9 @@ class CardGenerator {
       cardsDeck.add(cardOne);
       cardsDeck.add(cardTwo);
     }
+
+    // shuffle deck at the end
+    shuffleCardsDeck();
   }
 
   // shuffle cards
