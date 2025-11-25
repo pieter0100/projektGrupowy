@@ -1,6 +1,6 @@
 // main.dart
 import 'package:flutter/material.dart';
-import 'package:projekt_grupowy/app_router.dart';
+import 'package:go_router/go_router.dart';
 
 // Zaimportuj swoje pliki
 import 'widgets/scaffold_with_nav.dart';
@@ -35,7 +35,7 @@ final GoRouter _router = GoRouter(
           routes: [
             GoRoute(
               path: '/level',
-              builder: (context, state) => const LevelScreen(),
+              builder: (context, state) => const LevelScreen(levelsAmount: 8,),
             ),
           ],
         ),
@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
-      routerConfig: router,
+      routerConfig: _router,
       title: 'GoRouter Bottom Nav',
     );
   }
