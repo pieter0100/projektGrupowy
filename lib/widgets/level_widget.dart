@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class LevelWidget extends StatelessWidget {
   final String textInside;
-  final bool lock;
+  final bool isLocked;
 
-  const LevelWidget({this.textInside = "", required this.lock, super.key});
+  const LevelWidget({this.textInside = "", required this.isLocked, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -23,7 +23,7 @@ class LevelWidget extends StatelessWidget {
             border: Border.all(color: Colors.white, width: 5),
             color: Color(0xFF72BFC7),
           ),
-          child: (lock)
+          child: (isLocked)
               ? Center(
                   child: Opacity(
                     opacity: 0.5,
