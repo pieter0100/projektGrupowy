@@ -7,6 +7,7 @@ import '../models/level.dart';
 import '../models/unlock_requirements.dart';
 import '../models/leaderboard.dart';
 import '../models/leaderboard_entry.dart';
+import 'package:logger/logger.dart';
 
 class LocalSaves {
   // Box names
@@ -14,6 +15,18 @@ class LocalSaves {
   static const String levelProgressBoxName = 'levelProgress';
   static const String levelsBoxName = 'levels';
   static const String leaderboardBoxName = 'leaderboard';
+
+  // Logger instance
+  static final logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 1,
+      errorMethodCount: 8,
+      lineLength: 80,
+      colors: true,
+      printEmojis: false,
+      
+    )
+  );
 
   // Initialize Hive and register all adapters
   static Future<void> init() async {
@@ -42,7 +55,7 @@ class LocalSaves {
   static Future<void> saveUser(User user) async {
     final box = Hive.box<User>(usersBoxName);
     await box.put(user.userId, user);
-    print('Saved user: ${user.userId}');
+    logger.i('Saved user: ${user.userId}');
   }
 
   static User? getUser(String userId) {
@@ -55,7 +68,7 @@ class LocalSaves {
     if (user != null) {
       final updatedUser = user.copyWith(stats: newStats);
       await saveUser(updatedUser);
-      print('Updated stats for user: $userId');
+      logger.i('Updated stats for user: $userId');
     }
   }
 
@@ -64,7 +77,7 @@ class LocalSaves {
     if (user != null) {
       final updatedUser = user.copyWith(profile: newProfile);
       await saveUser(updatedUser);
-      print('Updated profile for user: $userId');
+      logger.i('Updated profile for user: $userId');
     }
   }
 
@@ -79,7 +92,7 @@ class LocalSaves {
     final box = Hive.box<LevelProgress>(levelProgressBoxName);
     final key = '${userId}_${progress.levelId}';
     await box.put(key, progress);
-    print('Saved level progress: $key');
+    logger.i('Saved level progress: $key');
   }
 
   static LevelProgress? getLevelProgress(String userId, String levelId) {
@@ -102,7 +115,7 @@ class LocalSaves {
   static Future<void> saveLevel(LevelInfo level) async {
     final box = Hive.box<LevelInfo>(levelsBoxName);
     await box.put(level.levelId, level);
-    print('Saved level: ${level.levelId}');
+    logger.i('Saved level: ${level.levelId}');
   }
 
   static LevelInfo? getLevel(String levelId) {
@@ -120,7 +133,7 @@ class LocalSaves {
   static Future<void> saveLeaderboard(Leaderboard leaderboard) async {
     final box = Hive.box<Leaderboard>(leaderboardBoxName);
     await box.put('global', leaderboard);
-    print('Saved global leaderboard');
+    logger.i('Saved global leaderboard');
   }
 
   static Leaderboard? getGlobalLeaderboard() {
@@ -137,7 +150,7 @@ class LocalSaves {
         lastUpdated: DateTime.now(),
       );
       await saveLeaderboard(updatedLeaderboard);
-      print('Added leaderboard entry for: ${entry.playerName}');
+      logger.i('Added leaderboard entry for: ${entry.playerName}');
     } else {
       // Create new leaderboard if it doesn't exist
       final newLeaderboard = Leaderboard(
@@ -145,17 +158,17 @@ class LocalSaves {
         lastUpdated: DateTime.now(),
       );
       await saveLeaderboard(newLeaderboard);
-      print('Created new leaderboard with entry for: ${entry.playerName}');
+      logger.i('Created new leaderboard with entry for: ${entry.playerName}');
     }
   }
 
   // === TESTING FUNCTION ===
 
   static Future<void> testAllClasses() async {
-    print('\n=== TESTING ALL CLASSES ===\n');
+    logger.i('\n=== TESTING ALL CLASSES ===\n');
 
     // 1. Test User, UserProfile, UserStats
-    print('Testing User classes...');
+    logger.i('Testing User classes...');
     final user = User(
       userId: 'user123',
       profile: UserProfile(displayName: 'TestPlayer', age: 25),
@@ -169,17 +182,16 @@ class LocalSaves {
     await saveUser(user);
     
     final retrievedUser = getUser('user123');
-    print('Retrieved user: ${retrievedUser?.toString()}');
+    logger.i('Retrieved user: ${retrievedUser?.toString()}');
 
     // Test immutability - try to update stats
-    print('\nTesting immutability - updating stats...');
+    logger.i('Testing immutability - updating stats...');
     final updatedStats = user.stats.copyWith(totalPoints: 1000);
     await updateUserStats('user123', updatedStats);
     final userAfterUpdate = getUser('user123');
-    print('User after stats update: ${userAfterUpdate?.stats.toString()}');
-
+    logger.i('User after stats update: ${userAfterUpdate?.stats.toString()}');
     // 2. Test LevelProgress
-    print('\nTesting LevelProgress...');
+    logger.i('\nTesting LevelProgress...');
     final progress = LevelProgress(
       levelId: 'multiply-by-2',
       bestScore: 100,
@@ -192,10 +204,10 @@ class LocalSaves {
     await saveLevelProgress('user123', progress);
     
     final retrievedProgress = getLevelProgress('user123', 'multiply-by-2');
-    print('Retrieved progress: ${retrievedProgress?.toString()}');
+    logger.i('Retrieved progress: ${retrievedProgress?.toString()}');
 
     // 3. Test LevelInfo with nested classes
-    print('\nTesting LevelInfo with UnlockRequirements and Rewards...');
+    logger.i('\nTesting LevelInfo with UnlockRequirements and Rewards...');
     final level = LevelInfo(
       levelId: 'multiply-by-2',
       levelNumber: 1,
@@ -211,10 +223,10 @@ class LocalSaves {
     await saveLevel(level);
     
     final retrievedLevel = getLevel('multiply-by-2');
-    print('Retrieved level: ${retrievedLevel?.toString()}');
+    logger.i('Retrieved level: ${retrievedLevel?.toString()}');
 
     // 4. Test Leaderboard and LeaderboardEntry
-    print('\nTesting Leaderboard...');
+    logger.i('\nTesting Leaderboard...');
     final entry1 = LeaderboardEntry(
       playerId: 'user123',
       playerName: 'TestPlayer',
@@ -232,21 +244,21 @@ class LocalSaves {
     await addLeaderboardEntry(entry2);
     
     final leaderboard = getGlobalLeaderboard();
-    print('Global leaderboard: ${leaderboard?.toString()}');
-    print('Number of entries: ${leaderboard?.entries.length}');
+    logger.i('Global leaderboard: ${leaderboard?.toString()}');
+    logger.i('Number of entries: ${leaderboard?.entries.length}');
 
     // 5. Test immutability on nested objects
-    print('\nTesting immutability - trying to modify LevelInfo rewards...');
+    logger.i('Testing immutability - trying to modify LevelInfo rewards...');
     if (retrievedLevel != null) {
       final updatedRewards = Rewards(points: 200);
       final updatedLevel = retrievedLevel.copyWith(rewards: updatedRewards);
       await saveLevel(updatedLevel);
       
       final levelAfterUpdate = getLevel('multiply-by-2');
-      print('Level rewards after update: ${levelAfterUpdate?.rewards.points}');
+      logger.i('Level rewards after update: ${levelAfterUpdate?.rewards.points}');
     }
 
-    print('\n=== ALL TESTS COMPLETED ===\n');
+    logger.i('\n=== ALL TESTS COMPLETED ===\n');
   }
 
   // Clear all data
@@ -255,6 +267,6 @@ class LocalSaves {
     await Hive.box<LevelProgress>(levelProgressBoxName).clear();
     await Hive.box<LevelInfo>(levelsBoxName).clear();
     await Hive.box<Leaderboard>(leaderboardBoxName).clear();
-    print('All data cleared');
+    logger.i('All data cleared');
   }
 }
