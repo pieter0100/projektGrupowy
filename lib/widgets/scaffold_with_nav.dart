@@ -1,4 +1,3 @@
-// scaffold_with_nav.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -95,7 +94,6 @@ class ScaffoldWithNav extends StatelessWidget {
     required VoidCallback onTap,
     required Color selectedColor,
   }) {
-    // Kolory z Twojego zrzutu ekranu
     final Color unselectedColor = Colors.grey.shade600;
     final Color itemColor = isSelected ? selectedColor : unselectedColor;
 
@@ -110,7 +108,6 @@ class ScaffoldWithNav extends StatelessWidget {
     ),
   );
 
-    // InkWell daje efekt "plusku" przy kliknięciu
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(30.0), 

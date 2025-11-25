@@ -35,7 +35,6 @@ class LevelWidget extends StatelessWidget {
                     textInside,
                     style: TextStyle(
                       fontFamily: 'Roboto',
-                      // fontWeight: FontWeight.bold,
                       fontSize: 40.0,
                       color: Colors.white,
                     ),

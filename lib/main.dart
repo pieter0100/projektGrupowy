@@ -1,8 +1,6 @@
-// main.dart
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-// Zaimportuj swoje pliki
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/home_screen.dart';
 import 'screens/level_screen.dart';
@@ -15,22 +13,20 @@ void main() {
   runApp(MyApp());
 }
 
-// Stwórz konfigurację routera
+// router configuration
 final GoRouter _router = GoRouter(
-  initialLocation: '/home', // Domyślna ścieżka
+  initialLocation: '/home',
   routes: [
-    // 🤖 To jest nasza główna trasa z zakładkami
     StatefulShellRoute.indexedStack(
       
-      // Budowniczy 'powłoki' (naszego widgetu z BottomNavBar)
       builder: (context, state, navigationShell) {
         return ScaffoldWithNav(navigationShell: navigationShell);
       },
 
-      // Definicja "gałęzi" (branches), czyli naszych zakładek
+      // branches definitiion
       branches: [
         
-        // --- GAŁĄŹ 1: LEVEL ---
+        // --- BRANCH 1: LEVEL ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -40,7 +36,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- GAŁĄŹ 2: SZUKAJ ---
+        // --- BRANCH 2: SZUKAJ ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -50,7 +46,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- GAŁĄŹ 3: PROFIL ---
+        // --- BRANCH 3: PROFIL ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -60,7 +56,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- GAŁĄŹ 4: SETTINGS ---
+        // --- BRANCH 4: SETTINGS ---
         StatefulShellBranch(
           routes: [
             GoRoute(

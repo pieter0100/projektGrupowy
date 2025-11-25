@@ -11,12 +11,12 @@ class SettingsDataWidget extends StatelessWidget {
       width: 378,
       height: 69,
       decoration: BoxDecoration(
-        color: Colors.white, // kolor środka
+        color: Colors.white, // background color
         border: Border.all(
-          color: const Color(0xFFC4C4C4), // obramowanie
+          color: const Color(0xFFC4C4C4),
           width: 2,
         ),
-        borderRadius: BorderRadius.circular(20), // zaokrąglone rogi
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Center(
         child: Row(
@@ -27,7 +27,7 @@ class SettingsDataWidget extends StatelessWidget {
               color: const Color.fromARGB(255, 206, 190, 245),
               size: 35,
             ),
-            const SizedBox(width: 8), // odstęp między ikoną a tekstem
+            const SizedBox(width: 8), // space between icon and text
             Text(
               textInside,
               style: const TextStyle(

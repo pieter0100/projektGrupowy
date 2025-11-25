@@ -11,15 +11,15 @@ class SettingsDeleteWidget extends StatelessWidget {
       width: 378,
       height: 69,
       decoration: BoxDecoration(
-        color: Colors.white, // kolor środka
+        color: Colors.white, // background color
         border: Border.all(
-          color: const Color(0xFFC4C4C4), // obramowanie
+          color: const Color(0xFFC4C4C4),
           width: 2,
         ),
-        borderRadius: BorderRadius.circular(20), // zaokrąglone rogi
+        borderRadius: BorderRadius.circular(20),
       ),
       child: Align(
-        alignment: Alignment.centerLeft, // wyrównanie do lewej
+        alignment: Alignment.centerLeft,
         child: Padding(
           padding: const EdgeInsets.only(left: 20),
           child: Row(

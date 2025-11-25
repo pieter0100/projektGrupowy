@@ -11,16 +11,15 @@ class MatchPairsWidget extends StatelessWidget {
       width: 130,
       height: 130,
       decoration: BoxDecoration(
-        color: const Color(0xFF7ED4DE), // kolor środka
-        borderRadius: BorderRadius.circular(12), // zaokrąglone rogi
+        color: const Color(0xFF7ED4DE), // background color
+        borderRadius: BorderRadius.circular(12),
       ),
       child: Center(
         child: Text(
           textInside,
           style: const TextStyle(
             fontSize: 96,
-            color: Colors.white, // kolor tekstu
-            //fontWeight: FontWeight.bold,
+            color: Colors.white,
           ),
           textAlign: TextAlign.center,
         ),
