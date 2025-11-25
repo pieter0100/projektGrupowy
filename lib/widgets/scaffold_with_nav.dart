@@ -56,24 +56,28 @@ class ScaffoldWithNav extends StatelessWidget {
                   label: 'Home',
                   isSelected: navigationShell.currentIndex == 0,
                   onTap: () => _onTap(0),
+                  iconColor: Color(0xFF41AC78)
                 ),
                 _buildNavItem(
                   icon: Icons.ads_click,
                   label: 'Leaderboard',
                   isSelected: navigationShell.currentIndex == 1,
                   onTap: () => _onTap(1),
+                  iconColor: Color(0xFFEB9F4A)
                 ),
                 _buildNavItem(
                   icon: Icons.people,
                   label: 'Profile',
                   isSelected: navigationShell.currentIndex == 2,
                   onTap: () => _onTap(2),
+                  iconColor: Color(0xFFAB70DF)
                 ),
                 _buildNavItem(
                   icon: Icons.settings,
                   label: 'Settings',
                   isSelected: navigationShell.currentIndex == 3,
                   onTap: () => _onTap(3),
+                  iconColor: Color.fromARGB(255, 20, 181, 240)
                 ),
               ],
             ),
@@ -89,8 +93,9 @@ class ScaffoldWithNav extends StatelessWidget {
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
+    required Color iconColor
   }) {
-    final Color selectedColor = Color(0xFF6A1B9A); 
+    final Color selectedColor = iconColor; 
     final Color unselectedColor = Colors.grey.shade600;
     final Color itemColor = isSelected ? selectedColor : unselectedColor;
 
