@@ -9,6 +9,7 @@ import 'screens/level_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/settings_screen.dart';
+import 'screens/practice_screen.dart';
 
 void main() {
   runApp(MyApp());
@@ -29,13 +30,12 @@ final GoRouter _router = GoRouter(
       // Definicja "gałęzi" (branches), czyli naszych zakładek
       branches: [
         
-        // --- GAŁĄŹ 1: DOM ---
+        // --- GAŁĄŹ 1: LEVEL ---
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/level', // Ścieżka URL
+              path: '/level',
               builder: (context, state) => const LevelScreen(),
-              // Możesz tu zagnieżdżać dalsze trasy, np. /home/details/1
             ),
           ],
         ),
@@ -60,21 +60,7 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- GAŁĄŹ 4: LEARN ---
-       StatefulShellBranch(
-        routes: [
-          GoRoute(
-            path: '/level/learn',
-            builder: (context, state) {
-              // pobieranie parametru z query
-              final level = state.uri.queryParameters['level'];
-              return LearnScreen(level: level);
-            },
-          ),
-        ],
-      ),
-
-        // --- GAŁĄŹ 5: SETTINGS ---
+        // --- GAŁĄŹ 4: SETTINGS ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -84,6 +70,21 @@ final GoRouter _router = GoRouter(
           ],
         ),
       ],
+    ),
+
+     GoRoute(
+      path: '/level/learn',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return LearnScreen(level: level);
+      },
+    ),
+    GoRoute(
+      path: '/level/learn/practice',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return PracticeScreen(level: level);
+      },
     ),
   ],
 );

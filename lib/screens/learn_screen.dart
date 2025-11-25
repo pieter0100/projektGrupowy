@@ -39,7 +39,12 @@ class LearnScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LearnWidget("practice"),
+              InkWell(
+                onTap: () {
+                  context.go('/level/learn/practice?level=$level');
+                },
+                child: LearnWidget("practice"),
+              ),
               SizedBox(height: 8),
               Text("Practice", style: TextStyle(fontSize: 20)),
               SizedBox(height: 16),
