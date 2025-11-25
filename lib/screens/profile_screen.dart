@@ -7,7 +7,9 @@ class ProfileScreen extends StatelessWidget{
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile page'),
+        title: Text('Profile screen'),
+        backgroundColor: Color(0xFFE5E5E5),
+        scrolledUnderElevation: 0.0,
       ),
       body: Center(
         child: Text('Profile page')
