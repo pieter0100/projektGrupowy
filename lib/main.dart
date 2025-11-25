@@ -61,14 +61,18 @@ final GoRouter _router = GoRouter(
         ),
 
         // --- GAŁĄŹ 4: LEARN ---
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/learn',
-              builder: (context, state) => const LearnScreen(),
-            ),
-          ],
-        ),
+       StatefulShellBranch(
+        routes: [
+          GoRoute(
+            path: '/level/learn',
+            builder: (context, state) {
+              // pobieranie parametru z query
+              final level = state.uri.queryParameters['level'];
+              return LearnScreen(level: level);
+            },
+          ),
+        ],
+      ),
 
         // --- GAŁĄŹ 5: SETTINGS ---
         StatefulShellBranch(

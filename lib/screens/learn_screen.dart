@@ -4,7 +4,9 @@ import 'package:projekt_grupowy/widgets/learn_widget.dart';
 import 'package:projekt_grupowy/widgets/learn_info_widget.dart';
 
 class LearnScreen extends StatelessWidget {
-  const LearnScreen({super.key});
+  final String? level;
+
+  const LearnScreen({super.key, this.level});
 
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,7 @@ class LearnScreen extends StatelessWidget {
         children: [
           SizedBox(height: 40),
           Center(
-            child: LearnInfoWidget("x1"),
+            child: LearnInfoWidget("x $level"),
           ),
 
           Column(

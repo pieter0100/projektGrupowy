@@ -56,9 +56,9 @@ class LevelScreen extends StatelessWidget {
         itemBuilder: (BuildContext context, int index) {
           if (index < 2) {
             return InkWell(
-              onTap: () => context.go('/learn'),
-              child: LevelWidget("x ${index + 1}"),
-            );
+            onTap: () => context.go('/level/learn?level=${index + 1}'),
+            child: LevelWidget("x ${index + 1}"),
+          );
           } else {
             return LevelWidget("lock");
           }
