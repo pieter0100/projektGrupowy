@@ -1,20 +1,18 @@
+// main.dart
 import 'package:flutter/material.dart';
-import 'app_router.dart';
+import 'package:projekt_grupowy/app_router.dart';
 
-void main() async {
-  runApp(MainApp());
+
+void main() {
+  runApp(MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
-
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: router,
-      debugShowCheckedModeBanner: false,
+      title: 'GoRouter Bottom Nav',
     );
   }
 }
-
-
