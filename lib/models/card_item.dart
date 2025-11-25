@@ -13,6 +13,6 @@ class CardItem {
 
   @override
   String toString() {
-    return "Card id: $id, pairdId: $pairId, value: $value, isMatched: $isMatched";
+    return "Card id: $id, pairId: $pairId, value: $value, isMatched: $isMatched";
   }
 }
