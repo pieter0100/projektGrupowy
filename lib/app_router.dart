@@ -1,42 +1,49 @@
 import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
 import 'package:projekt_grupowy/screens/home_screen.dart';
 import 'package:projekt_grupowy/screens/level_screen.dart';
 import 'package:projekt_grupowy/screens/profile_screen.dart';
+import 'package:projekt_grupowy/screens/learn_screen.dart';
 import 'package:projekt_grupowy/screens/settings_screen.dart';
-import 'widgets/scaffold_with_nav.dart';
+import 'package:projekt_grupowy/screens/practice_screen.dart';
 
 final GoRouter router = GoRouter(
-  initialLocation: '/home', // Domyślna ścieżka
-  routes: [
-    StatefulShellRoute.indexedStack(
-      
-      // Budowniczy 'powłoki' (naszego widgetu z BottomNavBar)
-      builder: (context, state, navigationShell) {
-        return ScaffoldWithNav(navigationShell: navigationShell);
+  routes: <RouteBase>[
+    GoRoute(
+      path: '/',
+      builder: (BuildContext context, GoRouterState state) {
+        return HomeScreen();
       },
-
-      // Definicja "gałęzi" (branches), czyli naszych zakładek
-      branches: [
-        
-        // --- GAŁĄŹ 1: DOM ---
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/level', // Ścieżka URL
-              builder: (context, state) => const LevelScreen(levelsAmount: 10,),
-              // Możesz tu zagnieżdżać dalsze trasy, np. /home/details/1
-            ),
-          ],
+      routes: <RouteBase>[
+        GoRoute(
+          path: 'profile',
+          builder: (BuildContext context, GoRouterState state) {
+            return ProfileScreen();
+          },
         ),
-
-        // --- GAŁĄŹ 2: LEADERBOARD ---
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/home',
-              builder: (context, state) => const HomeScreen(),
-            ),
-          ],
+        GoRoute(
+          path: 'level',
+          builder: (BuildContext context, GoRouterState state) {
+            return LevelScreen();
+          },
+        ),
+        GoRoute(
+          path: 'learn',
+          builder: (BuildContext context, GoRouterState state) {
+            return LearnScreen();
+          },
+        ),
+        GoRoute(
+          path: 'settings',
+          builder: (BuildContext context, GoRouterState state) {
+            return SettingsScreen();
+          },
+        ),
+        GoRoute(
+          path: 'practice',
+          builder: (BuildContext context, GoRouterState state) {
+            return PracticeScreen();
+          },
         ),
       ],
     ),

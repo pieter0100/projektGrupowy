@@ -56,28 +56,28 @@ class ScaffoldWithNav extends StatelessWidget {
                   label: 'Home',
                   isSelected: navigationShell.currentIndex == 0,
                   onTap: () => _onTap(0),
-                  iconColor: Color(0xFF41AC78)
+                  selectedColor: Color(0xFF41AC78),
                 ),
-                _buildNavItem(
+                 _buildNavItem(
                   icon: Icons.ads_click,
                   label: 'Leaderboard',
                   isSelected: navigationShell.currentIndex == 1,
                   onTap: () => _onTap(1),
-                  iconColor: Color(0xFFEB9F4A)
+                  selectedColor: Color(0xFFEB9F4A),
                 ),
                 _buildNavItem(
                   icon: Icons.people,
                   label: 'Profile',
                   isSelected: navigationShell.currentIndex == 2,
                   onTap: () => _onTap(2),
-                  iconColor: Color(0xFFAB70DF)
+                  selectedColor: Color(0xFFAB70DF),
                 ),
                 _buildNavItem(
                   icon: Icons.settings,
                   label: 'Settings',
-                  isSelected: navigationShell.currentIndex == 3,
-                  onTap: () => _onTap(3),
-                  iconColor: Color.fromARGB(255, 20, 181, 240)
+                  isSelected: navigationShell.currentIndex == 4,
+                  onTap: () => _onTap(4),
+                  selectedColor: Color.fromARGB(255, 114, 158, 216),
                 ),
               ],
             ),
@@ -93,13 +93,24 @@ class ScaffoldWithNav extends StatelessWidget {
     required String label,
     required bool isSelected,
     required VoidCallback onTap,
-    required Color iconColor
+    required Color selectedColor,
   }) {
-    final Color selectedColor = iconColor; 
+    // Kolory z Twojego zrzutu ekranu
     final Color unselectedColor = Colors.grey.shade600;
     final Color itemColor = isSelected ? selectedColor : unselectedColor;
 
-    // click effect
+    return GestureDetector(
+    onTap: onTap,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Icon(icon, color: itemColor),
+        Text(label, style: TextStyle(color: itemColor)),
+      ],
+    ),
+  );
+
+    // InkWell daje efekt "plusku" przy kliknięciu
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(30.0), 
