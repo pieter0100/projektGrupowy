@@ -8,7 +8,6 @@ import 'widgets/scaffold_with_nav.dart';
 final GoRouter router = GoRouter(
   initialLocation: '/home', // Domyślna ścieżka
   routes: [
-    // 🤖 To jest nasza główna trasa z zakładkami
     StatefulShellRoute.indexedStack(
       
       // Budowniczy 'powłoki' (naszego widgetu z BottomNavBar)
@@ -24,7 +23,7 @@ final GoRouter router = GoRouter(
           routes: [
             GoRoute(
               path: '/level', // Ścieżka URL
-              builder: (context, state) => const LevelScreen(),
+              builder: (context, state) => const LevelScreen(levelsAmount: 10,),
               // Możesz tu zagnieżdżać dalsze trasy, np. /home/details/1
             ),
           ],
@@ -39,11 +38,6 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
-        GoRoute(path: 'level',
-        builder: (BuildContext context, GoRouterState state) {
-            return LevelScreen(levelsAmount: 10,);
-          },
-        )
       ],
     ),
   ],
