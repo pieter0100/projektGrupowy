@@ -1,6 +1,6 @@
 // main.dart
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/app_router.dart';
 
 // Zaimportuj swoje pliki
 import 'widgets/scaffold_with_nav.dart';
@@ -92,9 +92,8 @@ final GoRouter _router = GoRouter(
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Użyj .router() zamiast zwykłego MaterialApp
     return MaterialApp.router(
-      routerConfig: _router,
+      routerConfig: router,
       title: 'GoRouter Bottom Nav',
     );
   }

@@ -19,13 +19,13 @@ class ScaffoldWithNav extends StatelessWidget {
   Widget build(BuildContext context) {
     double bottomSafeAreaPadding = MediaQuery.of(context).padding.bottom;
 
-    // inne ekrany niz ios
+    // devices that are not IOS
     if (bottomSafeAreaPadding == 0) {
       bottomSafeAreaPadding = 10;
     }
 
     return Scaffold(
-      extendBody: true, // Kluczowe, by body szło pod pasek
+      extendBody: true, 
       body: navigationShell,
 
       bottomNavigationBar: FractionallySizedBox(
@@ -37,26 +37,23 @@ class ScaffoldWithNav extends StatelessWidget {
             borderRadius: BorderRadius.circular(45.0),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.1),
+                color: Colors.black.withValues(alpha: 0.1),
                 blurRadius: 10,
                 spreadRadius: 2,
               ),
             ],
           ),
 
-          // Zamiast BottomNavigationBar, budujemy własny
           child: ClipRRect(
             borderRadius: BorderRadius.circular(45.0),
 
-            // ✅ KROK 1: Używamy Row, aby ułożyć elementy poziomo
             child: Row(
-              // Rozkładamy elementy równomiernie
+              // spaces between elements are even
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // ✅ KROK 2: Budujemy każdy element ręcznie
                 _buildNavItem(
                   icon: Icons.home,
-                  label: 'Dom',
+                  label: 'Home',
                   isSelected: navigationShell.currentIndex == 0,
                   onTap: () => _onTap(0),
                   selectedColor: Color(0xFF41AC78),
@@ -90,8 +87,7 @@ class ScaffoldWithNav extends StatelessWidget {
     );
   }
 
-  // ✅ KROK 3: Funkcja pomocnicza do budowania pojedynczej ikonki
-  // (Umieść ją wewnątrz klasy ScaffoldWithNav, ale poza metodą build)
+  // function that builds single icon in navbar
   Widget _buildNavItem({
     required IconData icon,
     required String label,
@@ -117,16 +113,14 @@ class ScaffoldWithNav extends StatelessWidget {
     // InkWell daje efekt "plusku" przy kliknięciu
     return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(30.0), // Dopasuj do kształtu
-      // Padding kontroluje wysokość paska
+      borderRadius: BorderRadius.circular(30.0), 
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 7.0),
         child: Column(
-          // Ważne: aby kolumna była tak mała, jak to możliwe
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(icon, color: itemColor, size: 28), // Większa ikona
-            SizedBox(height: 3), // Mały odstęp
+            Icon(icon, color: itemColor, size: 28), 
+            SizedBox(height: 3), 
             Text(
               label,
               style: TextStyle(

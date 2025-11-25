@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
 
 class LevelScreen extends StatelessWidget {
-  const LevelScreen({super.key});
+  final int levelsAmount;
+  const LevelScreen({super.key, required this.levelsAmount});
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class LevelScreen extends StatelessWidget {
   ),
       ),
       body: ListView.builder(
-        itemCount: 10,
+        itemCount: levelsAmount,
         itemBuilder: (BuildContext context, int index) {
           if (index < 2) {
             return InkWell(
@@ -60,7 +61,7 @@ class LevelScreen extends StatelessWidget {
             child: LevelWidget("x ${index + 1}"),
           );
           } else {
-            return LevelWidget("lock");
+            return LevelWidget(isLocked: true);
           }
         },
       ),
