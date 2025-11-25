@@ -39,25 +39,10 @@ final GoRouter router = GoRouter(
             ),
           ],
         ),
-
-        // --- GAŁĄŹ 3: PROFIL ---
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/profile',
-              builder: (context, state) => const ProfileScreen(),
-            ),
-          ],
-        ),
-
-        // --- GAŁĄŹ 4: SETTINGS ---
-        StatefulShellBranch(
-          routes: [
-            GoRoute(
-              path: '/settings',
-              builder: (context, state) => const SettingsScreen(),
-            )
-          ]
+        GoRoute(path: 'level',
+        builder: (BuildContext context, GoRouterState state) {
+            return LevelScreen(levelsAmount: 10,);
+          },
         )
       ],
     ),
