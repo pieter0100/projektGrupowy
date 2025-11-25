@@ -8,8 +8,18 @@ import 'screens/profile_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/practice_screen.dart';
+import 'game_logic/local_saves.dart';
 
-void main() {
+void main() async {
+  // Ensure Flutter is initialized
+  WidgetsFlutterBinding.ensureInitialized();
+  
+  // Initialize Hive and all adapters
+  await LocalSaves.init();
+
+  // Run tests
+  await LocalSaves.testAllClasses();
+
   runApp(MyApp());
 }
 
