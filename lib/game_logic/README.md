@@ -200,3 +200,16 @@ Hive.registerAdapter(ClassAdapter());
   - `box.get(key)` - Retrieve an object
   - `box.delete(key)` - Delete an object
   - `box.values` - Get all objects in the box
+
+## Testing
+To test that all classes and their Hive adapters are working correctly, use the following code snippet:
+
+```
+import 'game_logic/local_saves.dart';
+
+  // Initialize Hive and all adapters
+  await LocalSaves.init();
+
+  // Run tests
+  await LocalSaves.testAllClasses();
+```
