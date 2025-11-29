@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'widgets/scaffold_with_nav.dart';
-import 'screens/home_screen.dart';
+import 'screens/leaderboard_screen.dart';
 import 'screens/level_screen.dart';
 import 'screens/profile_screen.dart';
 import 'screens/learn_screen.dart';
@@ -25,7 +25,7 @@ void main() async {
 
 // router configuration
 final GoRouter _router = GoRouter(
-  initialLocation: '/home',
+  initialLocation: '/level',
   routes: [
     StatefulShellRoute.indexedStack(
       
@@ -50,7 +50,7 @@ final GoRouter _router = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/home',
+              path: '/leaderboard',
               builder: (context, state) => const HomeScreen(),
             ),
           ],
