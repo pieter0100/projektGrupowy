@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
+import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
 class PracticeScreen extends StatelessWidget{
   final String? level;
@@ -22,12 +23,49 @@ class PracticeScreen extends StatelessWidget{
       ),
       body: ListView(
         children: [
-          SizedBox(height: 40),
+          SizedBox(height: 29),
           Center(
-            child: MatchPairsWidget("2"),
+            child: ProgressBarWidget(),
+          ),
+          SizedBox(height: 42),
+          Center(
+            child: Text(
+              "Question 1",
+              style: TextStyle(fontSize: 30),
+            ),
+          ),
+          SizedBox(height: 57),
+          Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MatchPairsWidget("1"),
+                  SizedBox(width: 53),
+                  MatchPairsWidget("2"),
+                ],
+              ),
+              SizedBox(height: 35),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MatchPairsWidget("3"),
+                  SizedBox(width: 53),
+                  MatchPairsWidget("4"),
+                ],
+              ),
+              SizedBox(height: 35),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  MatchPairsWidget("5"),
+                  SizedBox(width: 53),
+                  MatchPairsWidget("6"),
+                ],
+              ),
+            ],
           ),
         ],
-        
       ),
     );
   }
