@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home page'),
+        title: Text('Leaderboard page'),
         actions: [
           IconButton(
             onPressed: () => context.go('/profile'),
@@ -17,10 +17,7 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () => context.go('/level'),
-          child: Text('Go to level page'),
-        ),
+        child: Text('Leaderboard page')
       ),
     );
   }
