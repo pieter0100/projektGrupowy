@@ -17,10 +17,7 @@ class HomeScreen extends StatelessWidget {
         ],
       ),
       body: Center(
-        child: ElevatedButton(
-          onPressed: () => context.go('/level'),
-          child: Text('Go to level page'),
-        ),
+        child: Text('Leaderboard page')
       ),
     );
   }
