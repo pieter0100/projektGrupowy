@@ -1,9 +1,11 @@
 import 'package:projekt_grupowy/models/card_generator.dart';
 import 'package:projekt_grupowy/models/card_item.dart';
+import 'package:logger/logger.dart';
 
 enum MatchStatus {
   matchFound,
   matchFailed,
+  cannotSelect // e.g., same card selected, already matched card selected, selecting more than 2 cards
 }
 
 enum RoundStatus {
@@ -12,6 +14,8 @@ enum RoundStatus {
 }
 
 class RoundManager {
+
+  final Logger _logger = Logger();
 
   CardGenerator cardGenerator;
   int pairsAmount;
@@ -24,6 +28,8 @@ class RoundManager {
   int attempts = 0;
   RoundStatus roundStatus = RoundStatus.ongoing;
 
+  List<CardItem> selectedCards = []; 
+
   RoundManager({
     required this.pairsAmount,
     required this.typeOfMultiplication,
@@ -33,6 +39,128 @@ class RoundManager {
         ),
         currentDeck = [] {
     currentDeck = cardGenerator.cardsDeck;
+  }
+
+  MatchStatus? onCardSelected(CardItem card) {
+    if (ifCardAlreadyMatched(card)) {
+      return MatchStatus.cannotSelect;
+    }
+
+    if (selectedCards.length < 2) {
+      selectedCards.add(card);
+    } else {
+      return MatchStatus.cannotSelect;
+    }
+
+    if (selectedCards.length == 2) {
+      return checkSelectedCards();
+    }
+
+    return null; // waiting for the second card to be selected
+  }
+
+  MatchStatus checkSelectedCards() {
+    if (if2CardsSelected() == false) {
+      return MatchStatus.cannotSelect;
+    }
+
+    attempts += 1;
+
+    CardItem firstCard = selectedCards[0];
+    CardItem secondCard = selectedCards[1];
+
+    if (ifSameCardsSelected(firstCard, secondCard)) {
+      selectedCards.clear();
+      return MatchStatus.cannotSelect;
+    }
+
+    if (ifCardAlreadyMatched(firstCard) || ifCardAlreadyMatched(secondCard)) {
+      selectedCards.clear();
+      return MatchStatus.cannotSelect;
+    }
+
+    // check for a match
+    if (firstCard.pairId == secondCard.id && secondCard.pairId == firstCard.id) {
+      // mark cards as matched
+      firstCard.isMatched = true;
+      secondCard.isMatched = true;
+
+      matchedPairs += 1;
+      matchedPairsList.addAll([firstCard, secondCard]);
+
+      // clear selected cards
+      selectedCards.clear();
+
+      // check if round is completed
+      if (getProgress() >= 1.0) {
+        roundStatus = RoundStatus.roundCompleted;
+      }
+
+      return MatchStatus.matchFound;
+    } else {
+      selectedCards.clear();
+      return MatchStatus.matchFailed;
+    }
+  }
+
+  bool ifSameCardsSelected(CardItem firstCard, CardItem secondCard) {
+    return firstCard.id == secondCard.id;
+  }
+
+  bool ifCardAlreadyMatched(CardItem card) {
+    if(card.isMatched) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool if2CardsSelected() {
+    return selectedCards.length == 2;
+  }
+
+  bool ifRoundCompleted() {
+    return roundStatus == RoundStatus.roundCompleted;
+  }
+
+  // returns % of progress
+  double getProgress() {
+    return matchedPairs / pairsAmount;
+  }
+
+  // resets the round to initial state, keeping the same settings but with a new shuffled deck
+  void resetRound() {
+    matchedPairs = 0;
+    matchedPairsList.clear();
+    attempts = 0;
+    roundStatus = RoundStatus.ongoing;
+    selectedCards.clear();
+    currentDeck = cardGenerator.cardsDeck;
+  }
+
+  // returns the current game state as a map
+  Map<String, dynamic> getGameState() {
+    return {
+      'matchedPairs': matchedPairs,
+      'totalPairs': pairsAmount,
+      'attempts': attempts,
+      'progress': getProgress(),
+      'status': roundStatus,
+      'selectedCardsCount': selectedCards.length,
+    };
+  }  
+
+  void logGameState(){
+    Map<String, dynamic> state = getGameState();
+    _logger.i('''
+    Game State:
+    Matched Pairs: ${state['matchedPairs']}}
+    Total Pairs: ${state['totalPairs']}
+    Attempts: ${state['attempts']}
+    Progress: ${(state['progress'] * 100).toStringAsFixed(2)}%
+    Round Status: ${state['status']}
+    Selected Cards Count: ${state['selectedCardsCount']}
+    ''');
   }
   
 }
