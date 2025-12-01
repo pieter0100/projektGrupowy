@@ -15,7 +15,11 @@ enum RoundStatus {
 
 class RoundManager {
 
-  final Logger _logger = Logger();
+  final Logger _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0
+    ),
+  );
 
   CardGenerator cardGenerator;
   int pairsAmount;
