@@ -154,7 +154,7 @@ class RoundManager {
     Map<String, dynamic> state = getGameState();
     _logger.i('''
     Game State:
-    Matched Pairs: ${state['matchedPairs']}}
+    Matched Pairs: ${state['matchedPairs']}
     Total Pairs: ${state['totalPairs']}
     Attempts: ${state['attempts']}
     Progress: ${(state['progress'] * 100).toStringAsFixed(2)}%
