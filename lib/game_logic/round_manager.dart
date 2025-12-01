@@ -80,7 +80,7 @@ class RoundManager {
     }
 
     // check for a match
-    if (firstCard.pairId == secondCard.id && secondCard.pairId == firstCard.id) {
+    if (firstCard.pairId == secondCard.id) {
       // mark cards as matched
       firstCard.isMatched = true;
       secondCard.isMatched = true;
