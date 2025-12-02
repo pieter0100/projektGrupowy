@@ -1,31 +1,75 @@
 import 'package:flutter/material.dart';
 
-class MatchPairsWidget extends StatelessWidget {
-  final String textInside;
+import 'package:projekt_grupowy/models/card_item.dart';
 
-  const MatchPairsWidget(this.textInside, {Key? key}) : super(key: key);
+class MatchPairsWidget extends StatelessWidget {
+  final CardItem card;
+  final bool isSelected;
+  final bool isMatched;
+  final VoidCallback? onTap;
+
+  const MatchPairsWidget(
+    this.card, {
+    Key? key,
+    this.isSelected = false,
+    this.isMatched = false,
+    this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final double fontSize =
-        textInside.length > 2 ? 56 : 82;
+    final Color backgroundColor =
+        isMatched ? Color(0xFF7EDE81) : const Color(0xFF7ED4DE);
 
-    return Container(
-      width: 130,
-      height: 130,
-      decoration: BoxDecoration(
-        color: const Color(0xFF7ED4DE), // background color
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Center(
-        child: Text(
-          textInside,
-          style: TextStyle(
-            fontSize: fontSize,
-            color: Colors.white,
-          ),
-          textAlign: TextAlign.center,
-        ),
+    final double fontSize = card.value.length > 2 ? 56 : 82;
+
+    return GestureDetector(
+      onTap: onTap,
+      child: Stack(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 200),
+            width: 130,
+            height: 130,
+            decoration: BoxDecoration(
+              color: backgroundColor,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Stack(
+              children: [
+                if (isSelected || isMatched)
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.topCenter,
+                        end: Alignment.bottomCenter,
+                        colors: [
+                        Colors.black.withOpacity(0.2),
+                        Colors.transparent,
+                        ],
+                        stops: const [
+                          0.0, 0.1,
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    card.value,
+                    style: TextStyle(
+                      fontSize: fontSize,
+                      color: Colors.white,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ]
       ),
     );
   }
