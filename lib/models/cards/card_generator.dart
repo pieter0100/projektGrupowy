@@ -1,4 +1,4 @@
-import 'package:projekt_grupowy/models/card_item.dart';
+import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:uuid/uuid.dart';
 
 class CardGenerator {
@@ -21,7 +21,7 @@ class CardGenerator {
       CardItem cardOne = CardItem(
         id: idOne,
         pairId: idSecond,
-        value: "${typeOfMultiplication}x${i + 1}",
+        value: "${typeOfMultiplication}×${i + 1}",
       );
 
       // second card from pair

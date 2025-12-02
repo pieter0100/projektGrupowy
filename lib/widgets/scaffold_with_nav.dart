@@ -24,7 +24,7 @@ class ScaffoldWithNav extends StatelessWidget {
     }
 
     return Scaffold(
-      extendBody: true, 
+      extendBody: true,
       body: navigationShell,
 
       bottomNavigationBar: FractionallySizedBox(
@@ -57,7 +57,7 @@ class ScaffoldWithNav extends StatelessWidget {
                   onTap: () => _onTap(0),
                   selectedColor: Color(0xFF41AC78),
                 ),
-                 _buildNavItem(
+                _buildNavItem(
                   icon: Icons.ads_click,
                   label: 'Leaderboard',
                   isSelected: navigationShell.currentIndex == 1,
@@ -98,36 +98,13 @@ class ScaffoldWithNav extends StatelessWidget {
     final Color itemColor = isSelected ? selectedColor : unselectedColor;
 
     return GestureDetector(
-    onTap: onTap,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Icon(icon, color: itemColor),
-        Text(label, style: TextStyle(color: itemColor)),
-      ],
-    ),
-  );
-
-    return InkWell(
       onTap: onTap,
-      borderRadius: BorderRadius.circular(30.0), 
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 7.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(icon, color: itemColor, size: 28), 
-            SizedBox(height: 3), 
-            Text(
-              label,
-              style: TextStyle(
-                color: itemColor,
-                fontSize: 12,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-              ),
-            ),
-          ],
-        ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, color: itemColor),
+          Text(label, style: TextStyle(color: itemColor)),
+        ],
       ),
     );
   }

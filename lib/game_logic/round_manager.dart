@@ -1,5 +1,5 @@
-import 'package:projekt_grupowy/models/card_generator.dart';
-import 'package:projekt_grupowy/models/card_item.dart';
+import 'package:projekt_grupowy/models/cards/card_generator.dart';
+import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:logger/logger.dart';
 
 enum MatchStatus {

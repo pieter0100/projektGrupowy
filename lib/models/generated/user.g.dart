@@ -1,35 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'leaderboard.dart';
+part of '../user/user.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class LeaderboardAdapter extends TypeAdapter<Leaderboard> {
+class UserAdapter extends TypeAdapter<User> {
   @override
-  final int typeId = 9;
+  final int typeId = 3;
 
   @override
-  Leaderboard read(BinaryReader reader) {
+  User read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return Leaderboard(
-      entries: (fields[0] as List).cast<LeaderboardEntry>(),
-      lastUpdated: fields[1] as DateTime,
+    return User(
+      userId: fields[0] as String,
+      profile: fields[1] as UserProfile,
+      stats: fields[2] as UserStats,
     );
   }
 
   @override
-  void write(BinaryWriter writer, Leaderboard obj) {
+  void write(BinaryWriter writer, User obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.entries)
+      ..write(obj.userId)
       ..writeByte(1)
-      ..write(obj.lastUpdated);
+      ..write(obj.profile)
+      ..writeByte(2)
+      ..write(obj.stats);
   }
 
   @override
@@ -38,7 +41,7 @@ class LeaderboardAdapter extends TypeAdapter<Leaderboard> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is LeaderboardAdapter &&
+      other is UserAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

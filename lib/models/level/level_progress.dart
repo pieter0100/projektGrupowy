@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'level_progress.g.dart';
+part '../generated/level_progress.g.dart';
 
 @HiveType(typeId: 4)
 class LevelProgress {

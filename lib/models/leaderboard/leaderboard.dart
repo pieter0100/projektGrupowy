@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'leaderboard_entry.dart';
 
-part 'leaderboard.g.dart';
+part '../generated/leaderboard.g.dart';
 
 @HiveType(typeId: 9)
 class Leaderboard {

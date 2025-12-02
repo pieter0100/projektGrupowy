@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class ProgressBarWidget extends StatelessWidget {
 
-  const ProgressBarWidget({Key? key}) : super(key: key);
+  const ProgressBarWidget({super.key});
 
   @override
   Widget build(BuildContext context) {

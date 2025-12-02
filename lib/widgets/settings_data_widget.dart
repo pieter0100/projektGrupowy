@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SettingsDataWidget extends StatelessWidget {
   final String textInside;
 
-  const SettingsDataWidget(this.textInside, {Key? key}) : super(key: key);
+  const SettingsDataWidget(this.textInside, {super.key});
 
   @override
   Widget build(BuildContext context) {

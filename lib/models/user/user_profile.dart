@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'user_profile.g.dart';
+part '../generated/user_profile.g.dart';
 
 @HiveType(typeId: 0)
 class UserProfile {

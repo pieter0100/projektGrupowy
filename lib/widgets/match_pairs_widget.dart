@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:projekt_grupowy/models/card_item.dart';
+import 'package:projekt_grupowy/models/cards/card_item.dart';
 
 class MatchPairsWidget extends StatelessWidget {
   final CardItem card;
@@ -10,11 +10,11 @@ class MatchPairsWidget extends StatelessWidget {
 
   const MatchPairsWidget(
     this.card, {
-    Key? key,
+    super.key,
     this.isSelected = false,
     this.isMatched = false,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -44,38 +44,33 @@ class MatchPairsWidget extends StatelessWidget {
             child: Stack(
               children: [
                 if (isSelected || isMatched || card.isFailed)
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topCenter,
-                        end: Alignment.bottomCenter,
-                        colors: [
-                        Colors.black.withOpacity(0.2),
-                        Colors.transparent,
-                        ],
-                        stops: const [
-                          0.0, 0.1,
-                        ],
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withValues(alpha: 0.2),
+                            Colors.transparent,
+                          ],
+                          stops: const [0.0, 0.1],
+                        ),
                       ),
                     ),
                   ),
-                ),
                 Center(
                   child: Text(
                     card.value,
-                    style: TextStyle(
-                      fontSize: fontSize,
-                      color: Colors.white,
-                    ),
+                    style: TextStyle(fontSize: fontSize, color: Colors.white),
                     textAlign: TextAlign.center,
                   ),
                 ),
               ],
             ),
-          )
-        ]
+          ),
+        ],
       ),
     );
   }

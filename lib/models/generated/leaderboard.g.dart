@@ -1,35 +1,35 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'unlock_requirements.dart';
+part of '../leaderboard/leaderboard.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UnlockRequirementsAdapter extends TypeAdapter<UnlockRequirements> {
+class LeaderboardAdapter extends TypeAdapter<Leaderboard> {
   @override
-  final int typeId = 5;
+  final int typeId = 9;
 
   @override
-  UnlockRequirements read(BinaryReader reader) {
+  Leaderboard read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UnlockRequirements(
-      minPoints: fields[0] as int,
-      previousLevelId: fields[1] as String?,
+    return Leaderboard(
+      entries: (fields[0] as List).cast<LeaderboardEntry>(),
+      lastUpdated: fields[1] as DateTime,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UnlockRequirements obj) {
+  void write(BinaryWriter writer, Leaderboard obj) {
     writer
       ..writeByte(2)
       ..writeByte(0)
-      ..write(obj.minPoints)
+      ..write(obj.entries)
       ..writeByte(1)
-      ..write(obj.previousLevelId);
+      ..write(obj.lastUpdated);
   }
 
   @override
@@ -38,7 +38,7 @@ class UnlockRequirementsAdapter extends TypeAdapter<UnlockRequirements> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UnlockRequirementsAdapter &&
+      other is LeaderboardAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

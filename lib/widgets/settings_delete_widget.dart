@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class SettingsDeleteWidget extends StatelessWidget {
   final String textInside;
 
-  const SettingsDeleteWidget(this.textInside, {Key? key}) : super(key: key);
+  const SettingsDeleteWidget(this.textInside, {super.key});
 
   @override
   Widget build(BuildContext context) {

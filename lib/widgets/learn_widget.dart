@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class LearnWidget extends StatelessWidget {
   final String textInside;
 
-  const LearnWidget(this.textInside, {Key? key}) : super(key: key);
+  const LearnWidget(this.textInside, {super.key});
 
   @override
   Widget build(BuildContext context) {

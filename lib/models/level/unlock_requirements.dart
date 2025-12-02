@@ -1,6 +1,6 @@
 import 'package:hive/hive.dart';
 
-part 'unlock_requirements.g.dart';
+part '../generated/unlock_requirements.g.dart';
 
 @HiveType(typeId: 5)
 class UnlockRequirements {

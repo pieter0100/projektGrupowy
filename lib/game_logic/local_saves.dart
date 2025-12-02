@@ -1,12 +1,12 @@
 import 'package:hive_flutter/hive_flutter.dart';
-import '../models/user.dart';
-import '../models/user_profile.dart';
-import '../models/user_stats.dart';
-import '../models/level_progress.dart';
-import '../models/level.dart';
-import '../models/unlock_requirements.dart';
-import '../models/leaderboard.dart';
-import '../models/leaderboard_entry.dart';
+import '../models/user/user.dart';
+import '../models/user/user_profile.dart';
+import '../models/user/user_stats.dart';
+import '../models/level/level_progress.dart';
+import '../models/level/level.dart';
+import '../models/level/unlock_requirements.dart';
+import '../models/leaderboard/leaderboard.dart';
+import '../models/leaderboard/leaderboard_entry.dart';
 import 'package:logger/logger.dart';
 
 class LocalSaves {
