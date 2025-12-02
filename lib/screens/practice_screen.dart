@@ -38,9 +38,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
     setState(() {});
 
     if (status == MatchStatus.matchFound) {
-      print("Match found!");
+      roundManager.logGameState();
+      roundManager.logMessage("Match found!");
     } else if (status == MatchStatus.matchFailed) {
-      print("Match failed!");
+      roundManager.logGameState();
+      roundManager.logMessage("Match failed!");
       final failedCards = roundManager.selectedCards.toList();
 
       for (var c in failedCards) {

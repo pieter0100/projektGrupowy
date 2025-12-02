@@ -1,10 +1,12 @@
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:uuid/uuid.dart';
+import 'package:logger/logger.dart';
 
 class CardGenerator {
   int pairsAmount;
   List<CardItem> cardsDeck = List.empty(growable: true);
   int typeOfMultiplication;
+  final Logger _logger = Logger(printer: PrettyPrinter(methodCount: 0));
 
   CardGenerator({
     required this.pairsAmount,
@@ -21,7 +23,7 @@ class CardGenerator {
       CardItem cardOne = CardItem(
         id: idOne,
         pairId: idSecond,
-        value: "${typeOfMultiplication}×${i + 1}",
+        value: "$typeOfMultiplication×${i + 1}",
       );
 
       // second card from pair
@@ -47,9 +49,9 @@ class CardGenerator {
 
   // for debugging
   void printCardDeck() {
-    print("Print all cards from deck: \n");
+    _logger.i("Print all cards from deck: \n");
     for (var card in cardsDeck) {
-      print(card);
+      _logger.i(card.toString());
     }
   }
 }
