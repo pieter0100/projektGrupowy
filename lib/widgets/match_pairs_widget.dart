@@ -7,6 +7,9 @@ class MatchPairsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double fontSize =
+        textInside.length > 2 ? 56 : 82;
+
     return Container(
       width: 130,
       height: 130,
@@ -17,8 +20,8 @@ class MatchPairsWidget extends StatelessWidget {
       child: Center(
         child: Text(
           textInside,
-          style: const TextStyle(
-            fontSize: 96,
+          style: TextStyle(
+            fontSize: fontSize,
             color: Colors.white,
           ),
           textAlign: TextAlign.center,

@@ -21,7 +21,7 @@ class CardGenerator {
       CardItem cardOne = CardItem(
         id: idOne,
         pairId: idSecond,
-        value: "$typeOfMultiplication x ${i + 1}",
+        value: "${typeOfMultiplication}x${i + 1}",
       );
 
       // second card from pair
