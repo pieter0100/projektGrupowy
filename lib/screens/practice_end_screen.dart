@@ -28,7 +28,7 @@ class _PracticeEndScreenState extends State<PracticeEndScreen> {
     return const Scaffold(
       body: Center(
         child: Text(
-          "Congratulations! You answered all the questions correctly!",
+          "Congratulations! \nYou answered all the questions correctly!",
           style: TextStyle(fontSize: 24),
           textAlign: TextAlign.center,
         ),
