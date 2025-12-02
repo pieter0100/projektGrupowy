@@ -88,7 +88,7 @@ void main() {
     });
 
     test('Backend correctly recognizes matched pairs', () {
-            logger.i('Testing matched pair recognition...');
+      logger.i('Testing matched pair recognition...');
 
       // Find a matching pair in the deck
       CardItem? firstCard;
