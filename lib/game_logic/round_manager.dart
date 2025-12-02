@@ -112,11 +112,7 @@ class RoundManager {
   }
 
   bool isCardAlreadyMatched(CardItem card) {
-    if(card.isMatched) {
-      return true;
-    } else {
-      return false;
-    }
+    return card.isMatched;
   }
 
   bool are2CardsSelected() {
