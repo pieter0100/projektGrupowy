@@ -8,6 +8,7 @@ import 'screens/profile_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/practice_screen.dart';
+import 'screens/practice_end_screen.dart';
 import 'game_logic/local_saves.dart';
 
 void main() async {
@@ -90,6 +91,13 @@ final GoRouter _router = GoRouter(
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
         return PracticeScreen(level: level);
+      },
+    ),
+    GoRoute(
+      path: '/level/learn/practice/end',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return PracticeEndScreen(level: level);
       },
     ),
   ],

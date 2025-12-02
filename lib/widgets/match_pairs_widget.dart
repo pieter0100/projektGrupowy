@@ -20,11 +20,11 @@ class MatchPairsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Color backgroundColor;
     if (card.isFailed) {
-      backgroundColor = const Color(0xFFE15D5D); // złe dopasowanie
+      backgroundColor = const Color(0xFFE15D5D);
     } else if (isMatched) {
-      backgroundColor = const Color(0xFF7EDE81); // dobre dopasowanie
+      backgroundColor = const Color(0xFF7EDE81);
     } else {
-      backgroundColor = const Color(0xFF7ED4DE); // normalny
+      backgroundColor = const Color(0xFF7ED4DE);
     }
 
     final double fontSize = card.value.length > 2 ? 56 : 82;

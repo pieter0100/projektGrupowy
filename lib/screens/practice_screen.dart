@@ -32,11 +32,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
     final status = roundManager.onCardSelected(card);
 
     setState(() {
-      // wymusza rebuild, aby MatchPairsWidget dostał nowe wartości isSelected/isMatched
     });
 
     if (status == MatchStatus.matchFound) {
-      // np. możesz pokazać snackbar albo animację
       print("Match found!");
     } else if (status == MatchStatus.matchFailed) {
       print("Match failed!");
@@ -45,7 +43,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
       for (var c in failedCards) {
         c.isFailed = true;
       }
-      _isLocked = true; // blokujemy kliknięcia
+      _isLocked = true;
       setState(() {});
 
       Future.delayed(const Duration(seconds: 1), () {
@@ -53,9 +51,13 @@ class _PracticeScreenState extends State<PracticeScreen> {
           c.isFailed = false;
         }
         roundManager.selectedCards.clear();
-        _isLocked = false; // odblokuj kliknięcia
+        _isLocked = false;
         setState(() {});
       });
+    }
+
+    if (roundManager.isRoundCompleted()) {
+      context.go('/level/learn/practice/end?level=${widget.level}');
     }
   }
 
