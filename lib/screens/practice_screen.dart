@@ -18,6 +18,7 @@ class PracticeScreen extends StatefulWidget {
 
 class _PracticeScreenState extends State<PracticeScreen> {
    late RoundManager roundManager;
+   bool _isLocked = false;
 
   @override
   void initState() {
@@ -26,6 +27,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
   }
 
   void _onCardTap(CardItem card) {
+    if (_isLocked) return;
+
     final status = roundManager.onCardSelected(card);
 
     setState(() {
@@ -37,6 +40,22 @@ class _PracticeScreenState extends State<PracticeScreen> {
       print("Match found!");
     } else if (status == MatchStatus.matchFailed) {
       print("Match failed!");
+      final failedCards = roundManager.selectedCards.toList();
+
+      for (var c in failedCards) {
+        c.isFailed = true;
+      }
+      _isLocked = true; // blokujemy kliknięcia
+      setState(() {});
+
+      Future.delayed(const Duration(seconds: 1), () {
+        for (var c in failedCards) {
+          c.isFailed = false;
+        }
+        roundManager.selectedCards.clear();
+        _isLocked = false; // odblokuj kliknięcia
+        setState(() {});
+      });
     }
   }
 

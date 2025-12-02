@@ -18,8 +18,14 @@ class MatchPairsWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color backgroundColor =
-        isMatched ? Color(0xFF7EDE81) : const Color(0xFF7ED4DE);
+    Color backgroundColor;
+    if (card.isFailed) {
+      backgroundColor = const Color(0xFFE15D5D); // złe dopasowanie
+    } else if (isMatched) {
+      backgroundColor = const Color(0xFF7EDE81); // dobre dopasowanie
+    } else {
+      backgroundColor = const Color(0xFF7ED4DE); // normalny
+    }
 
     final double fontSize = card.value.length > 2 ? 56 : 82;
 
@@ -37,7 +43,7 @@ class MatchPairsWidget extends StatelessWidget {
             ),
             child: Stack(
               children: [
-                if (isSelected || isMatched)
+                if (isSelected || isMatched || card.isFailed)
                 ClipRRect(
                   borderRadius: BorderRadius.circular(12),
                   child: Container(

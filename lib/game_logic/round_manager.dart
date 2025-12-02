@@ -102,7 +102,8 @@ class RoundManager {
 
       return MatchStatus.matchFound;
     } else {
-      selectedCards.clear();
+      firstCard.isFailed = true;
+      secondCard.isFailed = true;
       return MatchStatus.matchFailed;
     }
   }

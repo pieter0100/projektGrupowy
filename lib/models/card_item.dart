@@ -2,13 +2,16 @@ class CardItem {
   String id;
   String pairId;
   String value;
-  bool isMatched = false;
+  bool isMatched;
+  bool isFailed;
 
   // constructor
   CardItem({
     required this.id,
     required this.pairId,
-    required this.value
+    required this.value,
+    this.isMatched = false,
+    this.isFailed = false,
   });
 
   @override
