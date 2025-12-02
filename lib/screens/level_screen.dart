@@ -12,57 +12,41 @@ class LevelScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Row(
-    mainAxisSize: MainAxisSize.min,
-    children: [
-      const Text(
-        'Level screen',
-        style: TextStyle(
-          fontSize: 20,
-          color: Colors.black,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Level screen',
+              style: TextStyle(fontSize: 20, color: Colors.black),
+            ),
+            const SizedBox(width: 8),
+            Icon(
+              Icons.local_fire_department,
+              color: Color(0xFFEB9F4A),
+              size: 29,
+            ),
+            const SizedBox(width: 4),
+            const Text(
+              '3',
+              style: TextStyle(fontSize: 23, color: Color(0xFFEB9F4A)),
+            ),
+            const SizedBox(width: 8),
+            Icon(Icons.diamond, color: Color(0xFF338F9B), size: 29),
+            const SizedBox(width: 4),
+            const Text(
+              '1432 XP',
+              style: TextStyle(fontSize: 23, color: Color(0xFF338F9B)),
+            ),
+          ],
         ),
-      ),
-      const SizedBox(width: 8),
-      Icon(
-        Icons.local_fire_department,
-        color: Color(0xFFEB9F4A),
-        size: 29,
-      ),
-      const SizedBox(width: 4),
-      const Text(
-        '3',
-        style: TextStyle(
-          fontSize: 23,
-          color: Color(0xFFEB9F4A),
-        ),
-      ),
-      const SizedBox(width: 8),
-      Icon(
-        Icons.diamond,
-        color: Color(0xFF338F9B),
-        size: 29,
-      ),
-      const SizedBox(width: 4),
-      const Text(
-        '1432 XP',
-        style: TextStyle(
-          fontSize: 23,
-          color: Color(0xFF338F9B),
-        ),
-      ),
-    ],
-  ),
       ),
       body: ListView.builder(
         itemCount: levelsAmount,
         itemBuilder: (BuildContext context, int index) {
           if (index < 2) {
             return InkWell(
-            onTap: () => context.go('/level/learn?level=${index + 1}'),
-            child: LevelWidget(
-              textInside: "x ${index + 1}",
-              isLocked: false,
-            ),
-          );
+              onTap: () => context.go('/level/learn?level=${index + 1}'),
+              child: LevelWidget(textInside: "× ${index + 1}", isLocked: false),
+            );
           } else {
             return LevelWidget(isLocked: true);
           }

@@ -1,25 +1,17 @@
-import 'package:projekt_grupowy/models/card_generator.dart';
-import 'package:projekt_grupowy/models/card_item.dart';
+import 'package:projekt_grupowy/models/cards/card_generator.dart';
+import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:logger/logger.dart';
 
 enum MatchStatus {
   matchFound,
   matchFailed,
-  cannotSelect // e.g., same card selected, already matched card selected, selecting more than 2 cards
+  cannotSelect, // e.g., same card selected, already matched card selected, selecting more than 2 cards
 }
 
-enum RoundStatus {
-  ongoing,
-  roundCompleted,
-}
+enum RoundStatus { ongoing, roundCompleted }
 
 class RoundManager {
-
-  final Logger _logger = Logger(
-    printer: PrettyPrinter(
-      methodCount: 0
-    ),
-  );
+  final Logger _logger = Logger(printer: PrettyPrinter(methodCount: 0));
 
   CardGenerator cardGenerator;
   int pairsAmount;
@@ -32,16 +24,14 @@ class RoundManager {
   int attempts = 0;
   RoundStatus roundStatus = RoundStatus.ongoing;
 
-  List<CardItem> selectedCards = []; 
+  List<CardItem> selectedCards = [];
 
-  RoundManager({
-    required this.pairsAmount,
-    required this.typeOfMultiplication,
-  }) : cardGenerator = CardGenerator(
-          pairsAmount: pairsAmount,
-          typeOfMultiplication: typeOfMultiplication,
-        ),
-        currentDeck = [] {
+  RoundManager({required this.pairsAmount, required this.typeOfMultiplication})
+    : cardGenerator = CardGenerator(
+        pairsAmount: pairsAmount,
+        typeOfMultiplication: typeOfMultiplication,
+      ),
+      currentDeck = [] {
     currentDeck = cardGenerator.cardsDeck;
   }
 
@@ -102,7 +92,8 @@ class RoundManager {
 
       return MatchStatus.matchFound;
     } else {
-      selectedCards.clear();
+      firstCard.isFailed = true;
+      secondCard.isFailed = true;
       return MatchStatus.matchFailed;
     }
   }
@@ -148,9 +139,9 @@ class RoundManager {
       'status': roundStatus,
       'selectedCardsCount': selectedCards.length,
     };
-  }  
+  }
 
-  void logGameState(){
+  void logGameState() {
     Map<String, dynamic> state = getGameState();
     _logger.i('''
     Game State:
@@ -162,5 +153,8 @@ class RoundManager {
     Selected Cards Count: ${state['selectedCardsCount']}
     ''');
   }
-  
+
+  void logMessage(String message) {
+    _logger.i(message);
+  }
 }

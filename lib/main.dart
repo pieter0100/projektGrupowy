@@ -8,12 +8,13 @@ import 'screens/profile_screen.dart';
 import 'screens/learn_screen.dart';
 import 'screens/settings_screen.dart';
 import 'screens/practice_screen.dart';
+import 'screens/practice_end_screen.dart';
 import 'game_logic/local_saves.dart';
 
 void main() async {
   // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Initialize Hive and all adapters
   await LocalSaves.init();
 
@@ -28,20 +29,18 @@ final GoRouter _router = GoRouter(
   initialLocation: '/level',
   routes: [
     StatefulShellRoute.indexedStack(
-      
       builder: (context, state, navigationShell) {
         return ScaffoldWithNav(navigationShell: navigationShell);
       },
 
       // branches definitiion
       branches: [
-        
         // --- BRANCH 1: LEVEL ---
         StatefulShellBranch(
           routes: [
             GoRoute(
               path: '/level',
-              builder: (context, state) => const LevelScreen(levelsAmount: 8,),
+              builder: (context, state) => const LevelScreen(levelsAmount: 8),
             ),
           ],
         ),
@@ -78,7 +77,7 @@ final GoRouter _router = GoRouter(
       ],
     ),
 
-     GoRoute(
+    GoRoute(
       path: '/level/learn',
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
@@ -92,10 +91,19 @@ final GoRouter _router = GoRouter(
         return PracticeScreen(level: level);
       },
     ),
+    GoRoute(
+      path: '/level/learn/practice/end',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return PracticeEndScreen(level: level);
+      },
+    ),
   ],
 );
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(

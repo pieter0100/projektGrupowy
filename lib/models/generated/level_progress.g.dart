@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'level_progress.dart';
+part of '../level/level_progress.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator

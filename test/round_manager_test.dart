@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:projekt_grupowy/game_logic/round_manager.dart';
 import 'package:logger/logger.dart';
-import 'package:projekt_grupowy/models/card_item.dart';
+import 'package:projekt_grupowy/models/cards/card_item.dart';
 
 void main() {
   final Logger logger = Logger(

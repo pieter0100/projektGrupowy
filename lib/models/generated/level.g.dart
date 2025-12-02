@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'level.dart';
+part of '../level/level.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
