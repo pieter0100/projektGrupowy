@@ -46,7 +46,7 @@ class RoundManager {
   }
 
   MatchStatus? onCardSelected(CardItem card) {
-    if (ifCardAlreadyMatched(card)) {
+    if (isCardAlreadyMatched(card)) {
       return MatchStatus.cannotSelect;
     }
 
@@ -64,7 +64,7 @@ class RoundManager {
   }
 
   MatchStatus checkSelectedCards() {
-    if (if2CardsSelected() == false) {
+    if (are2CardsSelected() == false) {
       return MatchStatus.cannotSelect;
     }
 
@@ -73,12 +73,12 @@ class RoundManager {
     CardItem firstCard = selectedCards[0];
     CardItem secondCard = selectedCards[1];
 
-    if (ifSameCardsSelected(firstCard, secondCard)) {
+    if (areSameCardsSelected(firstCard, secondCard)) {
       selectedCards.clear();
       return MatchStatus.cannotSelect;
     }
 
-    if (ifCardAlreadyMatched(firstCard) || ifCardAlreadyMatched(secondCard)) {
+    if (isCardAlreadyMatched(firstCard) || isCardAlreadyMatched(secondCard)) {
       selectedCards.clear();
       return MatchStatus.cannotSelect;
     }
@@ -107,11 +107,11 @@ class RoundManager {
     }
   }
 
-  bool ifSameCardsSelected(CardItem firstCard, CardItem secondCard) {
+  bool areSameCardsSelected(CardItem firstCard, CardItem secondCard) {
     return firstCard.id == secondCard.id;
   }
 
-  bool ifCardAlreadyMatched(CardItem card) {
+  bool isCardAlreadyMatched(CardItem card) {
     if(card.isMatched) {
       return true;
     } else {
@@ -119,11 +119,11 @@ class RoundManager {
     }
   }
 
-  bool if2CardsSelected() {
+  bool are2CardsSelected() {
     return selectedCards.length == 2;
   }
 
-  bool ifRoundCompleted() {
+  bool isRoundCompleted() {
     return roundStatus == RoundStatus.roundCompleted;
   }
 
