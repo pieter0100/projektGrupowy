@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 
-class ProfileScreen extends StatelessWidget{
+class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile screen'),
+        title: Text('Profile'),
+        centerTitle: true,
         backgroundColor: Color(0xFFE5E5E5),
         scrolledUnderElevation: 0.0,
       ),
-      body: Center(
-        child: Text('Profile page')
-      ),
+      body: Center(child: Text('Profile page')),
     );
   }
 }

@@ -15,7 +15,7 @@ class LevelScreen extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              'Level screen',
+              'Multiply',
               style: TextStyle(fontSize: 20, color: Colors.black),
             ),
             const SizedBox(width: 8),
@@ -38,6 +38,7 @@ class LevelScreen extends StatelessWidget {
             ),
           ],
         ),
+        backgroundColor: Color(0xFFE5E5E5),
       ),
       body: ListView.builder(
         itemCount: levelsAmount,
