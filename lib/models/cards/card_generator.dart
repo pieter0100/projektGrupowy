@@ -1,6 +1,7 @@
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:uuid/uuid.dart';
 import 'package:logger/logger.dart';
+import 'dart:math';
 
 class CardGenerator {
   int pairsAmount;
@@ -12,42 +13,42 @@ class CardGenerator {
     required this.pairsAmount,
     required this.typeOfMultiplication,
   }) {
-    // create cards for the cardsDeck
-    for (int i = 0; i < pairsAmount; i++) {
-      // generate uuid's for card pair
-      var uuid = Uuid();
+
+    var uuid = Uuid();
+    final usedMultipliers = <int>{};
+    final rand = Random();
+    while (usedMultipliers.length < pairsAmount) {
+      int multiplier;
+      do {
+        multiplier = rand.nextInt(10) + 1; // random number from 1 to 10
+      } while (usedMultipliers.contains(multiplier));
+      usedMultipliers.add(multiplier);
       var idOne = uuid.v4();
       var idSecond = uuid.v4();
-
       // first card from pair
       CardItem cardOne = CardItem(
         id: idOne,
         pairId: idSecond,
-        value: "$typeOfMultiplication×${i + 1}",
+        value: "$typeOfMultiplication×$multiplier",
       );
-
       // second card from pair
       CardItem cardTwo = CardItem(
         id: idSecond,
         pairId: idOne,
-        value: "${typeOfMultiplication * (i + 1)}",
+        value: "${typeOfMultiplication * multiplier}",
       );
 
-      // add cards to deck
       cardsDeck.add(cardOne);
       cardsDeck.add(cardTwo);
     }
 
-    // shuffle deck at the end
     shuffleCardsDeck();
   }
 
-  // shuffle cards
   void shuffleCardsDeck() {
     cardsDeck.shuffle();
   }
 
-  // for debugging
   void printCardDeck() {
     _logger.i("Print all cards from deck: \n");
     for (var card in cardsDeck) {
