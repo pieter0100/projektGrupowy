@@ -8,7 +8,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Leaderboard page'),
+        title: Text('Leaderboard'),
         actions: [
           IconButton(
             onPressed: () => context.go('/profile'),
@@ -16,9 +16,7 @@ class HomeScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Text('Leaderboard page')
-      ),
+      body: Center(child: Text('Leaderboard')),
     );
   }
 }

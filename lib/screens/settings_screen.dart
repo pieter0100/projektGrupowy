@@ -4,7 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/settings_data_widget.dart';
 import 'package:projekt_grupowy/widgets/settings_delete_widget.dart';
 
-class SettingsScreen extends StatelessWidget{
+class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
 
   @override
@@ -15,16 +15,15 @@ class SettingsScreen extends StatelessWidget{
           onPressed: () => context.go('/level'),
           icon: Icon(Icons.arrow_back_ios),
         ),
-        title: Text('Settings screen'),
+        title: Text('Settings'),
+        centerTitle: true,
         backgroundColor: Color(0xFFE5E5E5),
         scrolledUnderElevation: 0.0,
       ),
       body: ListView(
         children: [
           SizedBox(height: 40),
-          Center(
-            child: SettingsDataWidget("Personal data"),
-          ),
+          Center(child: SettingsDataWidget("Personal data")),
           SizedBox(height: 40),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
@@ -34,7 +33,6 @@ class SettingsScreen extends StatelessWidget{
             ],
           ),
         ],
-        
       ),
     );
   }

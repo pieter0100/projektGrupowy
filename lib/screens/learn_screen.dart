@@ -16,16 +16,15 @@ class LearnScreen extends StatelessWidget {
           onPressed: () => context.go('/level'),
           icon: Icon(Icons.arrow_back_ios),
         ),
-        title: Text('Learn screen'),
+        title: Text('Learn'),
+        centerTitle: true,
         backgroundColor: Color(0xFFE5E5E5),
         scrolledUnderElevation: 0.0,
       ),
       body: ListView(
         children: [
           SizedBox(height: 40),
-          Center(
-            child: LearnInfoWidget("x $level"),
-          ),
+          Center(child: LearnInfoWidget("× $level")),
 
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
