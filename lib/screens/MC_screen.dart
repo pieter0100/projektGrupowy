@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
@@ -9,11 +10,23 @@ class McScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("(np Multiply x 2) dane z Question provider")),
+      appBar: AppBar(
+        title: Text("(np Multiply x 2) dane z Question provider"),
+        leading: IconButton(
+          icon: const Icon(
+            Icons.arrow_back_ios, 
+          ),
+          onPressed: () => context.pop(), // akcja powrotu
+        ),
+        backgroundColor: Color(0xFFE5E5E5),
+      ),
       body: Center(
         child: Column(
           children: [
-            ProgressBarWidget(),
+            Container(
+              margin: EdgeInsets.only(top: 20.0),
+              child: ProgressBarWidget(),
+            ),
             Container(
               margin: EdgeInsets.only(top: 10.0),
               child: Text(
