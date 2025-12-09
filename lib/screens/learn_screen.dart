@@ -38,11 +38,46 @@ class LearnScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              InkWell(
-                onTap: () {
-                  context.go('/level/learn/practice?level=$level');
-                },
-                child: LearnWidget("practice"),
+              // MENUACBHOR na potrzeby testowania TODO zrobic randomwy tryb po
+              // klikniecu
+              MenuAnchor(
+                // --- Elementy menu (co się ma pokazać) ---
+                menuChildren: [
+                  MenuItemButton(
+                    child: const Text('Memory tryb'),
+
+                    onPressed: () {
+                      context.go('/level/learn/practice?level=$level');
+                    },
+                  ),
+
+                  MenuItemButton(
+                    child: const Text('Typed answer tryb'),
+                    onPressed: () {
+                      context.push('/level/learn/practice/typedAnswer');
+                    },
+                  ),
+                ],
+
+                // --- widget practice ---
+                builder:
+                    (
+                      BuildContext context,
+                      MenuController controller,
+                      Widget? child,
+                    ) {
+                      return GestureDetector(
+                        onTap: () {
+                          if (controller.isOpen) {
+                            controller.close();
+                          } else {
+                            controller.open();
+                          }
+                        },
+
+                        child: LearnWidget("practice"),
+                      );
+                    },
               ),
               SizedBox(height: 8),
               Text("Practice", style: TextStyle(fontSize: 20)),
