@@ -79,7 +79,7 @@ final GoRouter _router = GoRouter(
     ),
 
     GoRoute(
-      path: '/level/learn/exam',
+      path: '/level/learn/practice/MC',
       builder: (context, state) {
         return McScreen();
       }
