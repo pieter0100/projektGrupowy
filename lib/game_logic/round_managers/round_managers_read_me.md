@@ -32,6 +32,8 @@ GameSessionManager (abstract)
     ↓                  ↓
 PracticeSessionManager  ExamSessionManager
 ```
+`GameSessionManager` is the abstract base class defining shared API and logic. `PracticeSessionManager` and `ExamSessionManager` are concrete implementations for respective game modes.
+All classes extend `ChangeNotifier` to support reactive UI updates.
 
 ### `GameSessionManager` Responsibilities
 
@@ -142,7 +144,7 @@ throw UnsupportedError('Skip is not allowed in Exam mode');
 - `StageType` (enum) - represents type of stage
 - `StageResult` - represents result of a single stage
 - `GameStage` - represents a single stage in the game (type + data)
-- `StageData` (abstract) - base class for stage-specific data
+- `StageData` (abstract) - base class for stage-specific data, only store the data/configuration for a stage, not the gameplay state or logic
   - `MultipleChoiceData` - data for MC stage
   - `TypedData` - data for Typed stage
   - `PairsData` - data for Pairs stage
