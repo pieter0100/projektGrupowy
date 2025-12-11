@@ -18,8 +18,7 @@ class McScreen extends StatelessWidget {
         ),
         backgroundColor: Color(0xFFE5E5E5),
       ),
-      body: ListView(
-        children: [
+      body: 
           Column(
             children: [
               Container(
@@ -39,72 +38,75 @@ class McScreen extends StatelessWidget {
                 style: TextStyle(fontSize: 48.0),
                 textAlign: TextAlign.center,
               ),
-              Column(
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
+              Expanded(
+                child: FittedBox(
+                  alignment: AlignmentGeometry.topCenter,
+                  child: Column(
                     children: [
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: MatchPairsWidget(
-                          CardItem(
-                            id: "1",
-                            pairId: "2",
-                            value: "2",
-                            isMatched: false,
-                            isFailed: false,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.all(20.0),
+                            child: MatchPairsWidget(
+                              CardItem(
+                                id: "1",
+                                pairId: "2",
+                                value: "2",
+                                isMatched: false,
+                                isFailed: false,
+                              ),
+                            ),
                           ),
-                        ),
+                          Container(
+                            margin: EdgeInsets.all(20.0),
+                            child: MatchPairsWidget(
+                              CardItem(
+                                id: "1",
+                                pairId: "2",
+                                value: "2",
+                                isMatched: false,
+                                isFailed: false,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: MatchPairsWidget(
-                          CardItem(
-                            id: "1",
-                            pairId: "2",
-                            value: "2",
-                            isMatched: false,
-                            isFailed: false,
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.all(20.0),
+                            child: MatchPairsWidget(
+                              CardItem(
+                                id: "1",
+                                pairId: "2",
+                                value: "2",
+                                isMatched: false,
+                                isFailed: false,
+                              ),
+                            ),
                           ),
-                        ),
+                          Container(
+                            margin: EdgeInsets.all(20.0),
+                            child: MatchPairsWidget(
+                              CardItem(
+                                id: "1",
+                                pairId: "2",
+                                value: "2",
+                                isMatched: false,
+                                isFailed: false,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: MatchPairsWidget(
-                          CardItem(
-                            id: "1",
-                            pairId: "2",
-                            value: "2",
-                            isMatched: false,
-                            isFailed: false,
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.all(20.0),
-                        child: MatchPairsWidget(
-                          CardItem(
-                            id: "1",
-                            pairId: "2",
-                            value: "2",
-                            isMatched: false,
-                            isFailed: false,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
+                ),
               ),
             ],
           ),
-        ],
-      ),
     );
   }
 }
