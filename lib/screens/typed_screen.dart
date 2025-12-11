@@ -8,6 +8,9 @@ class TypedScreen extends StatefulWidget {
 }
 
 class _TypedScreenState extends State<TypedScreen> {
+  // boolean for conditional rendering hint under the input
+  bool isPracticeMode = true;
+
   String placeHolder = "Type the answer";
 
   onSkip() {
@@ -97,23 +100,24 @@ class _TypedScreenState extends State<TypedScreen> {
                       ),
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.only(top: 10.0, right: 20.0),
-                    child: GestureDetector(
-                      onTap: onSkip,
+                  if (isPracticeMode)
+                    Padding(
+                      padding: EdgeInsets.only(top: 10.0, right: 20.0),
+                      child: GestureDetector(
+                        onTap: onSkip,
 
-                      child: Text(
-                        "Don’t Know?  ",
-                        style: TextStyle(
-                          fontSize: 25.0,
-                          color: Color(0x88000000),
-                          decoration: TextDecoration.underline,
-                          decorationColor: Color(0x88000000),
+                        child: Text(
+                          "Don’t Know?  ",
+                          style: TextStyle(
+                            fontSize: 25.0,
+                            color: Color(0x88000000),
+                            decoration: TextDecoration.underline,
+                            decorationColor: Color(0x88000000),
+                          ),
+                          textAlign: TextAlign.end,
                         ),
-                        textAlign: TextAlign.end,
                       ),
                     ),
-                  ),
                 ],
               ),
             ),
