@@ -13,70 +13,98 @@ class McScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text("(np Multiply x 2) dane z Question provider"),
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back_ios, 
-          ),
+          icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(), // akcja powrotu
         ),
         backgroundColor: Color(0xFFE5E5E5),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 20.0),
-              child: ProgressBarWidget(),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 10.0),
-              child: Text(
-                "Choose the correct \n answer",
-                style: TextStyle(
-                  fontSize: 30.0
+      body: ListView(
+        children: [
+          Column(
+            children: [
+              Container(
+                margin: EdgeInsets.only(top: 20.0),
+                child: ProgressBarWidget(),
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 10.0),
+                child: Text(
+                  "Choose the correct \n answer",
+                  style: TextStyle(fontSize: 30.0),
+                  textAlign: TextAlign.center,
                 ),
+              ),
+              Text(
+                "(np 2 x 2) dane z Question provider",
+                style: TextStyle(fontSize: 48.0),
                 textAlign: TextAlign.center,
               ),
-            ),
-            Text(
-              "(np 2 x 2) dane z Question provider",
-              style: TextStyle(
-                fontSize: 48.0
+              Column(
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.all(20.0),
+                        child: MatchPairsWidget(
+                          CardItem(
+                            id: "1",
+                            pairId: "2",
+                            value: "2",
+                            isMatched: false,
+                            isFailed: false,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(20.0),
+                        child: MatchPairsWidget(
+                          CardItem(
+                            id: "1",
+                            pairId: "2",
+                            value: "2",
+                            isMatched: false,
+                            isFailed: false,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.all(20.0),
+                        child: MatchPairsWidget(
+                          CardItem(
+                            id: "1",
+                            pairId: "2",
+                            value: "2",
+                            isMatched: false,
+                            isFailed: false,
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.all(20.0),
+                        child: MatchPairsWidget(
+                          CardItem(
+                            id: "1",
+                            pairId: "2",
+                            value: "2",
+                            isMatched: false,
+                            isFailed: false,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
-              textAlign: TextAlign.center,
-            ),
-             Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.all(20.0),
-                      child: MatchPairsWidget(CardItem(id: "1", pairId: "2", value: "2", isMatched: false, isFailed: false)),
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(20.0),
-                      child: MatchPairsWidget(CardItem(id: "1", pairId: "2", value: "2", isMatched: false, isFailed: false)),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      margin: EdgeInsets.all(20.0),
-                      child: MatchPairsWidget(CardItem(id: "1", pairId: "2", value: "2", isMatched: false, isFailed: false)),
-                    ),
-                    Container(
-                      margin: EdgeInsets.all(20.0),
-                      child: MatchPairsWidget(CardItem(id: "1", pairId: "2", value: "2", isMatched: false, isFailed: false)),
-                    ),
-                  ],
-                ),
-              ],
-            )
-          ],
-        ),
-      )
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
