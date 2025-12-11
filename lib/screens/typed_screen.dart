@@ -13,9 +13,12 @@ class _TypedScreenState extends State<TypedScreen> {
 
   String placeHolder = "Type the answer";
 
+  // pytanie pobrane z provider'a
+  String question = "2 x 2 =";
+
   onSkip() {
     setState(() {
-      // TODO pobierz odpowiedz do pytania i wstaw ja do placeholder'a
+      // TODO pobierz odpowiedz z provider'a do pytania i wstaw ja do placeholder'a
       placeHolder = "podpowiedz";
     });
 
@@ -31,11 +34,29 @@ class _TypedScreenState extends State<TypedScreen> {
     });
   }
 
+  void onComplete(String value) {
+    // czy odpowiedz to liczba
+    if (int.tryParse(value) == null) {
+      print("nie wpisano liczby");
+    } else {
+      print("wpisano liczbe, mozna sprawdzic poprawnosc wyniku");
+
+      // sprawdz poprawnosc odpowiedzi pobranej z provider'a
+      print(value);
+
+      // przejdzo do nastpenego pytania
+      setState(() {
+        question = "nastepne pytanie z dostepnych pobranych";
+        placeHolder = "Type the answer";
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("(np Multiply x 2) dane z pobrane"),
+        title: Text("(np Multiply x 2) dane pobrane"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(), // akcja powrotu
@@ -50,7 +71,7 @@ class _TypedScreenState extends State<TypedScreen> {
               child: ProgressBarWidget(),
             ),
             Text(
-              "(np 2 x 2) dane pobrane",
+              question,
               style: TextStyle(fontSize: 48.0),
               textAlign: TextAlign.center,
             ),
@@ -99,6 +120,9 @@ class _TypedScreenState extends State<TypedScreen> {
                         ),
                       ),
                     ),
+                    onSubmitted: onComplete,
+                    textInputAction: TextInputAction.done,
+
                   ),
                   if (isPracticeMode)
                     Padding(
