@@ -1,4 +1,3 @@
-// filepath: test/question_provider_card_generator_test.dart
 import 'package:flutter_test/flutter_test.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 import 'package:projekt_grupowy/services/card_generator.dart';
@@ -39,7 +38,7 @@ void main() {
 
       // Verify each multiplier results in exactly two cards forming a pair
       for (final m in qp.multipliers) {
-        final left = '${qp.typeOfMultiplication}×$m';
+        final left = '${qp.typeOfMultiplication} × $m';
         final right = '${qp.typeOfMultiplication * m}';
         final leftCard = deck.firstWhere(
           (c) => c.value == left,

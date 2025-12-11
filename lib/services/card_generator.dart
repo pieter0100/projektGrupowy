@@ -20,7 +20,7 @@ class CardGenerator {
     for (final m in qp.multipliers) {
       final idOne = uuid.v4();
       final idSecond = uuid.v4();
-      final left = '${qp.typeOfMultiplication}×$m';
+      final left = '${qp.typeOfMultiplication} × $m';
       final right = '${qp.typeOfMultiplication * m}';
       deck.add(CardItem(id: idOne, pairId: idSecond, value: left));
       deck.add(CardItem(id: idSecond, pairId: idOne, value: right));
