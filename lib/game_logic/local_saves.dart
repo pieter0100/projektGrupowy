@@ -128,6 +128,35 @@ class LocalSaves {
     return box.values.toList();
   }
 
+  static bool isLevelUnlocked(String userId, String levelId) {
+  final levelInfo = getLevel(levelId);
+  final user = getUser(userId);
+
+  if (levelInfo == null || user == null) {
+    logger.w('Level info or user not found for check: $levelId, $userId');
+    return false;
+  }
+
+  final requirements = levelInfo.unlockRequirements;
+
+  // Checking requirements based on points
+  if (requirements.minPoints != null && requirements.minPoints! > user.stats.totalPoints) {
+    return false;
+  }
+
+  // Checking requirements based on completing previous level
+  if (requirements.previousLevelId != null) {
+    final previousProgress = getLevelProgress(userId, requirements.previousLevelId!);
+
+    if (previousProgress == null || !previousProgress.completed) {
+      return false;
+    }
+  }
+
+  // Level is unlocked if all requirements are met
+  return true;
+}
+
   // === LEADERBOARD OPERATIONS ===
 
   static Future<void> saveLeaderboard(Leaderboard leaderboard) async {
@@ -257,6 +286,36 @@ class LocalSaves {
       final levelAfterUpdate = getLevel('multiply-by-2');
       logger.i('Level rewards after update: ${levelAfterUpdate?.rewards.points}');
     }
+
+    // 6. Test Unlocking Logic
+    logger.i('\nTesting Level Unlocking Logic...');
+
+    final isLevel1Unlocked = isLevelUnlocked('user123', 'multiply-by-2');
+    logger.i('Is level "multiply-by-2" unlocked? $isLevel1Unlocked');
+
+    final nextLevel = LevelInfo(
+      levelId: 'multiply-by-3',
+      levelNumber: 2,
+      name: 'Multiply by 3',
+      description: 'Learn multiplication by 3',
+      unlockRequirements: UnlockRequirements(
+        minPoints: 1500,
+        previousLevelId: 'multiply-by-2',
+      ),
+      rewards: Rewards(points: 200),
+      isRevision: false,
+    );
+    await saveLevel(nextLevel);
+
+    final isLevel2Unlocked = isLevelUnlocked('user123', 'multiply-by-3');
+    logger.i('Is level "multiply-by-3" unlocked? $isLevel2Unlocked');
+
+    // Zaktualizujmy punkty użytkownika do 2000
+    final highPointsStats = userAfterUpdate!.stats.copyWith(totalPoints: 2000);
+    await updateUserStats('user123', highPointsStats);
+
+    final isLevel2UnlockedAfterUpdate = isLevelUnlocked('user123', 'multiply-by-3');
+    logger.i('Is level "multiply-by-3" unlocked after points update? $isLevel2UnlockedAfterUpdate');
 
     logger.i('\n=== ALL TESTS COMPLETED ===\n');
   }
