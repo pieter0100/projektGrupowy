@@ -1,5 +1,4 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
@@ -37,11 +36,9 @@ abstract class GameSessionManager extends ChangeNotifier {
   
   // starts the game session with the given level
   // generates stages and initializes the session
+  // can be called multiple times to restart/retake a level
   void start(LevelInfo level) {
-    if (_isFinished) {
-      throw StateError('Cannot start a finished session');
-    }
-    
+    // reset all state to allow restarting
     _stages = generateStages(level);
     _currentStage = 0;
     _completedCount = 0;

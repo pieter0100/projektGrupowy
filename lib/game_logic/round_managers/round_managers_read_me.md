@@ -223,10 +223,12 @@ class TypedData extends StageData {
 class PairsData extends StageData {
   final List<CardItem> cards;     // List of CardItems to match
   final int pairsCount;           // Number of pairs
+  final typeOfMultiplication;
   
   PairsData({
     required this.cards,
     required this.pairsCount,
+    required this.typeOfMultiplication,
   });
 }
 ```

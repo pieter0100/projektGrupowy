@@ -4,7 +4,6 @@ class StageResult {
   
   final bool skipped;
   
-  //  (optional)
   final int? answerTime;
   
   // User's answer (dynamic type to support various answer formats)
