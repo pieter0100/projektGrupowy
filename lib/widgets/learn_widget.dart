@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class LearnWidget extends StatelessWidget {
   final String textInside;
 
@@ -8,44 +10,50 @@ class LearnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(AppSizes.circleMargin),
       decoration: BoxDecoration(
           shape: BoxShape.circle,
-          border: Border.all(color: Color(0xFFC4C4C4), width: 10)
+          border: Border.all(
+          color: AppColors.circleBorder,
+          width: AppSizes.circleBorderWidthOuter,
+        ),
       ),
-      width: 140,
-      height: 140,
+      width: AppSizes.circleSize,
+      height: AppSizes.circleSize,
       child: Center(
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 5),
-            color: Color(0xFF72BFC7),
+            border: Border.all(
+            color: AppColors.circleInnerBorder,
+            width: AppSizes.circleBorderWidthInner,
+          ),
+          color: AppColors.circleFill,
           ),
           child: (textInside == 'intro')
               ? Center(
                 child: Icon(
                   Icons.menu_book,
-                  color: Colors.white,
-                  size: 50.0,
+                  color: AppColors.textWhite,
+                  size: AppSizes.iconSize
                 ),
-          )
+            )
               :
           Center(
             child: (textInside == 'practice')
                 ? Center(
               child: Icon(
                 Icons.create,
-                color: Colors.white,
-                size: 50.0,
+                color: AppColors.textWhite,
+                size: AppSizes.iconSize
               ),
             )
                 :
             Center(
               child: Icon(
                 Icons.edit_document,
-                color: Colors.white,
-                size: 50.0,
+                color: AppColors.textWhite,
+                size: AppSizes.iconSize
               ),
             ),
           ),
@@ -54,4 +62,3 @@ class LearnWidget extends StatelessWidget {
     );
   }
 }
-

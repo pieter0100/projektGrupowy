@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class LearnInfoWidget extends StatelessWidget {
   final String textInside;
 
@@ -8,27 +10,24 @@ class LearnInfoWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 211,
-      height: 128,
+      width: AppSizes.learnInfoWidth,
+      height: AppSizes.learnInfoHeight,
       decoration: BoxDecoration(
-        color: const Color(0xFFE9E8E8), // background color
+        color:  AppColors.learnInfoBackground, // background color
         border: Border.all(
-          color: const Color(0xFFC4C4C4), // border color
-          width: 2,
+          color: AppColors.learnInfoBorder, // border color
+          width: AppSizes.learnInfoBorderWidth,
         ),
-        borderRadius: BorderRadius.circular(10),
+        borderRadius: BorderRadius.circular(AppSizes.learnInfoBorderRadius),
       ),
       child: Center(
         child: Text(
           textInside,
-          style: const TextStyle(
-            fontSize: 34,
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          style: AppTextStyles.learnInfoText,
           textAlign: TextAlign.center,
         ),
       ),
     );
   }
 }
+

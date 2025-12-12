@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class LevelWidget extends StatelessWidget {
   final String textInside;
   final bool isLocked;
