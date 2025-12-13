@@ -34,7 +34,20 @@ class PairsGameEngine {
        ),
        currentDeck = [] {
     currentDeck = cardGenerator.cardsDeck;
-  }  SelectionStatus? onCardSelected(CardItem card) {
+  }
+
+  /// Initialize the game with a specific level
+  void initialize(int level) {
+    // Reset the game state for new level
+    resetGame();
+  }
+
+  /// Skip is not allowed in Pairs - throws error
+  void skip() {
+    throw UnsupportedError('Skip is not allowed in Pairs game');
+  }
+
+  SelectionStatus? onCardSelected(CardItem card) {
     if (isCardAlreadyMatched(card)) {
       return SelectionStatus.cannotSelect;
     }
@@ -46,7 +59,9 @@ class PairsGameEngine {
     }
 
     if (selectedCards.length == 2) {
-      return checkSelectedCards();
+      final status = checkSelectedCards();
+      selectedCards.clear();
+      return status;
     }
 
     return null; // waiting for the second card to be selected
