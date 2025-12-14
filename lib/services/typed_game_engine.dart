@@ -1,10 +1,7 @@
 import 'package:projekt_grupowy/services/question_provider.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
-import 'package:logger/logger.dart';
 
 class TypedGameEngine {
-  final Logger _logger = Logger(printer: PrettyPrinter(methodCount: 0));
-
   late QuestionTyped _question;
   String? _userAnswer;
   bool _skipped = false;
@@ -68,22 +65,5 @@ class TypedGameEngine {
       'skipped': _skipped,
       'correctAnswer': _question.correctAnswer,
     };
-  }
-
-  /// Logs the current game state
-  void logGameState() {
-    Map<String, dynamic> state = getGameState();
-    _logger.i('''
-    Typed Game State:
-    Question: ${state['question']}
-    User Answer: ${state['userAnswer']}
-    Correct Answer: ${state['correctAnswer']}
-    Skipped: ${state['skipped']}
-    ''');
-  }
-
-  /// Logs a custom message
-  void logMessage(String message) {
-    _logger.i(message);
   }
 }

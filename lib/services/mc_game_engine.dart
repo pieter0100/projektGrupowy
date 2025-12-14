@@ -1,10 +1,7 @@
 import 'package:projekt_grupowy/services/question_provider.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
-import 'package:logger/logger.dart';
 
 class MCGameEngine {
-  final Logger _logger = Logger(printer: PrettyPrinter(methodCount: 0));
-
   late QuestionMC _question;
   int? _selectedIndex;
   final Function(StageResult)? onComplete;
@@ -66,23 +63,5 @@ class MCGameEngine {
       'selectedIndex': _selectedIndex,
       'answerSelected': _selectedIndex != null,
     };
-  }
-
-  /// Logs the current game state
-  void logGameState() {
-    Map<String, dynamic> state = getGameState();
-    _logger.i('''
-    MC Game State:
-    Question: ${state['prompt']}
-    Options: ${state['options']}
-    Correct Index: ${state['correctIndex']}
-    Selected Index: ${state['selectedIndex']}
-    Answer Selected: ${state['answerSelected']}
-    ''');
-  }
-
-  /// Logs a custom message
-  void logMessage(String message) {
-    _logger.i(message);
   }
 }

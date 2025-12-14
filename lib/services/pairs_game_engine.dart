@@ -1,26 +1,22 @@
 import 'package:projekt_grupowy/services/card_generator.dart';
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
-import 'package:logger/logger.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 
 enum SelectionStatus { matchFound, matchFailed, cannotSelect }
 
 class PairsGameEngine {
-  final Logger _logger = Logger(printer: PrettyPrinter(methodCount: 0));
-
   CardGenerator cardGenerator;
   final int pairsAmount;
   final int typeOfMultiplication;
   late List<CardItem> currentDeck;
   int matchedPairs = 0;
-  List<CardItem> matchedPairsList = List.empty(growable: true);  int attempts = 0;
+  List<CardItem> matchedPairsList = List.empty(growable: true);
+  int attempts = 0;
   List<CardItem> selectedCards = [];
 
   /// Callback fired when the game is completed (all pairs matched)
   final Function(StageResult)? onComplete;
-
-  /// Status of individual card selections
 
   PairsGameEngine({
     required this.pairsAmount,
@@ -66,20 +62,21 @@ class PairsGameEngine {
 
     return null; // waiting for the second card to be selected
   }
+
   SelectionStatus checkSelectedCards() {
     if (are2CardsSelected() == false) {
       return SelectionStatus.cannotSelect;
     }
 
-    attempts += 1;
-
     CardItem firstCard = selectedCards[0];
     CardItem secondCard = selectedCards[1];
-    
+
     if (areSameCardsSelected(firstCard, secondCard)) {
       selectedCards.clear();
       return SelectionStatus.cannotSelect;
     }
+    
+    attempts += 1;
 
     if (isCardAlreadyMatched(firstCard) || isCardAlreadyMatched(secondCard)) {
       selectedCards.clear();
@@ -143,19 +140,20 @@ class PairsGameEngine {
   double getProgress() {
     return matchedPairs / pairsAmount;
   }
+
   /// Resets the game to initial state with a new shuffled deck
   void resetGame() {
     matchedPairs = 0;
     matchedPairsList.clear();
     attempts = 0;
     selectedCards.clear();
-    
+
     // Resetuj flagi w kartach
     for (var card in currentDeck) {
       card.isMatched = false;
       card.isFailed = false;
     }
-    
+
     currentDeck.shuffle();
   }
 
@@ -169,23 +167,5 @@ class PairsGameEngine {
       'selectedCardsCount': selectedCards.length,
       'isCompleted': isGameCompleted(),
     };
-  }
-
-  /// Logs the current game state
-  void logGameState() {
-    Map<String, dynamic> state = getGameState();
-    _logger.i('''
-    Pairs Game State:
-    Matched Pairs: ${state['matchedPairs']}/${state['totalPairs']}
-    Attempts: ${state['attempts']}
-    Progress: ${(state['progress'] * 100).toStringAsFixed(2)}%
-    Selected Cards: ${state['selectedCardsCount']}
-    Completed: ${state['isCompleted']}
-    ''');
-  }
-
-  /// Logs a custom message
-  void logMessage(String message) {
-    _logger.i(message);
   }
 }

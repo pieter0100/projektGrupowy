@@ -2,8 +2,6 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:projekt_grupowy/services/pairs_game_engine.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 
-// Import SelectionStatus enum from pairs_game_engine.dart
-
 void main() {
   group('PairsGameEngine Tests', () {
     late PairsGameEngine engine;
@@ -27,6 +25,7 @@ void main() {
       expect(status, isNull);
       expect(engine.selectedCards.length, 1);
     });
+
     test('Selecting same card twice returns cannotSelect', () {
       final card = engine.currentDeck[0];
       engine.onCardSelected(card);
@@ -34,6 +33,7 @@ void main() {
       expect(status, SelectionStatus.cannotSelect);
       expect(engine.selectedCards.length, 0); // should be cleared
     });
+
     test('Selecting two different unmatched cards triggers check', () {
       final card1 = engine.currentDeck[0];
       final card2 = engine.currentDeck[1];
@@ -64,6 +64,7 @@ void main() {
       expect(card1.isMatched, true);
       expect(card2Candidate.isMatched, true);
     });
+
     test('Unmatched cards get marked as failed', () {
       // Find two cards that don't match
       final card1 = engine.currentDeck[0];
@@ -79,6 +80,7 @@ void main() {
       expect(card2.isFailed, true);
       expect(engine.matchedPairs, 0); // no match
     });
+
     test('Selecting already matched card returns cannotSelect', () {
       // Match a pair first
       final card1 = engine.currentDeck[0];

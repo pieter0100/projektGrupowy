@@ -102,6 +102,7 @@ void main() {
 
       expect(capturedResult!.isCorrect, true);
     });
+
     test('Skip generates skipped StageResult with correct answer', () {
       StageResult? capturedResult;
 
