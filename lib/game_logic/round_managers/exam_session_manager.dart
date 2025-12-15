@@ -4,7 +4,9 @@ import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
+import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
 
 class ExamSessionManager extends GameSessionManager {
   
@@ -58,5 +60,50 @@ class ExamSessionManager extends GameSessionManager {
       question: questionTyped.prompt,
       correctAnswer: int.parse(questionTyped.correctAnswer),
     );
+  }
+
+  /// Saves the exam result to local storage.
+  /// 
+  /// This method should be called after the exam session is finished.
+  /// It updates or creates a [LevelProgress] entry with the exam results:
+  /// - Score equals correctCount (number of correct answers, max 10)
+  /// - Level is completed ONLY if all 10 answers are correct (100% accuracy)
+  /// - If not 100%, the level is not marked as completed and user must retake the exam
+  /// - Increments attempt counter
+  /// - Updates completion and play timestamps
+  /// 
+  /// Throws [StateError] if called before the session is finished.
+  Future<void> saveExamResult(String userId, LevelInfo level) async {
+    if (!isFinished) {
+      throw StateError('Cannot save exam result before session is finished');
+    }
+
+    final score = correctCount; // Score is the number of correct answers (max 10)
+    final passed = correctCount == _totalStagesCount; // Must have 100% to pass
+
+    // Get existing progress or create new one
+    final existingProgress = LocalSaves.getLevelProgress(userId, level.levelId);
+
+    final newProgress = existingProgress != null
+        ? existingProgress.copyWith(
+            bestScore: score > existingProgress.bestScore ? score : null,
+            attempts: existingProgress.attempts + 1,
+            completed: passed ? true : null,
+            updateFirstCompletedAt: passed && !existingProgress.completed,
+            firstCompletedAt: passed && !existingProgress.completed ? DateTime.now() : null,
+            updateLastPlayedAt: true,
+            lastPlayedAt: DateTime.now(),
+          )
+        : LevelProgress(
+            levelId: level.levelId,
+            bestScore: score,
+            bestTimeSeconds: 0, // Time tracking not implemented yet
+            attempts: 1,
+            completed: passed,
+            firstCompletedAt: passed ? DateTime.now() : null,
+            lastPlayedAt: DateTime.now(),
+          );
+
+    await LocalSaves.saveLevelProgress(userId, newProgress);
   }
 }
