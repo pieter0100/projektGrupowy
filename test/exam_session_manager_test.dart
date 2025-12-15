@@ -279,4 +279,7 @@ void main() {
       logger.i('Zero score test passed');
     });
   });
+
+  // NOTE: Integration tests for saveExamResult() in exam_session_manager_save_test.dart
+  // Run with: flutter test test/exam_session_manager_save_test.dart
 }
