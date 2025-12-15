@@ -24,8 +24,8 @@ class PracticeSessionManager extends GameSessionManager {
     _typeHistory.clear();
     
     for (int i = 0; i < _totalStagesCount; i++) {
-      final type = _selectNextType();
-      final data = _generateStageData(type, level);
+      final type = selectNextType();
+      final data = generateStageData(type, level);
       stages.add(GameStage(type: type, data: data));
     }
     
@@ -48,13 +48,13 @@ class PracticeSessionManager extends GameSessionManager {
     super.processStageResult(result);
   }
 
-  StageType _selectNextType() {
+  StageType selectNextType() {
     final available = [
       StageType.multipleChoice,
       StageType.typed,
       StageType.pairs,
     ];
-    
+    // anti-series: avoid repeating the same type more than twice in a row
     if (_typeHistory.length >= 2 &&
         _typeHistory[_typeHistory.length - 1] == _typeHistory[_typeHistory.length - 2]) {
       available.remove(_typeHistory.last);
@@ -66,19 +66,19 @@ class PracticeSessionManager extends GameSessionManager {
     return selected;
   }
   
-  StageData _generateStageData(StageType type, LevelInfo level) {
+  StageData generateStageData(StageType type, LevelInfo level) {
     switch (type) {
       case StageType.multipleChoice:
-        return _generateMultipleChoiceData(level);
+        return generateMultipleChoiceData(level);
       case StageType.typed:
-        return _generateTypedData(level);
+        return generateTypedData(level);
       case StageType.pairs:
-        return _generatePairsData(level);
+        return generatePairsData(level);
     }
   }
   
   /// Generates Multiple Choice stage data using QuestionProvider.
-  MultipleChoiceData _generateMultipleChoiceData(LevelInfo level) {
+  MultipleChoiceData generateMultipleChoiceData(LevelInfo level) {
     final questionMC = QuestionProvider.getMcQuestion(level: level.levelNumber);
     
     // Parse string options to int list
@@ -93,7 +93,7 @@ class PracticeSessionManager extends GameSessionManager {
   }
   
   /// Generates Typed stage data using QuestionProvider.
-  TypedData _generateTypedData(LevelInfo level) {
+  TypedData generateTypedData(LevelInfo level) {
     final questionTyped = QuestionProvider.getTypedQuestion(level: level.levelNumber);
     
     return TypedData(
@@ -103,21 +103,18 @@ class PracticeSessionManager extends GameSessionManager {
   }
   
   /// Generates Pairs stage data using CardGenerator.
-  PairsData _generatePairsData(LevelInfo level) {
-    // Generate random multiplication table (1-10)
-    final typeOfMultiplication = _random.nextInt(10) + 1;
-    
-    final questions = QuestionProvider.getPairsQuestions(
-      level: typeOfMultiplication,
-      pairsAmount: _pairsAmount,
-    );
-    
-    final cardGenerator = CardGenerator(questions: questions);
-    
-    return PairsData(
-      cards: cardGenerator.cardsDeck,
-      pairsCount: _pairsAmount,
-      typeOfMultiplication: typeOfMultiplication,
-    );
-  }
+  PairsData generatePairsData(LevelInfo level) {
+  final questions = QuestionProvider.getPairsQuestions(
+    level: level.levelNumber,
+    pairsAmount: _pairsAmount,
+  );
+  
+  final cardGenerator = CardGenerator(questions: questions);
+  
+  return PairsData(
+    cards: cardGenerator.cardsDeck,
+    pairsCount: _pairsAmount,
+    typeOfMultiplication: questions.typeOfMultiplication,
+  );
+}
 }
