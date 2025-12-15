@@ -8,7 +8,6 @@ import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/services/card_generator.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 
-
 class PracticeSessionManager extends GameSessionManager {
   
   static const int _totalStagesCount = 6;
@@ -82,39 +81,59 @@ class PracticeSessionManager extends GameSessionManager {
     final questionMC = QuestionProvider.getMcQuestion(level: level.levelNumber);
     
     // Parse string options to int list
-    final options = questionMC.options.map((opt) => int.parse(opt)).toList();
-    final correctAnswer = int.parse(questionMC.options[questionMC.correctIndex]);
-    
-    return MultipleChoiceData(
-      question: questionMC.prompt,
-      correctAnswer: correctAnswer,
-      options: options,
-    );
+    try {
+      final options = questionMC.options.map((opt) => int.parse(opt)).toList();
+      final correctAnswer = int.parse(questionMC.options[questionMC.correctIndex]);
+      
+      return MultipleChoiceData(
+        question: questionMC.prompt,
+        correctAnswer: correctAnswer,
+        options: options,
+      );
+    } on FormatException catch (e) {
+      throw FormatException(
+        'Invalid question data for level ${level.levelNumber}: '
+        'Multiple choice options must be valid integers. Error: ${e.message}',
+      );
+    }
   }
   
   /// Generates Typed stage data using QuestionProvider.
   TypedData generateTypedData(LevelInfo level) {
     final questionTyped = QuestionProvider.getTypedQuestion(level: level.levelNumber);
     
-    return TypedData(
-      question: questionTyped.prompt,
-      correctAnswer: int.parse(questionTyped.correctAnswer),
-    );
+    try {
+      return TypedData(
+        question: questionTyped.prompt,
+        correctAnswer: int.parse(questionTyped.correctAnswer),
+      );
+    } on FormatException catch (e) {
+      throw FormatException(
+        'Invalid question data for level ${level.levelNumber}: '
+        'Typed answer must be a valid integer. Error: ${e.message}',
+      );
+    }
   }
   
   /// Generates Pairs stage data using CardGenerator.
   PairsData generatePairsData(LevelInfo level) {
-  final questions = QuestionProvider.getPairsQuestions(
-    level: level.levelNumber,
-    pairsAmount: _pairsAmount,
-  );
-  
-  final cardGenerator = CardGenerator(questions: questions);
-  
-  return PairsData(
-    cards: cardGenerator.cardsDeck,
-    pairsCount: _pairsAmount,
-    typeOfMultiplication: questions.typeOfMultiplication,
-  );
-}
+    try {
+      final questions = QuestionProvider.getPairsQuestions(
+        level: level.levelNumber,
+        pairsAmount: _pairsAmount,
+      );
+      
+      final cardGenerator = CardGenerator(questions: questions);
+      
+      return PairsData(
+        cards: cardGenerator.cardsDeck,
+        pairsCount: _pairsAmount,
+        typeOfMultiplication: questions.typeOfMultiplication,
+      );
+    } catch (e) {
+      throw Exception(
+        'Failed to generate pairs data for level ${level.levelNumber}: $e',
+      );
+    }
+  }
 }

@@ -139,7 +139,7 @@ void main() {
       logger.i('Completion test passed ✓');
     });
 
-    test('should not finish if stages are skipped and completedCount < 6', () {
+    test('should finish when all stages are exhausted even if completedCount < 6', () {
       manager.start(testLevel);
 
       for (int i = 0; i < 5; i++) {
