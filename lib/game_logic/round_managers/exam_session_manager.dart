@@ -62,17 +62,8 @@ class ExamSessionManager extends GameSessionManager {
     );
   }
 
-  /// Saves the exam result to local storage.
-  /// 
-  /// This method should be called after the exam session is finished.
-  /// It updates or creates a [LevelProgress] entry with the exam results:
-  /// - Score equals correctCount (number of correct answers, max 10)
-  /// - Level is completed ONLY if all 10 answers are correct (100% accuracy)
-  /// - If not 100%, the level is not marked as completed and user must retake the exam
-  /// - Increments attempt counter
-  /// - Updates completion and play timestamps
-  /// 
-  /// Throws [StateError] if called before the session is finished.
+  /// Saves the exam result to local storage. 
+  // requires 100% accuracy to mark level as completed.
   Future<void> saveExamResult(String userId, LevelInfo level) async {
     if (!isFinished) {
       throw StateError('Cannot save exam result before session is finished');
@@ -83,14 +74,15 @@ class ExamSessionManager extends GameSessionManager {
 
     // Get existing progress or create new one
     final existingProgress = LocalSaves.getLevelProgress(userId, level.levelId);
+    final shouldSetFirstCompletion = existingProgress != null && passed && !existingProgress.completed;
 
     final newProgress = existingProgress != null
         ? existingProgress.copyWith(
-            bestScore: score > existingProgress.bestScore ? score : null,
+            bestScore: score > existingProgress.bestScore ? score : existingProgress.bestScore,
             attempts: existingProgress.attempts + 1,
-            completed: passed ? true : null,
-            updateFirstCompletedAt: passed && !existingProgress.completed,
-            firstCompletedAt: passed && !existingProgress.completed ? DateTime.now() : null,
+            completed: passed ? true : existingProgress.completed,
+            updateFirstCompletedAt: shouldSetFirstCompletion,
+            firstCompletedAt: shouldSetFirstCompletion ? DateTime.now() : existingProgress.firstCompletedAt,
             updateLastPlayedAt: true,
             lastPlayedAt: DateTime.now(),
           )
