@@ -5,7 +5,7 @@ class AppColors {
   static const Color learnInfoBackground = Color(0xFFE9E8E8);
   static const Color learnInfoBorder = Color(0xFFC4C4C4);
 
-  // LevelWidget
+  // LevelWidget & LearnWidget
   static const Color levelCircleBorder = Color(0xFFC4C4C4);
   static const Color levelCircleFill = Color(0xFF72BFC7);
   static const Color levelCircleInnerBorder = Colors.white;
@@ -28,17 +28,22 @@ class AppColors {
   static const Color navSettings = Color(0xFF729ED8);
   static Color navUnselected = Colors.grey.shade600;
 
-  // Settings
+  // SettingsWidget
   static const Color settingsBorder = Color(0xFFC4C4C4);
   static const Color settingsAccountIcon = Color.fromARGB(255, 206, 190, 245);
+
+  // LevelScreen
+  static const Color Orange = Color(0xFFEB9F4A);
+  static const Color Blue = Color(0xFF338F9B);
 
   // General
   static const Color white = Colors.white;
   static const Color black = Colors.black;
+  static const Color appBarBackground = Color(0xFFE5E5E5);
 }
 
 class AppSizes {
-  // General & Icons
+  // Icons
   static const double iconLarge = 50.0;
   static const double iconMedium = 35.0;
 
@@ -48,7 +53,7 @@ class AppSizes {
   static const double learnInfoRadius = 10.0;
   static const double learnInfoBorderWidth = 2.0;
 
-  // LevelWidget
+  // LevelWidget & LearnWidget
   static const double levelCircleSize = 140.0;
   static const double levelCircleBorderOuter = 10.0;
   static const double levelCircleBorderInner = 5.0;
@@ -81,6 +86,23 @@ class AppSizes {
   static const double settingsFontSize = 20.0;
   static const double settingsIconGap = 8.0;
   static const double settingsArrowGap = 130.0;
+
+  //Screen Spacings
+  static const double screenPaddingTop = 40.0;
+  static const double screenPaddingMedium = 29.0;
+  static const double screenPaddingLarge = 57.0;
+  static const double spacingTiny = 4.0;
+  static const double spacingSmall = 8.0;
+  static const double spacingMedium = 16.0;
+  static const double spacingLarge = 35.0;
+  static const double spacingXLarge = 53.0;
+  static const double progressToTitleMargin = 42.0;
+
+  // Text Font Sizes
+  static const double fontSizeAppBar = 20.0;
+  static const double fontSizeStats = 23.0;
+  static const double fontSizeSectionTitle = 30.0;
+  static const double fontSizeCongratulations = 24.0;
 }
 
 class AppTextStyles {
@@ -97,12 +119,16 @@ class AppTextStyles {
   );
 
   static const TextStyle settingsLabel = TextStyle(
-    fontSize: 20.0,
+    fontSize: AppSizes.settingsFontSize,
     color: AppColors.black,
   );
-  
+
   static TextStyle matchCard(double size) => TextStyle(
-    fontSize: size, 
-    color: AppColors.white
+    fontSize: size,
+    color: AppColors.white,
+  );
+  
+  static const TextStyle sectionTitle = TextStyle(
+    fontSize: AppSizes.fontSizeSectionTitle,
   );
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
-
 import 'package:projekt_grupowy/game_logic/round_manager.dart';
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 
@@ -78,20 +78,20 @@ class _PracticeScreenState extends State<PracticeScreen> {
         ),
         title: Text('Multiply × ${widget.level ?? ''}'),
         centerTitle: true,
-        backgroundColor: const Color(0xFFE5E5E5),
+        backgroundColor: AppColors.appBarBackground,
         scrolledUnderElevation: 0.0,
       ),
       body: ListView(
         children: [
-          const SizedBox(height: 29),
+          const SizedBox(height: AppSizes.screenPaddingMedium),
           const Center(child: ProgressBarWidget()),
-          const SizedBox(height: 42),
+          const SizedBox(height: AppSizes.progressToTitleMargin),
 
           const Center(
-            child: Text("Question 1", style: TextStyle(fontSize: 30)),
+            child: Text("Question 1", style: TextStyle(fontSize: AppSizes.fontSizeSectionTitle)
+            ),
           ),
-
-          const SizedBox(height: 57),
+          const SizedBox(height: AppSizes.screenPaddingLarge),
 
           Column(
             children: [
@@ -106,7 +106,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     isMatched: cards[0].isMatched,
                     onTap: () => _onCardTap(cards[0]),
                   ),
-                  const SizedBox(width: 53),
+                  const SizedBox(width: AppSizes.spacingXLarge),
                   MatchPairsWidget(
                     cards[1],
                     isSelected: roundManager.selectedCards.any(
@@ -117,7 +117,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 35),
+              const SizedBox(height: AppSizes.spacingLarge),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -129,7 +129,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     isMatched: cards[2].isMatched,
                     onTap: () => _onCardTap(cards[2]),
                   ),
-                  const SizedBox(width: 53),
+                  const SizedBox(width: AppSizes.spacingXLarge),
                   MatchPairsWidget(
                     cards[3],
                     isSelected: roundManager.selectedCards.any(
@@ -140,7 +140,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                   ),
                 ],
               ),
-              const SizedBox(height: 35),
+              const SizedBox(height: AppSizes.spacingLarge),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -152,7 +152,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
                     isMatched: cards[4].isMatched,
                     onTap: () => _onCardTap(cards[4]),
                   ),
-                  const SizedBox(width: 53),
+                  const SizedBox(width: AppSizes.spacingXLarge),
                   MatchPairsWidget(
                     cards[5],
                     isSelected: roundManager.selectedCards.any(
