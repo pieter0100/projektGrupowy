@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class SettingsDataWidget extends StatelessWidget {
   final String textInside;
 
@@ -8,15 +10,15 @@ class SettingsDataWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 378,
-      height: 69,
+      width: AppSizes.settingsWidth,
+      height: AppSizes.settingsHeight,
       decoration: BoxDecoration(
-        color: Colors.white, // background color
+        color: AppColors.white, // background color
         border: Border.all(
-          color: const Color(0xFFC4C4C4),
-          width: 2,
+          color: AppColors.settingsBorder,
+          width: AppSizes.settingsBorderWidth,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.settingsRadius),
       ),
       child: Center(
         child: Row(
@@ -24,23 +26,20 @@ class SettingsDataWidget extends StatelessWidget {
           children: [
             Icon(
               Icons.account_circle,
-              color: const Color.fromARGB(255, 206, 190, 245),
-              size: 35,
+              color: AppColors.settingsAccountIcon,
+              size: AppSizes.iconMedium,
             ),
-            const SizedBox(width: 8), // space between icon and text
+            const SizedBox(width: AppSizes.settingsIconGap), // space between icon and text
             Text(
               textInside,
-              style: const TextStyle(
-                fontSize: 20,
-                color: Colors.black,
-              ),
+              style: AppTextStyles.settingsLabel,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(width: 130),
+            const SizedBox(width: AppSizes.settingsArrowGap),
             Icon(
               Icons.arrow_forward_ios,
-              color: const Color(0xFFC4C4C4),
-              size: 35,
+              color: AppColors.settingsBorder,
+              size: AppSizes.iconMedium,
             ),
           ],
         ),

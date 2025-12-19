@@ -18,12 +18,12 @@ class LearnInfoWidget extends StatelessWidget {
           color: AppColors.learnInfoBorder, // border color
           width: AppSizes.learnInfoBorderWidth,
         ),
-        borderRadius: BorderRadius.circular(AppSizes.learnInfoBorderRadius),
+        borderRadius: BorderRadius.circular(AppSizes.learnInfoRadius),
       ),
       child: Center(
         child: Text(
           textInside,
-          style: AppTextStyles.learnInfoText,
+          style: AppTextStyles.learnInfo,
           textAlign: TextAlign.center,
         ),
       ),
