@@ -1,6 +1,7 @@
-import 'package:projekt_grupowy/models/cards/card_generator.dart';
+import 'package:projekt_grupowy/services/card_generator.dart';
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:logger/logger.dart';
+import 'package:projekt_grupowy/services/question_provider.dart';
 
 enum MatchStatus {
   matchFound,
@@ -27,11 +28,13 @@ class RoundManager {
   List<CardItem> selectedCards = [];
 
   RoundManager({required this.pairsAmount, required this.typeOfMultiplication})
-    : cardGenerator = CardGenerator(
-        pairsAmount: pairsAmount,
-        typeOfMultiplication: typeOfMultiplication,
-      ),
-      currentDeck = [] {
+      : cardGenerator = CardGenerator(
+          questions: QuestionProvider.getPairsQuestions(
+            level: typeOfMultiplication,
+            pairsAmount: pairsAmount,
+          ),
+        ),
+        currentDeck = [] {
     currentDeck = cardGenerator.cardsDeck;
   }
 
