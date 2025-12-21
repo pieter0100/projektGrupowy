@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
@@ -36,12 +38,12 @@ class _TypedScreenState extends State<TypedScreen> {
   void onComplete(String value) {
     // is answer an integer
     if (int.tryParse(value) == null) {
-      print("nie wpisano liczby");
+      log("answer is not a number");
     } else {
-      print("wpisano liczbe, mozna sprawdzic poprawnosc wyniku");
+      log("answer is a number you can check if it is a correct answer");
 
       // check the answer
-      print(value);
+      log(value);
 
       // set the next question
       setState(() {
