@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/services/typed_game_engine.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
 class TypedScreen extends StatefulWidget {
@@ -10,18 +11,39 @@ class TypedScreen extends StatefulWidget {
 }
 
 class _TypedScreenState extends State<TypedScreen> {
+  // manager
+  late final manager;
+
+  // engine
+  final engine = TypedGameEngine(
+    onComplete: (result) {
+      print('Correct: ${result.isCorrect}');
+      print('Answer: ${result.userAnswer}');
+    },
+  );
+
   // boolean for conditional rendering hint under the input
   bool isPracticeMode = true;
 
   String placeHolder = "Type the answer";
 
   // question from provider
-  String question = "2 x 2 =";
+  String question = "Loading...";
+
+  @override
+  void initState() {
+    super.initState();
+
+    // TODO change value
+    engine.initialize(3);
+
+    question = engine.question.prompt;
+  }
 
   onSkip() {
     setState(() {
       // TODO get the hint from provider and set placeholder with its value
-      placeHolder = "podpowiedz";
+      placeHolder = "hint";
     });
 
     // Timer
@@ -43,11 +65,11 @@ class _TypedScreenState extends State<TypedScreen> {
       log("answer is a number you can check if it is a correct answer");
 
       // check the answer
-      log(value);
+      engine.submitAnswer(value);
 
       // set the next question
       setState(() {
-        question = "nastepne pytanie z dostepnych pobranych";
+        question = engine.question.prompt;
         placeHolder = "Type the answer";
       });
     }
@@ -60,7 +82,7 @@ class _TypedScreenState extends State<TypedScreen> {
         title: Text("(np Multiply x 2) dane pobrane"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => context.pop(), 
+          onPressed: () => context.pop(),
         ),
         backgroundColor: Color(0xFFE5E5E5),
       ),
@@ -114,16 +136,13 @@ class _TypedScreenState extends State<TypedScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16.0),
                         borderSide: const BorderSide(
-                          color: Color(
-                            0xFF7ED4DE,
-                          ),
-                          width: 3.0, 
+                          color: Color(0xFF7ED4DE),
+                          width: 3.0,
                         ),
                       ),
                     ),
                     onSubmitted: onComplete,
                     textInputAction: TextInputAction.done,
-
                   ),
                   if (isPracticeMode)
                     Padding(
