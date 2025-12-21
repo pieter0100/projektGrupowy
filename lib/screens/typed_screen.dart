@@ -13,19 +13,18 @@ class _TypedScreenState extends State<TypedScreen> {
 
   String placeHolder = "Type the answer";
 
-  // pytanie pobrane z provider'a
+  // question from provider
   String question = "2 x 2 =";
 
   onSkip() {
     setState(() {
-      // TODO pobierz odpowiedz z provider'a do pytania i wstaw ja do placeholder'a
+      // TODO get the hint from provider and set placeholder with its value
       placeHolder = "podpowiedz";
     });
 
-    // Uruchom licznik
+    // Timer
     Future.delayed(const Duration(seconds: 2), () {
-      // Sprawdzenie 'mounted' jest kluczowe!
-      // Zapobiega błędowi, jeśli użytkownik wyjdzie z ekranu
+      // Mounted
       if (mounted) {
         setState(() {
           placeHolder = "Type the answer";
@@ -35,16 +34,16 @@ class _TypedScreenState extends State<TypedScreen> {
   }
 
   void onComplete(String value) {
-    // czy odpowiedz to liczba
+    // is answer an integer
     if (int.tryParse(value) == null) {
       print("nie wpisano liczby");
     } else {
       print("wpisano liczbe, mozna sprawdzic poprawnosc wyniku");
 
-      // sprawdz poprawnosc odpowiedzi pobranej z provider'a
+      // check the answer
       print(value);
 
-      // przejdzo do nastpenego pytania
+      // set the next question
       setState(() {
         question = "nastepne pytanie z dostepnych pobranych";
         placeHolder = "Type the answer";
@@ -59,7 +58,7 @@ class _TypedScreenState extends State<TypedScreen> {
         title: Text("(np Multiply x 2) dane pobrane"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => context.pop(), // akcja powrotu
+          onPressed: () => context.pop(), 
         ),
         backgroundColor: Color(0xFFE5E5E5),
       ),
@@ -115,8 +114,8 @@ class _TypedScreenState extends State<TypedScreen> {
                         borderSide: const BorderSide(
                           color: Color(
                             0xFF7ED4DE,
-                          ), // Błękitny kolor (np. Light Blue)
-                          width: 3.0, // Grubość ramki (żeby była wyraźna)
+                          ),
+                          width: 3.0, 
                         ),
                       ),
                     ),

@@ -38,10 +38,9 @@ class LearnScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // MENUACBHOR na potrzeby testowania TODO zrobic randomwy tryb po
-              // klikniecu
+              // MENUANCHRO for testing purpose TODO after clicking set random type of game
               MenuAnchor(
-                // --- Elementy menu (co się ma pokazać) ---
+                // Menu elements
                 menuChildren: [
                   MenuItemButton(
                     child: const Text('Memory tryb'),
@@ -59,7 +58,7 @@ class LearnScreen extends StatelessWidget {
                   ),
                 ],
 
-                // --- widget practice ---
+                // Practice widget
                 builder:
                     (
                       BuildContext context,
