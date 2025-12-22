@@ -22,6 +22,8 @@ class _McScreenState extends State<McScreen> {
     },
   );
 
+  List<CardItem> cards = [];
+
   @override
   void initState() {
     super.initState();
@@ -30,6 +32,30 @@ class _McScreenState extends State<McScreen> {
     engine.initialize(3);
 
     question = engine.question.prompt;
+
+    for (var index = 0; index < engine.question.options.length; index++) {
+      cards.add(
+        CardItem(
+          id: "$index",
+          pairId: "-1",
+          value: engine.question.options[index],
+          isMatched: false,
+          isFailed: false,
+        ),
+      );
+    }
+  }
+
+  void onOptionSelected(int index) {
+    engine.selectOption(index);
+
+    setState(() {
+      if (index == engine.correctIndex) {
+        cards[index].isMatched = true;
+      } else {
+        cards[index].isFailed = true;
+      }
+    });
   }
 
   @override
@@ -80,26 +106,16 @@ class _McScreenState extends State<McScreen> {
                         children: [
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              CardItem(
-                                id: "1",
-                                pairId: "2",
-                                value: "2",
-                                isMatched: false,
-                                isFailed: false,
-                              ),
+                            child: GestureDetector(
+                              onTap: () => onOptionSelected(0),
+                              child: MatchPairsWidget(cards[0]),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              CardItem(
-                                id: "1",
-                                pairId: "2",
-                                value: "2",
-                                isMatched: false,
-                                isFailed: false,
-                              ),
+                            child: GestureDetector(
+                              onTap: () => onOptionSelected(1),
+                              child: MatchPairsWidget(cards[1]),
                             ),
                           ),
                         ],
@@ -109,26 +125,16 @@ class _McScreenState extends State<McScreen> {
                         children: [
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              CardItem(
-                                id: "1",
-                                pairId: "2",
-                                value: "2",
-                                isMatched: false,
-                                isFailed: false,
-                              ),
+                            child: GestureDetector(
+                              onTap: () => onOptionSelected(2),
+                              child: MatchPairsWidget(cards[2]),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              CardItem(
-                                id: "1",
-                                pairId: "2",
-                                value: "2",
-                                isMatched: false,
-                                isFailed: false,
-                              ),
+                            child: GestureDetector(
+                              onTap: () => onOptionSelected(3),
+                              child: MatchPairsWidget(cards[3]),
                             ),
                           ),
                         ],
