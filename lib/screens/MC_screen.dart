@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/models/cards/card_item.dart';
+import 'package:projekt_grupowy/services/mc_game_engine.dart';
 import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
@@ -14,10 +15,21 @@ class McScreen extends StatefulWidget {
 class _McScreenState extends State<McScreen> {
   String question = "Loading...";
 
+  final engine = MCGameEngine(
+    onComplete: (result) {
+      print('Correct: ${result.isCorrect}');
+      print('Answer: ${result.userAnswer}');
+    },
+  );
+
   @override
   void initState() {
     super.initState();
-    
+
+    // TODO change static value
+    engine.initialize(3);
+
+    question = engine.question.prompt;
   }
 
   @override
