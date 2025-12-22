@@ -41,6 +41,8 @@ class _TypedScreenState extends State<TypedScreen> {
   }
 
   onSkip() {
+    engine.skip();
+
     setState(() {
       // TODO get the hint from provider and set placeholder with its value
       placeHolder = "hint";
@@ -87,8 +89,8 @@ class _TypedScreenState extends State<TypedScreen> {
             ),
             Padding(
               padding: EdgeInsetsGeometry.directional(
-                start: 100.0,
-                end: 100.0,
+                start: 30.0,
+                end: 30.0,
                 top: 20.0,
                 bottom: 40.0,
               ),
