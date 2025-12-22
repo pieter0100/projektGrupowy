@@ -1,18 +1,18 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/services/typed_game_engine.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
 class TypedScreen extends StatefulWidget {
+  const TypedScreen({super.key});
+
   @override
   _TypedScreenState createState() => _TypedScreenState();
 }
 
 class _TypedScreenState extends State<TypedScreen> {
   // manager
-  late final manager;
+  //late final manager;
 
   // engine
   final engine = TypedGameEngine(
@@ -34,7 +34,7 @@ class _TypedScreenState extends State<TypedScreen> {
   void initState() {
     super.initState();
 
-    // TODO change value
+    // TODO change static value
     engine.initialize(3);
 
     question = engine.question.prompt;
@@ -58,21 +58,8 @@ class _TypedScreenState extends State<TypedScreen> {
   }
 
   void onComplete(String value) {
-    // is answer an integer
-    if (int.tryParse(value) == null) {
-      log("answer is not a number");
-    } else {
-      log("answer is a number you can check if it is a correct answer");
-
-      // check the answer
-      engine.submitAnswer(value);
-
-      // set the next question
-      setState(() {
-        question = engine.question.prompt;
-        placeHolder = "Type the answer";
-      });
-    }
+    // check the answer
+    engine.submitAnswer(value);
   }
 
   @override
