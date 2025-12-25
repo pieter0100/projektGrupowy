@@ -4,7 +4,6 @@ import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
-import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 import 'package:projekt_grupowy/repositories/exam_result_repository.dart';
 
