@@ -30,6 +30,28 @@ class ExamSessionManager extends GameSessionManager {
     
     return stages;
   }
+
+  /*
+  if the set of questions is provided by QuestionProvider, assume the function is called getTypedQuestionsSet
+  @override
+  List<GameStage> generateStages(LevelInfo level) {
+    final stages = <GameStage>[];
+    _correctCount = 0;
+
+    // Get a shuffled set of 10 unique questions for the exam
+    final questions = QuestionProvider.getTypedQuestionsSet(level.levelNumber);
+
+    for (final questionTyped in questions) {
+      final data = TypedData(
+        question: questionTyped.prompt,
+        correctAnswer: int.parse(questionTyped.correctAnswer),
+      );
+      stages.add(GameStage(type: StageType.typed, data: data));
+    }
+
+    return stages;
+  }
+  */
   
   @override
   bool canSkipStage() {
