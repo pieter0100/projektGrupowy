@@ -3,7 +3,6 @@ import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
-import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 
 class ExamSessionManager extends GameSessionManager {
@@ -41,14 +40,7 @@ class ExamSessionManager extends GameSessionManager {
   bool shouldFinish() {
     return completedCount >= _totalStagesCount;
   }
-  
-  @override
-  void processStageResult(StageResult result) {
-    if (result.isCorrect) {
-      _correctCount++;
-    }
-    super.processStageResult(result);
-  }
+
   
   /// Generates Typed stage data using QuestionProvider.
   TypedData _generateTypedData(LevelInfo level) {
