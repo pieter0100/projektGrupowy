@@ -6,9 +6,13 @@ import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
-import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/repositories/exam_result_repository.dart';
 
 class ExamSessionManager extends GameSessionManager {
+  final ExamResultRepository examResultRepository;
+
+  ExamSessionManager({ExamResultRepository? examResultRepository})
+      : examResultRepository = examResultRepository ?? ExamResultRepository();
   
   static const int _totalStagesCount = 10;
   
@@ -62,40 +66,14 @@ class ExamSessionManager extends GameSessionManager {
     );
   }
 
-  /// Saves the exam result to local storage. 
-  // requires 100% accuracy to mark level as completed.
-  Future<void> saveExamResult(String userId, LevelInfo level) async {
-    if (!isFinished) {
-      throw StateError('Cannot save exam result before session is finished');
-    }
-
-    final score = correctCount; // Score is the number of correct answers (max 10)
-    final passed = correctCount == _totalStagesCount; // Must have 100% to pass
-
-    // Get existing progress or create new one
-    final existingProgress = LocalSaves.getLevelProgress(userId, level.levelId);
-    final shouldSetFirstCompletion = existingProgress != null && passed && !existingProgress.completed;
-
-    final newProgress = existingProgress != null
-        ? existingProgress.copyWith(
-            bestScore: score > existingProgress.bestScore ? score : existingProgress.bestScore,
-            attempts: existingProgress.attempts + 1,
-            completed: passed ? true : existingProgress.completed,
-            updateFirstCompletedAt: shouldSetFirstCompletion,
-            firstCompletedAt: shouldSetFirstCompletion ? DateTime.now() : existingProgress.firstCompletedAt,
-            updateLastPlayedAt: true,
-            lastPlayedAt: DateTime.now(),
-          )
-        : LevelProgress(
-            levelId: level.levelId,
-            bestScore: score,
-            bestTimeSeconds: 0, // Time tracking not implemented yet
-            attempts: 1,
-            completed: passed,
-            firstCompletedAt: passed ? DateTime.now() : null,
-            lastPlayedAt: DateTime.now(),
-          );
-
-    await LocalSaves.saveLevelProgress(userId, newProgress);
+  /// Saves the exam result using ExamResultRepository.
+  Future<void> saveExamResult(String? userId, LevelInfo? level) async {
+    await examResultRepository.saveExamResult(
+      userId: userId,
+      level: level,
+      correctCount: correctCount,
+      totalStagesCount: _totalStagesCount,
+      isFinished: isFinished,
+    );
   }
 }
