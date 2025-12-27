@@ -3,11 +3,15 @@ import 'package:flutter/material.dart';
 class LoginTextInput extends StatelessWidget {
   final String hintText;
   final bool isPassword;
+  final String? Function(String?)? validator; 
+  final TextEditingController? controller;
 
   const LoginTextInput({
     super.key,
     required this.hintText,
     this.isPassword = false,
+    this.validator, 
+    this.controller,
   });
 
   @override
@@ -25,10 +29,12 @@ class LoginTextInput extends StatelessWidget {
           ),
         ],
       ),
-      child: TextField(
-        obscureText: isPassword, 
+      child: TextFormField(
+        controller: controller, 
+        validator: validator,   
+        obscureText: isPassword,
         style: const TextStyle(
-          fontWeight: FontWeight.bold, 
+          fontWeight: FontWeight.bold,
           color: Colors.black87,
         ),
         decoration: InputDecoration(
