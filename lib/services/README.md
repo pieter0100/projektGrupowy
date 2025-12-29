@@ -41,3 +41,11 @@ Game engine for the multiple choice mini-game. Players select one of four option
 Handles option shuffling, answer verification, and result generation for integration with session managers. Enforces valid state transitions to prevent illegal operations (e.g., selecting twice).
 
 [Detailed description](../../code_documentation/mc_game_engine_documentation.md)
+
+### `auth_service.dart`
+
+Provides authentication and user management using Firebase Authentication and Firestore.
+- Register, sign in, sign out, password reset
+- Creates user profile documents in Firestore
+
+[Detailed description](../../code_documentation/auth_service.md)
