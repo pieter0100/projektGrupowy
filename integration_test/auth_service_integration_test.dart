@@ -1,18 +1,18 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:integration_test/integration_test.dart';
 import 'package:projekt_grupowy/services/auth_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() {
+  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
   late AuthService authService;
 
   setUpAll(() async {
-    // Initialize Firebase only once for all tests
-    TestWidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
     authService = AuthService();
   });
 
-  test('register, sign in, and sign out', () async {
+  testWidgets('register, sign in, and sign out (integration)', (WidgetTester tester) async {
     final email = 'testuser${DateTime.now().millisecondsSinceEpoch}@example.com';
     final password = 'TestPassword123!';
     final username = 'TestUser';
