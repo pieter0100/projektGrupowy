@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:projekt_grupowy/services/auth_service.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main() {
@@ -81,5 +82,29 @@ void main() {
     } catch (e) {
       expect(e.toString(), contains('invalid-credential'));
     }
+  });
+
+  testWidgets('onAuthStateChanged restores state after app restart', (WidgetTester tester) async {
+    final email = 'restartuser${DateTime.now().millisecondsSinceEpoch}@example.com';
+    final password = 'TestPassword123!';
+    final username = 'RestartUser';
+
+    // Rejestracja i logowanie
+    final user = await authService.register(email, password, username: username);
+    expect(user, isNotNull);
+
+    // Symulacja restartu aplikacji (ponowna inicjalizacja AuthService)
+    final newAuthService = AuthService();
+
+    // Oczekujemy, że stream odtworzy zalogowanego użytkownika
+    expect(
+      newAuthService.onAuthStateChanged,
+      emits(predicate((u) => u is User && u.email == email)),
+    );
+
+    // Wylogowanie i ponowna inicjalizacja
+    await newAuthService.signOut();
+    final afterSignOutAuthService = AuthService();
+    expect(afterSignOutAuthService.onAuthStateChanged, emits(null));
   });
 }
