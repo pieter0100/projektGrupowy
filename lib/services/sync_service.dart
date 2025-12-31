@@ -1,14 +1,16 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'offline_store.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SyncService {
   final OfflineStore _store;
   final FirebaseFirestore _firestore;
+  final FirebaseAuth _auth;
   Timer? _timer;
   bool _isSyncing = false;
 
-  SyncService(this._store, this._firestore);
+  SyncService(this._store, this._firestore, this._auth);
 
 
   void start() {
@@ -22,6 +24,7 @@ class SyncService {
 
   Future<void> syncNow() async {
     if (_isSyncing) return;
+    if (_auth.currentUser == null) return;
     _isSyncing = true;
     try {
       await _syncResults();
