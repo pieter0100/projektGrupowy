@@ -46,6 +46,8 @@ class SyncService {
       }
     } catch (e) {
       // Log error per item if needed
+      // DO NOT set syncPending = false if commit failed
+      rethrow;
     }
   }
 
@@ -64,6 +66,8 @@ class SyncService {
       }
     } catch (e) {
       // Log error per item if needed
+      // DO NOT set syncPending = false if commit failed
+      rethrow;
     }
   }
 }
