@@ -7,6 +7,7 @@ import 'package:projekt_grupowy/services/offline_store.dart';
 import 'package:projekt_grupowy/services/sync_service.dart';
 import 'package:projekt_grupowy/game_logic/models/game_result.dart';
 import 'package:projekt_grupowy/game_logic/models/game_progress.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 @GenerateMocks([
   Box,
@@ -14,6 +15,8 @@ import 'package:projekt_grupowy/game_logic/models/game_progress.dart';
   WriteBatch,
   CollectionReference<Map<String, dynamic>>,
   DocumentReference<Map<String, dynamic>>,
+  FirebaseAuth,
+  User,
 ])
 import 'offline_and_sync_service_test.mocks.dart';
 
@@ -28,6 +31,8 @@ void main() {
     late SyncService syncService;
     late MockCollectionReference<Map<String, dynamic>> collectionRef;
     late MockDocumentReference<Map<String, dynamic>> docRef;
+    late MockFirebaseAuth auth;
+    late MockUser user;
 
     setUp(() {
       resultsBox = MockBox();
@@ -37,10 +42,13 @@ void main() {
       batch = MockWriteBatch();
       collectionRef = MockCollectionReference<Map<String, dynamic>>();
       docRef = MockDocumentReference<Map<String, dynamic>>();
+      auth = MockFirebaseAuth();
+      user = MockUser();
+      when(auth.currentUser).thenReturn(user);
       when(firestore.batch()).thenReturn(batch);
       when(firestore.collection(any)).thenReturn(collectionRef);
       when(collectionRef.doc(any)).thenReturn(docRef);
-      syncService = SyncService(store, firestore);
+      syncService = SyncService(store, firestore, auth);
       when(resultsBox.values).thenReturn([]);
       when(progressBox.values).thenReturn([]);
     });
