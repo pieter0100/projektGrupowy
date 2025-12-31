@@ -32,14 +32,6 @@ GameProgress
 
 GameResult aggregates StageResult objects for a session. GameProgress tracks overall progress for a user in a game.
 
-## Data Models
-
-- `GameResult` - Aggregates results for a game session
-- `GameProgress` - Tracks user progress in a game
-- `StageResult` - Stores result for a single stage/level
-
-[Detailed documentation](../../code_documentation/game_models.md)
-
 ## Related Components
 
 ### Services (`lib/services/`)
