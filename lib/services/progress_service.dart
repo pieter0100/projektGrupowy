@@ -10,7 +10,6 @@ class ProgressService {
 
   Future<void> saveProgress(GameProgress progress) async {
     await _store.saveProgress(progress);
-    await _syncService.enqueueProgress(progress);
   }
 
   Future<GameProgress?> getProgress(String uid, String gameId) async {

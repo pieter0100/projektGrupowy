@@ -10,7 +10,6 @@ class ResultsService {
 
   Future<void> saveResult(GameResult result) async {
     await _store.saveResult(result);
-    await _syncService.enqueueResult(result);
   }
 
   Future<List<GameResult>> listUserResults(String uid, {int? limit, int? paging}) async {
