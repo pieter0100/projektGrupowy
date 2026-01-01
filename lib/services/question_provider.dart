@@ -67,7 +67,7 @@ class QuestionProvider {
     );
   }
 
-  static List<QuestionTyped> getTypedQuestionsForExam({
+  static List<QuestionTyped> getTypedQuestionsSet({
     required int level,
     int numberOfQuestions = 10,
   }) {
