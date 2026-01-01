@@ -26,9 +26,9 @@ void main() {
     });
   });
 
-  group('QuestionProvider - getTypedQuestionsForExam', () {
+  group('QuestionProvider - getTypedQuestionsSet', () {
     test('returns 10 unique, shuffled questions for level 1', () {
-      final questions = QuestionProvider.getTypedQuestionsForExam(level: 1);
+      final questions = QuestionProvider.getTypedQuestionsSet(level: 1);
       expect(questions.length, 10);
       final prompts = questions.map((q) => q.prompt).toSet();
       expect(prompts.length, 10);
@@ -38,7 +38,7 @@ void main() {
     });
 
     test('returns correct number of questions if numberOfQuestions < 10', () {
-      final questions = QuestionProvider.getTypedQuestionsForExam(
+      final questions = QuestionProvider.getTypedQuestionsSet(
         level: 2,
         numberOfQuestions: 5,
       );
@@ -51,8 +51,8 @@ void main() {
     });
 
     test('questions are shuffled (order is not always the same)', () {
-      final list1 = QuestionProvider.getTypedQuestionsForExam(level: 3);
-      final list2 = QuestionProvider.getTypedQuestionsForExam(level: 3);
+      final list1 = QuestionProvider.getTypedQuestionsSet(level: 3);
+      final list2 = QuestionProvider.getTypedQuestionsSet(level: 3);
       final sameOrder = List.generate(
         10,
         (i) => list1[i].prompt == list2[i].prompt,
