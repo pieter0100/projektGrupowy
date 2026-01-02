@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
 
 class LoginScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
-  // clean controllers after closing 
+  // clean controllers after closing
   @override
   void dispose() {
     _emailController.dispose();
@@ -25,7 +26,6 @@ class _LoginScreenState extends State<LoginScreen> {
   // login logic function
   void _handleLogin() {
     if (_formKey.currentState!.validate()) {
-      
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
@@ -37,11 +37,11 @@ class _LoginScreenState extends State<LoginScreen> {
       print("--------------------------");
 
       // authService.login(email, password);
-      
+
       // message for user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Logging as $email...')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Logging as $email...')));
     }
   }
 
@@ -66,11 +66,19 @@ class _LoginScreenState extends State<LoginScreen> {
                     const SizedBox(height: 60),
                     const Text(
                       'Learn',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primaryColor),
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
                     const Text(
                       'Multiplication',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primaryColor),
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
                     const SizedBox(height: 30),
 
@@ -94,7 +102,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     // --- PASSWORD INPUT ---
                     LoginTextInput(
                       hintText: 'Password',
-                      isPassword: true, 
+                      isPassword: true,
                       controller: _passwordController,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
@@ -112,12 +120,20 @@ class _LoginScreenState extends State<LoginScreen> {
                     Align(
                       alignment: Alignment.centerRight,
                       child: TextButton(
-                        onPressed: () {},
-                        child: const Text('Forgot Password?', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                        onPressed: () {
+                          context.go('/login/forgot');
+                        },
+                        child: const Text(
+                          'Forgot Password?',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 10),
-                    
+
                     // --- LOG IN BUTTON ---
                     SizedBox(
                       width: double.infinity,
@@ -127,19 +143,39 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
-                        child: const Text('Log In', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'Log In',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 25),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text("Don't have account yet? ", style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600)),
+                        const Text(
+                          "Don't have account yet? ",
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                         GestureDetector(
                           onTap: () {},
-                          child: const Text("Sign Up", style: TextStyle(color: linkColor, fontWeight: FontWeight.bold)),
+                          child: const Text(
+                            "Sign Up",
+                            style: TextStyle(
+                              color: linkColor,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -147,7 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ),
-            
+
             // --- DINOZAUR ---
             Expanded(
               child: Container(
