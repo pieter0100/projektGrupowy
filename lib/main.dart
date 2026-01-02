@@ -4,6 +4,7 @@ import 'package:projekt_grupowy/screens/change_password_screen.dart';
 import 'package:projekt_grupowy/screens/forgot_password_screen.dart';
 import 'package:projekt_grupowy/screens/login_screen.dart';
 import 'package:projekt_grupowy/screens/password_change_confirmation_screen.dart';
+import 'package:projekt_grupowy/screens/sign_up_screen.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -126,6 +127,11 @@ final GoRouter _router = GoRouter(
         ),
       ],
     ),
+
+    GoRoute(
+          path: '/signup',
+          builder: (context, state) => const SignUpScreen(),
+        ),
   ],
 );
 

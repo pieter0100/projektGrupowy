@@ -2,36 +2,40 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class SignUpScreen extends StatefulWidget {
+  const SignUpScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<SignUpScreen> createState() => _SignUpScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  final _nickController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
   // clean controllers after closing
   @override
   void dispose() {
+    _nickController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
   }
 
-  // login logic function
-  void _handleLogin() {
+  // sign up logic function
+  void _handleSignUp() {
     if (_formKey.currentState!.validate()) {
+      final nick = _nickController.text;
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
       // businnes logic
       print("--------------------------");
-      print("Próba logowania:");
+      print("Próba rejestracji:");
+      print('Nick: $nick');
       print("Email: $email");
       print("Hasło: $password");
       print("--------------------------");
@@ -41,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // message for user
       ScaffoldMessenger.of(
         context,
-      ).showSnackBar(SnackBar(content: Text('Logging as $email...')));
+      ).showSnackBar(SnackBar(content: Text('Signing as $nick...')));
     }
   }
 
@@ -65,22 +69,29 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     const SizedBox(height: 60),
                     const Text(
-                      'Learn',
+                      'Sign Up',
                       style: TextStyle(
                         fontSize: 40,
                         fontWeight: FontWeight.bold,
                         color: primaryColor,
                       ),
                     ),
-                    const Text(
-                      'Multiplication',
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold,
-                        color: primaryColor,
-                      ),
-                    ),
+
                     const SizedBox(height: 30),
+
+                    // --- NICK INPUT ---
+                    LoginTextInput(
+                      hintText: 'Nick',
+                      controller: _nickController,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Write Nick';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    const SizedBox(height: 20),
 
                     // --- EMAIL INPUT ---
                     LoginTextInput(
@@ -115,31 +126,14 @@ class _LoginScreenState extends State<LoginScreen> {
                       },
                     ),
 
-                    const SizedBox(height: 10),
-
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
-                          context.go('/login/forgot');
-                        },
-                        child: const Text(
-                          'Forgot Password?',
-                          style: TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+                    const SizedBox(height: 50),
 
                     // --- LOG IN BUTTON ---
                     SizedBox(
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: _handleLogin,
+                        onPressed: _handleSignUp,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
@@ -148,7 +142,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                         child: const Text(
-                          'Log In',
+                          'Sign up',
                           style: TextStyle(
                             fontSize: 20,
                             fontWeight: FontWeight.bold,
@@ -156,12 +150,14 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                       ),
                     ),
+
                     const SizedBox(height: 25),
+
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         const Text(
-                          "Don't have account yet? ",
+                          "You already have an account? ",
                           style: TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.w600,
@@ -169,10 +165,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            context.go('/signup');
+                            context.go('/login');
                           },
                           child: const Text(
-                            "Sign Up",
+                            "Log in",
                             style: TextStyle(
                               color: linkColor,
                               fontWeight: FontWeight.bold,
