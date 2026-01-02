@@ -75,87 +75,83 @@ class _TypedScreenState extends State<TypedScreen> {
         ),
         backgroundColor: Color(0xFFE5E5E5),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 20.0),
-              child: ProgressBarWidget(),
-            ),
-            Text(
-              question,
-              style: TextStyle(fontSize: 48.0),
-              textAlign: TextAlign.center,
-            ),
-            Padding(
-              padding: EdgeInsetsGeometry.directional(
-                start: 30.0,
-                end: 30.0,
-                top: 20.0,
-                bottom: 40.0,
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    style: const TextStyle(
-                      color: Colors.black87,
-                      fontSize: 25.0,
+      body: Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 20.0),
+            child: ProgressBarWidget(),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(30.0),
+            child: Text('Type your answer', style: TextStyle(fontSize: 30.0)),
+          ),
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    Text(
+                      question,
+                      style: TextStyle(fontSize: 48.0),
+                      textAlign: TextAlign.center,
                     ),
-                    decoration: InputDecoration(
-                      hintText: placeHolder,
-                      hintStyle: TextStyle(
-                        color: Colors.grey[600],
-                        fontSize: 25.0,
+                    Padding(
+                      padding: EdgeInsetsGeometry.directional(
+                        start: 35.0,
+                        end: 35.0,
+                        top: 35.0,
+                        bottom: 40.0,
                       ),
-                      filled: true,
-                      fillColor: const Color(0xFFD9D9D9),
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 24.0,
-                        vertical: 26.0,
-                      ),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                        borderSide: BorderSide.none,
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(16.0),
-                        borderSide: const BorderSide(
-                          color: Color(0xFF7ED4DE),
-                          width: 3.0,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        children: [
+                          TextField(
+                            style: const TextStyle(
+                              color: Colors.black87,
+                              fontSize: 25.0,
+                            ),
+                            decoration: InputDecoration(
+                              hintText: placeHolder,
+                              hintStyle: TextStyle(
+                                color: Colors.grey[600],
+                                fontSize: 25.0,
+                              ),
+                              filled: true,
+                              fillColor: const Color(0xFFD9D9D9),
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 24.0,
+                                vertical: 26.0,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                                borderSide: BorderSide.none,
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(16.0),
+                                borderSide: const BorderSide(
+                                  color: Color(0xFF7ED4DE),
+                                  width: 3.0,
+                                ),
+                              ),
+                            ),
+                            onSubmitted: onComplete,
+                            textInputAction: TextInputAction.done,
+                            cursorColor: Colors.grey[600],
+                          ),
+                          SizedBox(height: 200.0),
+                        ],
                       ),
                     ),
-                    onSubmitted: onComplete,
-                    textInputAction: TextInputAction.done,
-                  ),
-                  // if (isPracticeMode)
-                  //   Padding(
-                  //     padding: EdgeInsets.only(top: 10.0, right: 20.0),
-                  //     child: GestureDetector(
-                  //       onTap: onSkip,
-
-                  //       child: Text(
-                  //         "Don’t Know?  ",
-                  //         style: TextStyle(
-                  //           fontSize: 25.0,
-                  //           color: Color(0x88000000),
-                  //           decoration: TextDecoration.underline,
-                  //           decorationColor: Color(0x88000000),
-                  //         ),
-                  //         textAlign: TextAlign.end,
-                  //       ),
-                  //     ),
-                  //   ),
-                ],
+                  ],
+                ),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
