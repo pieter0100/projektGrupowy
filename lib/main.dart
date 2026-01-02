@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/screens/change_password_screen.dart';
+import 'package:projekt_grupowy/screens/forgot_password_screen.dart';
+import 'package:projekt_grupowy/screens/login_screen.dart';
+import 'package:projekt_grupowy/screens/password_change_confirmation_screen.dart';
+import 'package:projekt_grupowy/screens/sign_up_screen.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -98,6 +103,35 @@ final GoRouter _router = GoRouter(
         return PracticeEndScreen(level: level);
       },
     ),
+
+    // login path
+    GoRoute(
+      path: '/login',
+      builder: (context, state) => const LoginScreen(),
+      routes: [
+        // forgot password email path
+        GoRoute(
+          path: 'forgot',
+          builder: (context, state) => const ForgotPasswordScreen(),
+          routes: [
+            GoRoute(
+              path: 'change',
+              builder: (context, state) => const ChangePasswordScreen(),
+            ),
+            GoRoute(
+              path: 'updated',
+              builder: (context, state) =>
+                  const PasswordChangeConfirmationScreen(),
+            ),
+          ],
+        ),
+      ],
+    ),
+
+    GoRoute(
+          path: '/signup',
+          builder: (context, state) => const SignUpScreen(),
+        ),
   ],
 );
 
