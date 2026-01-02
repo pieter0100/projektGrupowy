@@ -20,7 +20,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  // login logic function
+  // email logic function
   void _handleEmail() {
     if (_formKey.currentState!.validate()) {
       
@@ -28,16 +28,11 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
 
       // businnes logic
       print("--------------------------");
-      print("Próba logowania:");
+      print("Próba zmiany hasla:");
       print("Email: $email");
       print("--------------------------");
 
-      // authService.login(email, password);
-      
-      // message for user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Logging as $email...')),
-      );
+      // chyba cos z firebase to be removed
     }
   }
 
@@ -45,7 +40,6 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     const Color backgroundColor = Color(0xFFFFFAF5);
     const Color primaryColor = Color(0xFFDCA466);
-    const Color linkColor = Color(0xFF7CB69D);
 
     return Scaffold(
       appBar: AppBar(),
