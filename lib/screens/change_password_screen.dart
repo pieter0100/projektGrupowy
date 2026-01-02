@@ -1,37 +1,51 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
 
-class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+class ChangePasswordScreen extends StatefulWidget {
+  const ChangePasswordScreen({super.key});
 
   @override
-  State<ForgotPasswordScreen> createState() => _ForgotPasswordState();
+  State<ChangePasswordScreen> createState() => _ChangePasswordState();
 }
 
-class _ForgotPasswordState extends State<ForgotPasswordScreen> {
+class _ChangePasswordState extends State<ChangePasswordScreen> {
   final _formKey = GlobalKey<FormState>();
 
-  final _emailController = TextEditingController();
+  final _passwordController1 = TextEditingController();
+  final _passwordController2 = TextEditingController();
 
   // clean controllers after closing 
   @override
   void dispose() {
-    _emailController.dispose();
+    _passwordController1.dispose();
+    _passwordController2.dispose();
     super.dispose();
   }
 
-  // email logic function
-  void _handleEmail() {
+  // password logic function
+  void _handlePassword() {
     if (_formKey.currentState!.validate()) {
+      
+      final password1 = _passwordController1.text;
+      final password2 = _passwordController2.text;
+
       // businnes logic
       print("--------------------------");
       print("Próba zmiany hasla:");
+      print("Password1: $password1");
+      print("Password2: $password2");
       print("--------------------------");
 
       // chyba cos z firebase to be removed
-
-      context.go('/login/forgot/change');
+      if (password1 == password2) {
+        
+      }
+      else {
+        // message for user
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Passwords must be the same')));
+      }
     }
   }
 
@@ -55,7 +69,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                   children: [
                     const SizedBox(height: 60),
                     const Text(
-                      'Forgot',
+                      'Change',
                       style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primaryColor),
                     ),
                     const Text(
@@ -65,43 +79,55 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
 
                     const SizedBox(height: 60),
 
-                    // --- EMAIL INPUT ---
+                    // --- PASSWORD INPUT ---
                     LoginTextInput(
-                      hintText: 'Email',
-                      controller: _emailController,
+                      hintText: 'New password',
+                      isPassword: true,
+                      controller: _passwordController1,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Write Email';
+                          return 'Write password';
                         }
-                        if (!value.contains('@')) {
-                          return 'Wrong email format';
+                        if (value.length < 6) {
+                          return 'Password needs at least 6 characters';
                         }
                         return null;
                       },
                     ),
 
-                    SizedBox(height: 50),
+                    SizedBox(height: 30,),
+                    
 
+                    // --- REAPEAT PASSWORD INPUT ---
+                    LoginTextInput(
+                      hintText: 'Confirm password',
+                      isPassword: true,
+                      controller: _passwordController2,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Write password';
+                        }
+                        if (value.length < 6) {
+                          return 'Password needs at least 6 characters';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    SizedBox(height: 50,),
+                    
                     // --- SEND  BUTTON ---
                     SizedBox(
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: _handleEmail,
+                        onPressed: _handlePassword,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30),
-                          ),
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                         ),
-                        child: const Text(
-                          'Send',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: const Text('Update', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
                       ),
                     ),
 
@@ -110,7 +136,7 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                 ),
               ),
             ),
-
+            
             // --- DINOZAUR ---
             Expanded(
               child: Container(

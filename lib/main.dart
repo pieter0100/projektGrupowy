@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/screens/change_password_screen.dart';
 import 'package:projekt_grupowy/screens/forgot_password_screen.dart';
 import 'package:projekt_grupowy/screens/login_screen.dart';
 
@@ -110,10 +111,15 @@ final GoRouter _router = GoRouter(
         GoRoute(
           path: 'forgot',
           builder: (context, state) => const ForgotPasswordScreen(),
-        ) 
-      ]
+          routes: [
+            GoRoute(
+              path: 'change',
+              builder: (context, state) => const ChangePasswordScreen(),
+            ),
+          ],
+        ),
+      ],
     ),
-
   ],
 );
 
