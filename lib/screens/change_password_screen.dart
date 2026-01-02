@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -14,7 +15,7 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
   final _passwordController1 = TextEditingController();
   final _passwordController2 = TextEditingController();
 
-  // clean controllers after closing 
+  // clean controllers after closing
   @override
   void dispose() {
     _passwordController1.dispose();
@@ -25,7 +26,6 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
   // password logic function
   void _handlePassword() {
     if (_formKey.currentState!.validate()) {
-      
       final password1 = _passwordController1.text;
       final password2 = _passwordController2.text;
 
@@ -38,9 +38,8 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
 
       // chyba cos z firebase to be removed
       if (password1 == password2) {
-        
-      }
-      else {
+        context.go('/login/forgot/updated');
+      } else {
         // message for user
         ScaffoldMessenger.of(
           context,
@@ -70,11 +69,19 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
                     const SizedBox(height: 60),
                     const Text(
                       'Change',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primaryColor),
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
                     const Text(
                       'Password',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primaryColor),
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
 
                     const SizedBox(height: 60),
@@ -95,8 +102,7 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
                       },
                     ),
 
-                    SizedBox(height: 30,),
-                    
+                    SizedBox(height: 30),
 
                     // --- REAPEAT PASSWORD INPUT ---
                     LoginTextInput(
@@ -114,8 +120,8 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
                       },
                     ),
 
-                    SizedBox(height: 50,),
-                    
+                    SizedBox(height: 50),
+
                     // --- SEND  BUTTON ---
                     SizedBox(
                       width: double.infinity,
@@ -125,9 +131,17 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(30),
+                          ),
                         ),
-                        child: const Text('Update', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'Update',
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
 
@@ -136,7 +150,7 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
                 ),
               ),
             ),
-            
+
             // --- DINOZAUR ---
             Expanded(
               child: Container(

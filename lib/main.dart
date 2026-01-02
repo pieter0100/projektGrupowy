@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/screens/change_password_screen.dart';
 import 'package:projekt_grupowy/screens/forgot_password_screen.dart';
 import 'package:projekt_grupowy/screens/login_screen.dart';
+import 'package:projekt_grupowy/screens/password_change_confirmation_screen.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -115,6 +116,11 @@ final GoRouter _router = GoRouter(
             GoRoute(
               path: 'change',
               builder: (context, state) => const ChangePasswordScreen(),
+            ),
+            GoRoute(
+              path: 'updated',
+              builder: (context, state) =>
+                  const PasswordChangeConfirmationScreen(),
             ),
           ],
         ),
