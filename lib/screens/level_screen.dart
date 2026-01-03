@@ -44,15 +44,20 @@ class LevelScreen extends StatelessWidget {
       body: ListView.builder(
         itemCount: levelsAmount,
         itemBuilder: (BuildContext context, int index) {
-          if (index < 2) {
-            return InkWell(
-              onTap: () => context.go('/level/learn?level=${index + 1}'),
-              child: LevelWidget(textInside: "× ${index + 1}", isLocked: false),
-            );
-          } else {
-            return LevelWidget(isLocked: true);
-          }
-        },
+          final String levelId = (index + 1).toString();
+          
+          final bool unlocked = LocalSaves.isLevelUnlocked("current_user_id", levelId);
+
+          return InkWell(
+            onTap: unlocked 
+              ? () => context.go('/level/learn?level=$levelId') 
+              : null,
+            child: LevelWidget(
+              textInside: "× $levelId", 
+              isLocked: !unlocked,
+            ),
+          );
+        }
       ),
     );
   }

@@ -129,33 +129,35 @@ class LocalSaves {
   }
 
   static bool isLevelUnlocked(String userId, String levelId) {
-  final levelInfo = getLevel(levelId);
-  final user = getUser(userId);
+    if (levelId == '1') return true;
 
-  if (levelInfo == null || user == null) {
-    logger.w('Level info or user not found for check: $levelId, $userId');
-    return false;
-  }
+    final levelInfo = getLevel(levelId);
+    final user = getUser(userId);
 
-  final requirements = levelInfo.unlockRequirements;
-
-  // Checking requirements based on points
-  if (requirements.minPoints != null && requirements.minPoints! > user.stats.totalPoints) {
-    return false;
-  }
-
-  // Checking requirements based on completing previous level
-  if (requirements.previousLevelId != null) {
-    final previousProgress = getLevelProgress(userId, requirements.previousLevelId!);
-
-    if (previousProgress == null || !previousProgress.completed) {
+    if (levelInfo == null || user == null) {
+      logger.w('Level info or user not found for check: $levelId, $userId');
       return false;
     }
-  }
 
-  // Level is unlocked if all requirements are met
-  return true;
-}
+    final requirements = levelInfo.unlockRequirements;
+
+    // Checking requirements based on points
+    if (requirements.minPoints != null && requirements.minPoints! > user.stats.totalPoints) {
+      return false;
+    }
+
+    // Checking requirements based on completing previous level
+    if (requirements.previousLevelId != null) {
+      final previousProgress = getLevelProgress(userId, requirements.previousLevelId!);
+
+      if (previousProgress == null || !previousProgress.completed) {
+        return false;
+      }
+    }
+
+    // Level is unlocked if all requirements are met
+    return true;
+  }
 
   // === LEADERBOARD OPERATIONS ===
 
