@@ -142,7 +142,7 @@ class LocalSaves {
     final requirements = levelInfo.unlockRequirements;
 
     // Checking requirements based on points
-    if (requirements.minPoints > 0 && requirements.minPoints > user.stats.totalPoints) {
+    if (requirements.minPoints > user.stats.totalPoints) {
       return false;
     }
 
