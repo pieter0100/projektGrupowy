@@ -13,7 +13,14 @@ class ProfileScreen extends StatelessWidget {
         backgroundColor: Color(0xFFE5E5E5),
         scrolledUnderElevation: 0.0,
       ),
-      body: Column(children: [ProfileHeader(), StatisticsSection()]),
+      body: Column(
+        children: [
+          ProfileHeader(),
+          StatisticsSection(),
+          SizedBox(height: 20),
+          InviteFriendsCard(),
+        ],
+      ),
     );
   }
 }
@@ -26,12 +33,14 @@ class ProfileHeader extends StatelessWidget {
     return Container(
       padding: EdgeInsets.only(
         top: 25.0,
-        bottom: 25.0,
+        bottom: 15.0,
         left: 10.0,
         right: 10.0,
       ),
       decoration: BoxDecoration(
-        border: Border(bottom: BorderSide(color: Color(0x33000000), width: 3.0)),
+        border: Border(
+          bottom: BorderSide(color: Color(0x33000000), width: 3.0),
+        ),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -95,8 +104,8 @@ class StatisticsSection extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: EdgeInsets.only(
-        top: 25.0,
-        bottom: 25.0,
+        top: 15.0,
+        bottom: 0.0,
         left: 10.0,
         right: 10.0,
       ),
@@ -129,7 +138,7 @@ class StatisticsSection extends StatelessWidget {
                 children: [
                   StatisticBox(witchBox: 'dayStreak', value: '67'),
                   SizedBox(height: 15.0),
-                  StatisticBox(witchBox: 'achievements', value: '6 7',),
+                  StatisticBox(witchBox: 'achievements', value: '6 7'),
                 ],
               ),
               SizedBox(width: 15.0),
@@ -137,10 +146,94 @@ class StatisticsSection extends StatelessWidget {
                 children: [
                   StatisticBox(witchBox: 'totalXP', value: '67'),
                   SizedBox(height: 15.0),
-                  StatisticBox(witchBox: 'leaderBoard', value: '6 7',),
+                  StatisticBox(witchBox: 'leaderBoard', value: '6 7'),
                 ],
               ),
             ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class InviteFriendsCard extends StatelessWidget {
+  const InviteFriendsCard({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final Color borderColor = Color(0x33000000);
+    final Color buttonColor = const Color(0xFF02A1FB);
+
+    return Container(
+      width: 320,
+      padding: const EdgeInsets.all(20.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20.0),
+        border: Border.all(color: borderColor, width: 3),
+      ),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.pets, 
+                size: 80,
+              ),
+
+              const SizedBox(width: 20),
+
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Invite your friends',
+                      style: TextStyle(
+                        fontSize: 20.0,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Text(
+                      'Tell your friends it’s free and fun to learn on Multiply app!',
+                      style: TextStyle(fontSize: 16.0, height: 1.3),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+
+          const SizedBox(height: 24.0),
+
+          SizedBox(
+            width: double.infinity,
+            height: 47.0,
+            child: ElevatedButton(
+              onPressed: () {
+                print("Invite friends clicked");
+              },
+              style: ElevatedButton.styleFrom(
+                backgroundColor: buttonColor,
+                foregroundColor: Colors.white,
+                elevation: 8, 
+                shadowColor: Color(0x8802A1FB),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(16.0),
+                ),
+              ),
+              child: const Text(
+                'INVITE FRIENDS',
+                style: TextStyle(
+                  fontSize: 20.0,
+                  fontWeight: FontWeight.bold,
+                  letterSpacing: 1.0,
+                ),
+              ),
+            ),
           ),
         ],
       ),
