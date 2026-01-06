@@ -66,9 +66,9 @@ class PersonalData extends StatelessWidget {
             const SizedBox(height: 16),
 
             // FORM FIELDS
-            _buildProfileField('Nick', 'Nick'),
-            _buildProfileField('Name', 'John Doe'),
-            _buildProfileField('Email', 'mail@mail.com'),
+            _buildProfileField('Nick:', 'Nick'),
+            _buildProfileField('Name:', 'John Doe'),
+            _buildProfileField('Email:', 'mail@mail.com'),
           ],
         ),
       ),
@@ -106,13 +106,14 @@ Widget _buildProfileField(String label, String initialValue) {
               color: Colors.black87,
               fontWeight: FontWeight.w500,
             ),
+            readOnly: label == 'Email:' ? true : false,
             decoration: InputDecoration(
               border: InputBorder.none,
               contentPadding: const EdgeInsets.symmetric(
                 horizontal: 20,
                 vertical: 20,
               ),
-              suffixIcon: label != 'Email'
+              suffixIcon: label != 'Email:'
                   ? Padding(
                       padding: const EdgeInsets.only(
                         right: 30.0,
