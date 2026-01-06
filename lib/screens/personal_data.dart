@@ -80,7 +80,7 @@ Widget _buildProfileField(String label, String initialValue) {
   Color fillColor = const Color(0xFFE5E5E5);
 
   return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 28.0),
+    padding: const EdgeInsets.symmetric(horizontal: 10.0),
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
