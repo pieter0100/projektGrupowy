@@ -23,7 +23,10 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           SizedBox(height: 40),
-          Center(child: SettingsDataWidget("Personal data")),
+          GestureDetector(
+            onTap: () => context.go('/settings/personaldata'),
+            child: Center(child: SettingsDataWidget("Personal data")),
+          ),
           SizedBox(height: 40),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
