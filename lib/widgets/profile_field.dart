@@ -4,11 +4,7 @@ class ProfileField extends StatefulWidget {
   final String label;
   final String initialValue;
 
-  ProfileField({
-    super.key,
-    required this.label,
-    required this.initialValue,
-  });
+  ProfileField({super.key, required this.label, required this.initialValue});
 
   @override
   _ProfileFieldState createState() => _ProfileFieldState();
@@ -18,7 +14,7 @@ class _ProfileFieldState extends State<ProfileField> {
   final FocusNode _myFocusNode = FocusNode();
 
   IconData iconData = Icons.edit_outlined;
-  
+
   Color fillColor = const Color(0xFFE5E5E5);
 
   late TextEditingController _controller;
@@ -27,8 +23,10 @@ class _ProfileFieldState extends State<ProfileField> {
   void initState() {
     super.initState();
 
+    // controller to handle user input
     _controller = TextEditingController(text: widget.initialValue);
 
+    // add focus node for changing icon
     _myFocusNode.addListener(() {
       setState(() {
         if (_myFocusNode.hasFocus) {
@@ -42,6 +40,7 @@ class _ProfileFieldState extends State<ProfileField> {
 
   @override
   void dispose() {
+    // clean stuff
     _controller.dispose();
     _myFocusNode.dispose();
     super.dispose();
@@ -51,13 +50,18 @@ class _ProfileFieldState extends State<ProfileField> {
     // Handle nick change logic here
     print('Nick changed to: $value');
 
+    // update logic here TODO
+
     // if nick is avaible
     _myFocusNode.unfocus();
+    // else TODO
   }
 
   void handleNameChange(String value) {
-    // Handle nick change logic here
+    // Handle name change logic here
     print('Name changed to: $value');
+
+    // update logic here TODO
 
     // after changing name, unfocus
     _myFocusNode.unfocus();
@@ -104,19 +108,18 @@ class _ProfileFieldState extends State<ProfileField> {
                     ? Padding(
                         padding: const EdgeInsets.only(right: 30.0),
                         child: IconButton(
-                          icon: Icon(
-                            iconData,
-                            size: 24,
-                            color: Colors.black,
-                          ),
+                          icon: Icon(iconData, size: 24, color: Colors.black),
 
-                          onPressed: _myFocusNode.hasFocus ? () {
-                            if (widget.label == 'Nick:' && _myFocusNode.hasFocus) {
-                              handleNickChange(_controller.text);
-                            } else {
-                              handleNameChange(_controller.text);
-                            }
-                          }: null,
+                          onPressed: _myFocusNode.hasFocus
+                              ? () {
+                                  if (widget.label == 'Nick:' &&
+                                      _myFocusNode.hasFocus) {
+                                    handleNickChange(_controller.text);
+                                  } else {
+                                    handleNameChange(_controller.text);
+                                  }
+                                }
+                              : null,
                         ),
                       )
                     : null,
