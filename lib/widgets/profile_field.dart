@@ -46,9 +46,44 @@ class _ProfileFieldState extends State<ProfileField> {
     super.dispose();
   }
 
+  // helpter function to show snackbar messages
+  void showMessage(String message, {bool isError = false}) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(message),
+        backgroundColor: isError ? Colors.red : Colors.green,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
   void handleNickChange(String value) {
+    // Trim whitespace
+    final nick = value.trim();
+
+    // Validate nick is not empty
+    if (nick.isEmpty) {
+      showMessage('Nick can\'t be empty', isError: true);
+      return;
+    }
+
+    // Validate nick length
+    if (nick.length < 4 || nick.length > 20) {
+      showMessage('Nick must have between 4 to 20 characters', isError: true);
+      return;
+    }
+
+    // Validate nick characters
+    final validCharacters = RegExp(r'^[a-zA-Z0-9_]+$');
+    if (!validCharacters.hasMatch(nick)) {
+      showMessage('Error: Nick has illegal characters.', isError: true);
+      return;
+    }
+
     // Handle nick change logic here
-    print('Nick changed to: $value');
+    showMessage('Nick "$nick" is correct!');
 
     // update logic here TODO
 
