@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:projekt_grupowy/widgets/profile_field.dart';
 
 class PersonalData extends StatelessWidget {
   const PersonalData({super.key});
@@ -66,70 +67,12 @@ class PersonalData extends StatelessWidget {
             const SizedBox(height: 16),
 
             // FORM FIELDS
-            _buildProfileField('Nick:', 'Nick'),
-            _buildProfileField('Name:', 'John Doe'),
-            _buildProfileField('Email:', 'mail@mail.com'),
+            ProfileField(label: 'Nick:', initialValue: 'Nick'),
+            ProfileField(label: 'Name:', initialValue: 'John Doe'),
+            ProfileField(label: 'Email:', initialValue: 'mail@mail.com'),
           ],
         ),
       ),
     );
   }
-}
-
-Widget _buildProfileField(String label, String initialValue) {
-  Color fillColor = const Color(0xFFE5E5E5);
-
-  return Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 10.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        // LABEL
-        Padding(
-          padding: const EdgeInsets.only(left: 4.0, bottom: 8.0),
-          child: Text(
-            label,
-            style: TextStyle(fontSize: 15, color: Colors.grey.shade600),
-          ),
-        ),
-
-        // TEXT FORM FIELD
-        Container(
-          decoration: BoxDecoration(
-            color: fillColor,
-            borderRadius: BorderRadius.circular(20.0),
-          ),
-          child: TextFormField(
-            initialValue: initialValue,
-            style: const TextStyle(
-              fontSize: 20,
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-            ),
-            readOnly: label == 'Email:' ? true : false,
-            decoration: InputDecoration(
-              border: InputBorder.none,
-              contentPadding: const EdgeInsets.symmetric(
-                horizontal: 20,
-                vertical: 20,
-              ),
-              suffixIcon: label != 'Email:'
-                  ? Padding(
-                      padding: const EdgeInsets.only(
-                        right: 30.0,
-                      ), 
-                      child: Icon(
-                        Icons.edit_outlined,
-                        size: 24,
-                        color: Colors.black,
-                      ),
-                    )
-                  : null, 
-            ),
-          ),
-        ),
-        const SizedBox(height: 20),
-      ],
-    ),
-  );
 }
