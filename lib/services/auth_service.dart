@@ -110,6 +110,29 @@ class AuthService {
       throw Exception('An unknown error occurred.');
     }
   }
+  
+  // Sign in with email and password
+  Future<User?> signIn(String email, String password) async {
+    if (email.isEmpty || !_isValidEmail(email)) {
+      throw Exception('Please enter a valid email address.');
+    }
+    if (!_isValidPassword(password)) {
+      throw Exception('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
+    }
+    try {
+      final UserCredential result = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      return result.user;
+    } on FirebaseAuthException catch (e) {
+      throw Exception(e.message ?? 'Authentication error.');
+    } on FirebaseException catch (e) {
+      throw Exception(e.message ?? 'Firebase error.');
+    } catch (e) {
+      throw Exception('An unknown error occurred.');
+    }
+  }
 
   // Sign out
   Future<void> signOut() async {
