@@ -67,6 +67,9 @@ class ExamSessionManager extends GameSessionManager {
 
   /// Saves the exam result using ExamResultRepository.
   Future<void> saveExamResult(String? userId, LevelInfo? level) async {
+    if (userId == null || level == null) {
+      throw ArgumentError('userId and level must not be null when saving exam result.');
+    }
     await examResultRepository.saveExamResult(
       userId: userId,
       level: level,
