@@ -19,7 +19,7 @@ void main() {
     final username = 'TestUser';
 
     // Register
-    final user = await authService.register(email, password, username: username);
+    final user = await authService.register(email, password, username);
     expect(user, isNotNull);
 
     // Sign out
@@ -40,12 +40,12 @@ void main() {
     final username = 'TestUser';
 
     // Register first time
-    final user1 = await authService.register(email, password, username: username);
+    final user1 = await authService.register(email, password, username);
     expect(user1, isNotNull);
 
     // Register second time with same email
     try {
-      await authService.register(email, password, username: username);
+      await authService.register(email, password, username);
       fail('Expected an exception for duplicate email');
     } catch (e) {
       expect(e.toString(), contains('email-already-in-use'));
@@ -59,7 +59,7 @@ void main() {
     final username = 'TestUser';
 
     // Register
-    final user = await authService.register(email, password, username: username);
+    final user = await authService.register(email, password, username);
     expect(user, isNotNull);
 
     // Try to sign in with wrong password
@@ -90,7 +90,7 @@ void main() {
     final username = 'RestartUser';
 
     // Rejestracja i logowanie
-    final user = await authService.register(email, password, username: username);
+    final user = await authService.register(email, password, username);
     expect(user, isNotNull);
 
     // Symulacja restartu aplikacji (ponowna inicjalizacja AuthService)
