@@ -19,27 +19,20 @@ class ExamSessionManager extends GameSessionManager {
   }
   
   @override
-  List<GameStage> generateStages(LevelInfo level) {
-    final stages = <GameStage>[];
-    _correctCount = 0;
-    
-    for (int i = 0; i < _totalStagesCount; i++) {
-      final data = _generateTypedData(level);
-      stages.add(GameStage(type: StageType.typed, data: data));
+  void processStageResult(result) {
+    if (result.isCorrect == true) {
+      _correctCount++;
     }
-    
-    return stages;
+    super.processStageResult(result);
   }
-
-  /*
-  if the set of questions is provided by QuestionProvider, assume the function is called getTypedQuestionsSet
+  
   @override
   List<GameStage> generateStages(LevelInfo level) {
     final stages = <GameStage>[];
     _correctCount = 0;
 
     // Get a shuffled set of 10 unique questions for the exam
-    final questions = QuestionProvider.getTypedQuestionsSet(level.levelNumber);
+    final questions = QuestionProvider.getTypedQuestionsSet(level: level.levelNumber);
 
     for (final questionTyped in questions) {
       final data = TypedData(
@@ -51,7 +44,6 @@ class ExamSessionManager extends GameSessionManager {
 
     return stages;
   }
-  */
   
   @override
   bool canSkipStage() {
@@ -61,16 +53,5 @@ class ExamSessionManager extends GameSessionManager {
   @override
   bool shouldFinish() {
     return completedCount >= _totalStagesCount;
-  }
-
-  
-  /// Generates Typed stage data using QuestionProvider.
-  TypedData _generateTypedData(LevelInfo level) {
-    final questionTyped = QuestionProvider.getTypedQuestion(level: level.levelNumber);
-    
-    return TypedData(
-      question: questionTyped.prompt,
-      correctAnswer: int.parse(questionTyped.correctAnswer),
-    );
   }
 }
