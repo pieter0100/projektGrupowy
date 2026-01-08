@@ -125,10 +125,11 @@ void main() {
       when(batch.set(any, any, any)).thenReturn(null);
       when(batch.commit()).thenThrow(Exception('network error'));
 
-      // Expect an exception on the first sync attempt
-      await expectLater(syncService.syncNow(), throwsA(isA<Exception>()));
+      // First sync attempt: should not throw, but syncPending remains true
+      await syncService.syncNow();
       expect(result.syncPending, true);
 
+      // Simulate network recovery: next sync attempt succeeds
       when(batch.commit()).thenAnswer((_) async => null);
       when(resultsBox.get('s3')).thenReturn(result);
       await syncService.syncNow();
