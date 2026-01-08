@@ -5,6 +5,24 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+    bool _isValidEmail(String email) {
+    final emailRegex = RegExp(r"^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}");
+    return emailRegex.hasMatch(email);
+  }
+
+  bool _isValidPassword(String password) {
+    return password.length >= 6;
+  }
+
+  bool _isValidUsername(String username) {
+    return username.trim().isNotEmpty;
+  }
+
+  Future<bool> _isUsernameTaken(String username) async {
+    final query = await _firestore.collection('users').where('profile.displayName', isEqualTo: username).get();
+    return query.docs.isNotEmpty;
+  }
+
   // Sign in with email and password
   Future<User?> signIn(String email, String password) async {
     final UserCredential result = await _auth.signInWithEmailAndPassword(
@@ -15,17 +33,18 @@ class AuthService {
   }
 
   // Register with email, password, and optional username
-  Future<User?> register(String email, String password, {String? username}) async {
+  Future<User?> register(String email, String password, String username) async {
     final UserCredential result = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
+      username: username,
     );
     final user = result.user;
     if (user != null) {
       // Create user document in Firestore
       await _firestore.collection('users').doc(user.uid).set({
         'profile': {
-          'displayName': username ?? '',
+          'displayName': username,
           'age': null,
         },
         'stats': {
