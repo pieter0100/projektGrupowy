@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:developer';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'offline_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -11,7 +13,8 @@ class SyncService {
   bool _isSyncing = false;
   int _retryCount = 0;
   static const int _maxBackoffSeconds = 300;
-  StreamSubscription? _connectivitySub;
+  StreamSubscription<List<ConnectivityResult>>? _connectivitySub;
+  final List<Map<String, dynamic>> _errorLog = [];
 
   SyncService(this._store, this._firestore, this._auth);
 
@@ -19,9 +22,15 @@ class SyncService {
   void start() {
     _timer?.cancel();
     _timer = Timer.periodic(Duration(minutes: 15), (_) => syncNow());
-    // TODO: Replace with real connectivity listener
-    // Example: Connectivity().onConnectivityChanged.listen((result) { if (result != ConnectivityResult.none) syncNow(); });
-    // _connectivitySub = connectivityStream.listen((online) { if (online) syncNow(); });
+    // Real connectivity listener: triggers sync on network change (offline→online)
+    _connectivitySub?.cancel();
+    _connectivitySub = Connectivity().onConnectivityChanged.listen((results) {
+      // If any connectivity result is not 'none', trigger sync
+      if (results.any((r) => r != ConnectivityResult.none)) {
+        syncNow();
+      }
+    });
+    // Requirement: periodic sync and event-based sync (connectivity)
   }
 
   void stop() {
@@ -31,19 +40,19 @@ class SyncService {
 
   Future<void> syncNow() async {
     if (_isSyncing) return;
-    if (_auth.currentUser == null) return;
+    if (_auth.currentUser == null) return; // Requirement: sync only with active Firebase Auth session
     _isSyncing = true;
     try {
       await _syncResults();
       await _syncProgress();
       _retryCount = 0; // reset on success
     } catch (e) {
-      // Exponential backoff on failure
-      _retryCount++;
-      final backoff = (_retryCount <= 8)
+        // Exponential backoff on failure (requirement)
+        _retryCount++;
+        final backoff = (_retryCount <= 8)
           ? (1 << (_retryCount - 1))
           : _maxBackoffSeconds;
-      Future.delayed(Duration(seconds: backoff), syncNow);
+        Future.delayed(Duration(seconds: backoff), syncNow);
     } finally {
       _isSyncing = false;
     }
@@ -64,15 +73,20 @@ class SyncService {
         await _store.markResultSynced(result.sessionId);
       }
     } catch (e) {
-      // Per-item error logging (simulate, since Firestore batch errors are not per-item)
+      // Per-item error logging (requirement)
       for (var result in pending) {
         errors[result.sessionId] = e.toString();
+        _errorLog.add({
+          'type': 'result',
+          'sessionId': result.sessionId,
+          'error': e.toString(),
+          'timestamp': DateTime.now().toIso8601String(),
+        });
       }
-      // TODO: Persist errors in local log if needed
       rethrow;
     }
     if (errors.isNotEmpty) {
-      print('Sync errors (results): $errors');
+      log('Sync errors (results): $errors');
     }
   }
 
@@ -91,23 +105,31 @@ class SyncService {
         await _store.markProgressSynced(progress.sessionId);
       }
     } catch (e) {
-      // Per-item error logging (simulate, since Firestore batch errors are not per-item)
+      // Per-item error logging (requirement)
       for (var progress in pending) {
         errors[progress.sessionId] = e.toString();
+        _errorLog.add({
+          'type': 'progress',
+          'sessionId': progress.sessionId,
+          'error': e.toString(),
+          'timestamp': DateTime.now().toIso8601String(),
+        });
       }
-      // TODO: Persist errors in local log if needed
       rethrow;
     }
     if (errors.isNotEmpty) {
-      print('Sync errors (progress): $errors');
+      log('Sync errors (progress): $errors');
     }
   }
   // Call this on sign out
   void onSignedOut() {
-    stop();
+    stop(); // Requirement: stop immediately on sign out
   }
   // Call this on app start or profile screen entry
   void triggerSync() {
-    syncNow();
+    syncNow(); // Requirement: trigger sync on app start or profile entry
   }
+
+  // For testing or diagnostics: get error log
+  List<Map<String, dynamic>> getErrorLog() => List.unmodifiable(_errorLog);
 }
