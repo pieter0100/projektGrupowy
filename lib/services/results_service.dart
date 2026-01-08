@@ -10,6 +10,8 @@ class ResultsService {
 
   Future<void> saveResult(GameResult result) async {
     await _store.saveResult(result);
+    // Enqueue for sync: trigger immediate sync after local save
+    _syncService.triggerSync();
   }
 
   Future<List<GameResult>> listUserResults(String uid, {int? limit, int? paging}) async {
