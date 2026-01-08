@@ -6,20 +6,14 @@ class ExamResultRepository {
   /// Saves the exam result to local storage.
   /// Requires 100% accuracy to mark level as completed.
   Future<void> saveExamResult({
-    required String? userId,
-    required LevelInfo? level,
+    required String userId,
+    required LevelInfo level,
     required int correctCount,
     required int totalStagesCount,
     required bool isFinished,
   }) async {
     if (!isFinished) {
       throw StateError('Cannot save exam result before session is finished');
-    }
-    if (userId == null || userId.isEmpty) {
-      throw ArgumentError('userId must not be null or empty');
-    }
-    if (level == null) {
-      throw ArgumentError('level must not be null');
     }
 
     final score = correctCount;
