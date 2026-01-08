@@ -25,15 +25,29 @@ class ExamSessionManager extends GameSessionManager {
   }
   
   @override
+  void processStageResult(result) {
+    if (result.isCorrect == true) {
+      _correctCount++;
+    }
+    super.processStageResult(result);
+  }
+  
+  @override
   List<GameStage> generateStages(LevelInfo level) {
     final stages = <GameStage>[];
     _correctCount = 0;
-    
-    for (int i = 0; i < _totalStagesCount; i++) {
-      final data = _generateTypedData(level);
+
+    // Get a shuffled set of 10 unique questions for the exam
+    final questions = QuestionProvider.getTypedQuestionsSet(level: level.levelNumber);
+
+    for (final questionTyped in questions) {
+      final data = TypedData(
+        question: questionTyped.prompt,
+        correctAnswer: int.parse(questionTyped.correctAnswer),
+      );
       stages.add(GameStage(type: StageType.typed, data: data));
     }
-    
+
     return stages;
   }
   
@@ -46,26 +60,8 @@ class ExamSessionManager extends GameSessionManager {
   bool shouldFinish() {
     return completedCount >= _totalStagesCount;
   }
-  
-  @override
-  void processStageResult(StageResult result) {
-    if (result.isCorrect) {
-      _correctCount++;
-    }
-    super.processStageResult(result);
-  }
-  
-  /// Generates Typed stage data using QuestionProvider.
-  TypedData _generateTypedData(LevelInfo level) {
-    final questionTyped = QuestionProvider.getTypedQuestion(level: level.levelNumber);
-    
-    return TypedData(
-      question: questionTyped.prompt,
-      correctAnswer: int.parse(questionTyped.correctAnswer),
-    );
-  }
 
-  /// Saves the exam result using ExamResultRepository.
+    /// Saves the exam result using ExamResultRepository.
   Future<void> saveExamResult(String? userId, LevelInfo? level) async {
     if (userId == null || level == null) {
       throw ArgumentError('userId and level must not be null when saving exam result.');
@@ -77,5 +73,13 @@ class ExamSessionManager extends GameSessionManager {
       totalStagesCount: _totalStagesCount,
       isFinished: isFinished,
     );
+
+    @override
+    void processStageResult(StageResult result) {
+    if (result.isCorrect) {
+      _correctCount++;
+    }
+    super.processStageResult(result);
+    }
   }
 }
