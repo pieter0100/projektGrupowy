@@ -122,7 +122,7 @@ class TypedScreenState extends State<TypedScreen> {
                               fillColor: const Color(0xFFD9D9D9),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 24.0,
-                                vertical: 26.0,
+                                vertical: 16.0,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16.0),
