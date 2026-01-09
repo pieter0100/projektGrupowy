@@ -7,10 +7,10 @@ class TypedScreen extends StatefulWidget {
   const TypedScreen({super.key});
 
   @override
-  _TypedScreenState createState() => _TypedScreenState();
+  TypedScreenState createState() => TypedScreenState();
 }
 
-class _TypedScreenState extends State<TypedScreen> {
+class TypedScreenState extends State<TypedScreen> {
   // manager
   //late final manager;
 
