@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/services/typed_game_engine.dart';
@@ -17,8 +19,8 @@ class TypedScreenState extends State<TypedScreen> {
   // engine
   final engine = TypedGameEngine(
     onComplete: (result) {
-      print('Correct: ${result.isCorrect}');
-      print('Answer: ${result.userAnswer}');
+      log('Correct: ${result.isCorrect}');
+      log('Answer: ${result.userAnswer}');
     },
   );
 
