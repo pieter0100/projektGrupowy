@@ -39,6 +39,10 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Node.js/NPM related
+node_modules/
+package-lock.json
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
