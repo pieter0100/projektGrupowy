@@ -83,31 +83,13 @@ final GoRouter _router = GoRouter(
       path: '/level/learn/practice/typedAnswer',
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
-        return TypedScreen(
-          level: int.parse(level),
-          isPracticeMode: true,
-        );
+        return TypedScreen(level: int.parse(level), isPracticeMode: true);
       },
-    ),
-
-    GoRoute(
-      path: '/level/learn/practice/MC',
-      builder: (context, state) {
-        return McScreen();
-      }
     ),    GoRoute(
-      path: '/level/learn/practice/typedAnswer',
+      path: '/level/learn/practice/MC',
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
-        return TypedScreen(
-          level: int.parse(level),
-          isPracticeMode: true,
-        );
-      },
-    ),    GoRoute(
-      path: '/level/learn/practice/MC',
-      builder: (context, state) {
-        return McScreen();
+        return McScreen(level: int.parse(level));
       },
     ),
 

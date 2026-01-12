@@ -6,7 +6,9 @@ import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
 class McScreen extends StatefulWidget {
-  const McScreen({super.key});
+  final int level;
+
+  const McScreen({super.key, required this.level});
 
   @override
   _McScreenState createState() => _McScreenState();
@@ -14,6 +16,7 @@ class McScreen extends StatefulWidget {
 
 class _McScreenState extends State<McScreen> {
   String question = "Loading...";
+  bool _isLocked = false;
 
   final engine = MCGameEngine(
     onComplete: (result) {
@@ -28,8 +31,7 @@ class _McScreenState extends State<McScreen> {
   void initState() {
     super.initState();
 
-    // TODO change static value
-    engine.initialize(3);
+    engine.initialize(widget.level);
 
     question = engine.question.prompt;
 
@@ -47,6 +49,8 @@ class _McScreenState extends State<McScreen> {
   }
 
   void onOptionSelected(int index) {
+    if (_isLocked) return; // Prevent multiple selections
+
     engine.selectOption(index);
 
     setState(() {
@@ -54,6 +58,15 @@ class _McScreenState extends State<McScreen> {
         cards[index].isMatched = true;
       } else {
         cards[index].isFailed = true;
+      }
+      _isLocked = true; // Lock further selections
+    });
+
+    // Show feedback for 1.5 seconds then proceed
+    Future.delayed(const Duration(milliseconds: 1500), () {
+      if (mounted) {
+        // For now, just go back
+        context.pop();
       }
     });
   }
@@ -106,16 +119,18 @@ class _McScreenState extends State<McScreen> {
                         children: [
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: GestureDetector(
+                            child: MatchPairsWidget(
+                              cards[0],
+                              isMatched: cards[0].isMatched,
                               onTap: () => onOptionSelected(0),
-                              child: MatchPairsWidget(cards[0]),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: GestureDetector(
+                            child: MatchPairsWidget(
+                              cards[1],
+                              isMatched: cards[1].isMatched,
                               onTap: () => onOptionSelected(1),
-                              child: MatchPairsWidget(cards[1]),
                             ),
                           ),
                         ],
@@ -125,16 +140,18 @@ class _McScreenState extends State<McScreen> {
                         children: [
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: GestureDetector(
+                            child: MatchPairsWidget(
+                              cards[2],
+                              isMatched: cards[2].isMatched,
                               onTap: () => onOptionSelected(2),
-                              child: MatchPairsWidget(cards[2]),
                             ),
                           ),
                           Container(
                             margin: EdgeInsets.all(20.0),
-                            child: GestureDetector(
+                            child: MatchPairsWidget(
+                              cards[3],
+                              isMatched: cards[3].isMatched,
                               onTap: () => onOptionSelected(3),
-                              child: MatchPairsWidget(cards[3]),
                             ),
                           ),
                         ],
