@@ -3,9 +3,15 @@ import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
+import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
+import 'package:projekt_grupowy/repositories/exam_result_repository.dart';
 
 class ExamSessionManager extends GameSessionManager {
+  final ExamResultRepository examResultRepository;
+
+  ExamSessionManager({ExamResultRepository? examResultRepository})
+      : examResultRepository = examResultRepository ?? ExamResultRepository();
   
   static const int _totalStagesCount = 10;
   
@@ -19,7 +25,7 @@ class ExamSessionManager extends GameSessionManager {
   }
   
   @override
-  void processStageResult(result) {
+  void processStageResult(StageResult result) {
     if (result.isCorrect == true) {
       _correctCount++;
     }
@@ -53,5 +59,19 @@ class ExamSessionManager extends GameSessionManager {
   @override
   bool shouldFinish() {
     return completedCount >= _totalStagesCount;
+  }
+
+    /// Saves the exam result using ExamResultRepository.
+  Future<void> saveExamResult(String? userId, LevelInfo? level) async {
+    if (userId == null || level == null) {
+      throw ArgumentError('userId and level must not be null when saving exam result.');
+    }
+    await examResultRepository.saveExamResult(
+      userId: userId,
+      level: level,
+      correctCount: correctCount,
+      totalStagesCount: _totalStagesCount,
+      isFinished: isFinished,
+    );
   }
 }
