@@ -79,7 +79,7 @@ final GoRouter _router = GoRouter(
       ],
     ),
 
-    GoRoute(
+     GoRoute(
       path: '/level/learn/practice/typedAnswer',
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
