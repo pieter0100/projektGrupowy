@@ -30,11 +30,21 @@ class TypedScreenState extends State<TypedScreen> {
   bool _isSkipHighlighted = false;
   String question = "Loading...";
 
+  // Feedback states
+  bool _showFeedback = false;
+  bool _isCorrect = false;
+  final TextEditingController _textController = TextEditingController();
   @override
   void initState() {
     super.initState();
     engine.initialize(widget.level);
     question = engine.question.prompt;
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    super.dispose();
   }
 
   void onSkip() {
@@ -58,8 +68,45 @@ class TypedScreenState extends State<TypedScreen> {
       }
     });
   }
+
   void onComplete(String value) {
+    if (value.trim().isEmpty) return;
+
+    // Get the result before submitting to engine
+    final userAnswer = int.tryParse(value.trim()) ?? 0;
+    final correctAnswer = int.parse(engine.question.correctAnswer);
+    final isCorrect = userAnswer == correctAnswer;
+
+    // Show visual feedback only in practice mode
+    if (widget.isPracticeMode) {
+      setState(() {
+        _showFeedback = true;
+        _isCorrect = isCorrect;
+      });
+    }
+
+    // Submit to engine
     engine.submitAnswer(value);
+
+    // Hide feedback after 1 second and move to next question
+    final delayDuration = widget.isPracticeMode
+        ? const Duration(seconds: 1)
+        : const Duration(milliseconds: 100); // Minimal delay for exam mode
+
+    Future.delayed(delayDuration, () {
+      if (mounted) {
+        setState(() {
+          _showFeedback = false;
+          _textController.clear();
+          // Update question for next round
+          question = engine.question.prompt;
+        });
+
+        // TEMPORARY: Navigate back to learn screen after answering
+        // TODO: Remove this and implement proper session flow
+        context.go('/level/learn?level=${widget.level}');
+      }
+    });
   }
 
   @override
@@ -104,6 +151,8 @@ class TypedScreenState extends State<TypedScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           TextField(
+                            controller: _textController,
+                            enabled: !_showFeedback, // Disable during feedback
                             style: const TextStyle(
                               color: Colors.black87,
                               fontSize: 25.0,
@@ -115,31 +164,52 @@ class TypedScreenState extends State<TypedScreen> {
                                 fontSize: 25.0,
                               ),
                               filled: true,
-                              fillColor: const Color(0xFFD9D9D9),
+                              fillColor: _showFeedback
+                                  ? (_isCorrect
+                                        ? Colors.green[100]
+                                        : Colors.red[100])
+                                  : const Color(0xFFD9D9D9),
                               contentPadding: const EdgeInsets.symmetric(
                                 horizontal: 24.0,
                                 vertical: 16.0,
                               ),
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16.0),
-                                borderSide: BorderSide.none,
+                                borderSide: _showFeedback
+                                    ? BorderSide(
+                                        color: _isCorrect
+                                            ? Colors.green
+                                            : Colors.red,
+                                        width: 3.0,
+                                      )
+                                    : BorderSide.none,
                               ),
                               enabledBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16.0),
-                                borderSide: BorderSide.none,
+                                borderSide: _showFeedback
+                                    ? BorderSide(
+                                        color: _isCorrect
+                                            ? Colors.green
+                                            : Colors.red,
+                                        width: 3.0,
+                                      )
+                                    : BorderSide.none,
                               ),
                               focusedBorder: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(16.0),
-                                borderSide: const BorderSide(
-                                  color: Color(0xFF7ED4DE),
+                                borderSide: BorderSide(
+                                  color: _showFeedback
+                                      ? (_isCorrect ? Colors.green : Colors.red)
+                                      : const Color(0xFF7ED4DE),
                                   width: 3.0,
                                 ),
                               ),
                             ),
-                            onSubmitted: onComplete,
+                            onSubmitted: _showFeedback ? null : onComplete,
                             textInputAction: TextInputAction.done,
                             cursorColor: Colors.grey[600],
-                          ),                          SizedBox(height: 20.0),
+                          ),
+                          SizedBox(height: 20.0),
                           if (widget.isPracticeMode)
                             Align(
                               alignment: Alignment.centerRight,
