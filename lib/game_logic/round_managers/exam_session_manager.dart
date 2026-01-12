@@ -25,7 +25,7 @@ class ExamSessionManager extends GameSessionManager {
   }
   
   @override
-  void processStageResult(result) {
+  void processStageResult(StageResult result) {
     if (result.isCorrect == true) {
       _correctCount++;
     }
@@ -73,13 +73,5 @@ class ExamSessionManager extends GameSessionManager {
       totalStagesCount: _totalStagesCount,
       isFinished: isFinished,
     );
-
-    @override
-    void processStageResult(StageResult result) {
-    if (result.isCorrect) {
-      _correctCount++;
-    }
-    super.processStageResult(result);
-    }
   }
 }
