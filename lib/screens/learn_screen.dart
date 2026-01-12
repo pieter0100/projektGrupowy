@@ -53,7 +53,7 @@ class LearnScreen extends StatelessWidget {
                   MenuItemButton(
                     child: const Text('Typed answer tryb'),
                     onPressed: () {
-                      context.push('/level/learn/practice/typedAnswer');
+                      context.push('/level/learn/practice/typedAnswer?level=$level');
                     },
                   ),
                 ],

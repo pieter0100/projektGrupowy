@@ -38,6 +38,7 @@ class TypedScreenState extends State<TypedScreen> {
 
   // question from provider
   String question = "Loading...";
+
   @override
   void initState() {
     super.initState();
