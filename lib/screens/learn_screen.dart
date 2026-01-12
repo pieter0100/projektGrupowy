@@ -38,26 +38,31 @@ class LearnScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              // MENUANCHRO for testing purpose TODO after clicking set random type of game
+              // MENUANCHOR for testing purpose TODO after clicking set random type of game
               MenuAnchor(
                 // Menu elements
                 menuChildren: [
                   MenuItemButton(
                     child: const Text('Memory tryb'),
-
                     onPressed: () {
                       context.go('/level/learn/practice?level=$level');
                     },
                   ),
-
+                  MenuItemButton(
+                    child: const Text('MC tryb'),
+                    onPressed: () {
+                      context.push('/level/learn/practice/MC?level=$level');
+                    },
+                  ),
                   MenuItemButton(
                     child: const Text('Typed answer tryb'),
                     onPressed: () {
-                      context.push('/level/learn/practice/typedAnswer?level=$level');
+                      context.push(
+                        '/level/learn/practice/typedAnswer?level=$level',
+                      );
                     },
                   ),
                 ],
-
                 // Practice widget
                 builder:
                     (
