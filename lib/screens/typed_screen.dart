@@ -6,7 +6,14 @@ import 'package:projekt_grupowy/services/typed_game_engine.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
 class TypedScreen extends StatefulWidget {
-  const TypedScreen({super.key});
+  final int level;
+  final bool isPracticeMode;
+
+  const TypedScreen({
+    super.key,
+    required this.level,
+    required this.isPracticeMode,
+  });
 
   @override
   TypedScreenState createState() => TypedScreenState();
@@ -31,13 +38,12 @@ class TypedScreenState extends State<TypedScreen> {
 
   // question from provider
   String question = "Loading...";
-
   @override
   void initState() {
     super.initState();
 
-    // TODO change static value
-    engine.initialize(3);
+    // Use level from widget parameter instead of hardcoded value
+    engine.initialize(widget.level);
 
     question = engine.question.prompt;
   }
