@@ -33,8 +33,8 @@ class TypedScreenState extends State<TypedScreen> {
 
   // boolean for conditional rendering hint under the input
   //bool isPracticeMode = true;
-
   String placeHolder = "Type the answer";
+  bool _isSkipHighlighted = false;
 
   // question from provider
   String question = "Loading...";
@@ -45,28 +45,35 @@ class TypedScreenState extends State<TypedScreen> {
 
     // Use level from widget parameter instead of hardcoded value
     engine.initialize(widget.level);
-
     question = engine.question.prompt;
   }
 
-  // onSkip() {
-  //   engine.skip();
+  void onSkip() {
+    // Check if skip is allowed (only in practice mode)
+    if (!widget.isPracticeMode) {
+      // In test/exam mode, skip is not allowed
+      return;
+    }
 
-  //   setState(() {
-  //     // TODO get the hint from provider and set placeholder with its value
-  //     placeHolder = "hint";
-  //   });
+    // Skip the question
+    engine.skip();
 
-  //   // Timer
-  //   Future.delayed(const Duration(seconds: 2), () {
-  //     // Mounted
-  //     if (mounted) {
-  //       setState(() {
-  //         placeHolder = "Type the answer";
-  //       });
-  //     }
-  //   });
-  // }
+    // Show highlight and correct answer
+    setState(() {
+      _isSkipHighlighted = true;
+      placeHolder = engine.question.correctAnswer;
+    });
+
+    // Reset placeholder and highlight after 3 seconds
+    Future.delayed(const Duration(seconds: 3), () {
+      if (mounted) {
+        setState(() {
+          _isSkipHighlighted = false;
+          placeHolder = "Type the answer";
+        });
+      }
+    });
+  }
 
   void onComplete(String value) {
     // check the answer
@@ -151,7 +158,27 @@ class TypedScreenState extends State<TypedScreen> {
                             textInputAction: TextInputAction.done,
                             cursorColor: Colors.grey[600],
                           ),
-                          SizedBox(height: 200.0),
+                          SizedBox(height: 20.0),
+                          // Don't know text - only show in practice mode, aligned to right
+                          if (widget.isPracticeMode)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: GestureDetector(
+                                onTap: onSkip,
+                                child: Text(
+                                  "Don't know?",
+                                  style: TextStyle(
+                                    fontSize: 16.0,
+                                    color: Colors.grey[600],
+                                    decoration: _isSkipHighlighted
+                                        ? TextDecoration.underline
+                                        : TextDecoration.none,
+                                    decorationColor: Colors.grey[600],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          SizedBox(height: 180.0),
                         ],
                       ),
                     ),
