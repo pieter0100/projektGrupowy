@@ -20,51 +20,35 @@ class TypedScreen extends StatefulWidget {
 }
 
 class TypedScreenState extends State<TypedScreen> {
-  // manager
-  //late final manager;
-
-  // engine
   final engine = TypedGameEngine(
     onComplete: (result) {
       log('Correct: ${result.isCorrect}');
       log('Answer: ${result.userAnswer}');
     },
   );
-
-  // boolean for conditional rendering hint under the input
-  //bool isPracticeMode = true;
   String placeHolder = "Type the answer";
   bool _isSkipHighlighted = false;
-
-  // question from provider
   String question = "Loading...";
 
   @override
   void initState() {
     super.initState();
-
-    // Use level from widget parameter instead of hardcoded value
     engine.initialize(widget.level);
     question = engine.question.prompt;
   }
 
   void onSkip() {
-    // Check if skip is allowed (only in practice mode)
     if (!widget.isPracticeMode) {
-      // In test/exam mode, skip is not allowed
       return;
     }
 
-    // Skip the question
     engine.skip();
 
-    // Show highlight and correct answer
     setState(() {
       _isSkipHighlighted = true;
       placeHolder = engine.question.correctAnswer;
     });
 
-    // Reset placeholder and highlight after 3 seconds
     Future.delayed(const Duration(seconds: 3), () {
       if (mounted) {
         setState(() {
@@ -74,9 +58,7 @@ class TypedScreenState extends State<TypedScreen> {
       }
     });
   }
-
   void onComplete(String value) {
-    // check the answer
     engine.submitAnswer(value);
   }
 
@@ -157,9 +139,7 @@ class TypedScreenState extends State<TypedScreen> {
                             onSubmitted: onComplete,
                             textInputAction: TextInputAction.done,
                             cursorColor: Colors.grey[600],
-                          ),
-                          SizedBox(height: 20.0),
-                          // Don't know text - only show in practice mode, aligned to right
+                          ),                          SizedBox(height: 20.0),
                           if (widget.isPracticeMode)
                             Align(
                               alignment: Alignment.centerRight,
