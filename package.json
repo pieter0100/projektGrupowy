@@ -5,10 +5,11 @@
   },
   "devDependencies": {
     "@types/jest": "^30.0.0",
+    "firebase-functions-test": "^3.4.1",
     "jest": "^30.2.0",
     "ts-jest": "^29.4.6"
   },
   "scripts": {
-  "test": "jest"
-}
+    "test": "jest"
+  }
 }
