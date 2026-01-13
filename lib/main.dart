@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
 
+import 'package:projekt_grupowy/screens/typed_screen.dart';
+import 'package:projekt_grupowy/screens/MC_screen.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -80,6 +82,20 @@ final GoRouter _router = GoRouter(
           ],
         ),
       ],
+    ),
+
+     GoRoute(
+      path: '/level/learn/practice/typedAnswer',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return TypedScreen(level: int.parse(level), isPracticeMode: true);
+      },
+    ),    GoRoute(
+      path: '/level/learn/practice/MC',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return McScreen(level: int.parse(level));
+      },
     ),
 
     GoRoute(

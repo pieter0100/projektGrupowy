@@ -29,12 +29,10 @@ Returns `true` when `completedCount >= 10`.
 ### `processStageResult(StageResult result)`
 Tracks correct answers for accuracy calculation.
 - If `result.isCorrect == true`: increments `_correctCount`
+- Calls `super.processStageResult(result)` for base functionality
 
-### `validateAnswer(dynamic userAnswer, {int? answerTime})`
-Convenience method that validates typed answers:
-- Handles both `int` and `String` inputs (uses `TypedValidator.parseAnswer()`)
-- Uses `TypedValidator.checkAnswer()` to validate
-- Returns `StageResult` or `null` if parsing/validation fails
+### Removed: `validateAnswer()`
+This method was removed from the implementation as answer validation is handled by the UI layer and result is passed as `StageResult` to `nextStage()`.
 
 ## Accuracy Tracking
 
@@ -51,11 +49,11 @@ Example: 7 correct out of 10 = 0.7 (70%)
 
 ## Stage Data Generation
 
-### `_generateTypedData(LevelInfo level, int stageIndex)`
-Generates Typed stage data:
-- TODO: Will use `TypedQuestionGenerator` (to be implemented)
-- Currently throws `UnimplementedError`
-- Will generate questions based on level configuration
+### `_generateTypedData(LevelInfo level)`
+Generates Typed stage data using QuestionProvider:
+- Uses `QuestionProvider.getTypedQuestion()` with level number
+- Returns `TypedData` with question prompt and correct answer
+- Generates questions based on the multiplication table corresponding to the level
 
 ## Acceptance Criteria
 

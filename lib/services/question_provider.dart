@@ -67,6 +67,24 @@ class QuestionProvider {
     );
   }
 
+  static List<QuestionTyped> getTypedQuestionsSet({
+    required int level,
+    int numberOfQuestions = 10,
+  }) {
+    final type = _levelToType(level);
+    final questions = <QuestionTyped>[];
+    for (int b = 1; b <= 10; b++) {
+      questions.add(
+        QuestionTyped(
+          prompt: '$type × $b =',
+          correctAnswer: (type * b).toString(),
+        ),
+      );
+    }
+    questions.shuffle();
+    return questions.take(numberOfQuestions).toList();
+  }
+
   static int _levelToType(int level) {
     if (level <= 0) return 1;
     return level.clamp(1, 10);
