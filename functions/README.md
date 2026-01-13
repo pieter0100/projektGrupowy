@@ -33,6 +33,22 @@
    firebase deploy --only functions
    ```
 
+5. **Testing functions locally:**
+   Since Jest is set up, you can run tests using:
+   ```
+   npm test
+   ```
+   If you haven't set up Jest yet, you can do so by installing it:
+   ```
+   npm install --save-dev jest @types/jest ts-jest
+   ```
+   
+   `npm test` will find all files with `.test.ts` or `.spec.ts` extensions and run the tests. If you want to run a specific test file, you can use:
+   ```
+   npx test functions/.test.ts
+   ```
+
 ## Notes
 - Functions are defined in `functions/index.ts`.
 - Update `firebase.json` if you change the functions source directory.
+
