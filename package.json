@@ -10,6 +10,7 @@
     "ts-jest": "^29.4.6"
   },
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "emulator": "firebase emulators:start --only firestore,functions"
   }
 }
