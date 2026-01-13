@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_core/firebase_core.dart';
+
 import 'package:projekt_grupowy/screens/typed_screen.dart';
 import 'package:projekt_grupowy/screens/MC_screen.dart';
 
@@ -22,6 +24,9 @@ void main() async {
 
   // Run tests
   await LocalSaves.testAllClasses();
+
+  // Initialize firebase
+  await Firebase.initializeApp();
 
   runApp(MyApp());
 }
