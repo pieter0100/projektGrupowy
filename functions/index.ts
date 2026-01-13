@@ -47,8 +47,28 @@ export const onResultWrite = functions.firestore
     // Update stats
     stats.totalPoints += result.score || 0;
     stats.totalGamesPlayed += 1;
-    // currentStreak, lastPlayedAt można rozbudować wg potrzeb
-    stats.lastPlayedAt = new Date().toISOString();
+
+    // Update currentStreak
+    const now = new Date();
+    const nowDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    let streak = 1;
+    if (stats.lastPlayedAt) {
+      const last = new Date(stats.lastPlayedAt);
+      const lastDay = new Date(last.getFullYear(), last.getMonth(), last.getDate());
+      const diffDays = Math.floor((nowDay.getTime() - lastDay.getTime()) / (1000 * 60 * 60 * 24));
+      if (diffDays === 0) {
+        // Played today, keep current
+        streak = stats.currentStreak;
+      } else if (diffDays === 1) {
+        // Played yesterday, increment streak
+        streak = stats.currentStreak + 1;
+      } else {
+        // Missed days, reset streak
+        streak = 1;
+      }
+    }
+    stats.currentStreak = streak;
+    stats.lastPlayedAt = now.toISOString();
 
     await userRef.update({ stats });
   });
