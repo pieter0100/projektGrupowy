@@ -1,24 +1,33 @@
 
+
 import * as functions from 'firebase-functions';
 import * as admin from 'firebase-admin';
 
 admin.initializeApp();
 const db = admin.firestore();
 
-// onUserCreate: Creates users/{uid} with username, email, creation_date, avatar_url (optional)
+// onUserCreate: Tworzy users/{uid}/profile, users/{uid}/stats, users/{uid}/settings
 export const onUserCreate = functions.auth.user().onCreate(async (user: admin.auth.UserRecord) => {
-  const { uid, email, displayName, photoURL, metadata } = user;
-  const userProfile = {
-    username: displayName || '',
-    email: email || '',
-    creation_date: metadata.creationTime || new Date().toISOString(),
-    avatar_url: photoURL || '',
-    // Add other default fields if needed
+  const { uid, displayName } = user;
+  // Profile
+  const profile = {
+    displayName: displayName || '',
+    age: null,
   };
-  await db.collection('users').doc(uid).set(userProfile);
+  // Stats
+  const stats = {
+    totalGamesPlayed: 0,
+    totalPoints: 0,
+    currentStreak: 0,
+    lastPlayedAt: null,
+  };
+  // Settings
+  const settings = {};
+
+  await db.collection('users').doc(uid).set({ profile, stats, settings });
 });
 
-// onResultWrite: Updates aggregates on CREATE only
+// onResultWrite: Ac users/{uid}/stats (nie podkolekcję)
 export const onResultWrite = functions.firestore
   .document('results/{resultId}')
   .onCreate(async (snap: functions.firestore.QueryDocumentSnapshot, context: functions.EventContext) => {
@@ -26,22 +35,22 @@ export const onResultWrite = functions.firestore
     const uid = result.uid;
     if (!uid) return;
 
-    const userStatsRef = db.collection('users').doc(uid).collection('stats').doc('aggregates');
-    const userStatsSnap = await userStatsRef.get();
-    let stats = userStatsSnap.exists && userStatsSnap.data() ? userStatsSnap.data() as any : {
-      totalScore: 0,
-      gamesPlayed: 0,
-      bestScore: 0,
-      totalTime: 0,
-      averageScore: 0,
+    const userRef = db.collection('users').doc(uid);
+    const userSnap = await userRef.get();
+    if (!userSnap.exists) return;
+    const userData = userSnap.data() || {};
+    const stats = userData.stats || {
+      totalGamesPlayed: 0,
+      totalPoints: 0,
+      currentStreak: 0,
+      lastPlayedAt: null,
     };
 
     // Update stats
-    stats.totalScore += result.score || 0;
-    stats.gamesPlayed += 1;
-    stats.bestScore = Math.max(stats.bestScore, result.score || 0);
-    stats.totalTime += result.time || 0;
-    stats.averageScore = stats.gamesPlayed > 0 ? stats.totalScore / stats.gamesPlayed : 0;
+    stats.totalPoints += result.score || 0;
+    stats.totalGamesPlayed += 1;
+    // currentStreak, lastPlayedAt można rozbudować wg potrzeb
+    stats.lastPlayedAt = new Date().toISOString();
 
-    await userStatsRef.set(stats);
+    await userRef.update({ stats });
   });
