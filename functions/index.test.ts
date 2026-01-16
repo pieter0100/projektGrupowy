@@ -1,35 +1,45 @@
+
 import * as admin from 'firebase-admin';
+import * as functionsTestLib from 'firebase-functions-test';
 import { onUserCreate, onResultWrite } from './index';
 
-describe('Cloud Functions', () => {
+const testEnv = functionsTestLib({
+  projectId: 'demo-project',
+});
+
+
+describe('Cloud Functions (emulator)', () => {
   beforeAll(() => {
+    process.env.FIRESTORE_EMULATOR_HOST = 'localhost:8080';
+    process.env.GCLOUD_PROJECT = 'demo-project';
     if (!admin.apps.length) {
       admin.initializeApp();
     }
   });
 
+  afterAll(() => {
+    testEnv.cleanup();
+  });
+
   it('should create user profile on user creation', async () => {
-    // Simulate user creation event
     const fakeUser = {
       uid: 'testuid',
-      email: 'test@example.com',
       displayName: 'TestUser',
-      photoURL: 'http://example.com/avatar.png',
-      metadata: { creationTime: new Date().toISOString() },
-    };
-    await onUserCreate(fakeUser as any);
+    } as any;
+    await testEnv.wrap(onUserCreate)(fakeUser);
     const userDoc = await admin.firestore().collection('users').doc('testuid').get();
     expect(userDoc.exists).toBe(true);
-    expect(userDoc.data()?.email).toBe('test@example.com');
+    expect(userDoc.data()?.profile.displayName).toBe('TestUser');
   });
 
   it('should update stats on result write', async () => {
-    const fakeSnap = {
-      data: () => ({ uid: 'testuid', score: 100, time: 60 }),
-    };
-    await onResultWrite(fakeSnap as any, {} as any);
-    const statsDoc = await admin.firestore().collection('users').doc('testuid').collection('stats').doc('aggregates').get();
-    expect(statsDoc.exists).toBe(true);
-    expect(statsDoc.data()?.gamesPlayed).toBeGreaterThan(0);
+    const fakeSnap = testEnv.firestore.makeDocumentSnapshot(
+      { uid: 'testuid', score: 100, time: 60 },
+      'results/testresultid'
+    );
+    await testEnv.wrap(onResultWrite)(fakeSnap, {});
+    const userDoc = await admin.firestore().collection('users').doc('testuid').get();
+    expect(userDoc.exists).toBe(true);
+    expect(userDoc.data()?.stats.totalGamesPlayed).toBeGreaterThan(0);
   });
 });
