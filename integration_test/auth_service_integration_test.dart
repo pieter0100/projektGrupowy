@@ -14,12 +14,13 @@ void main() {
   });
 
   testWidgets('register, sign in, and sign out (integration)', (WidgetTester tester) async {
-    final email = 'testuser${DateTime.now().millisecondsSinceEpoch}@example.com';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final email = 'testuser$timestamp@example.com';
     final password = 'TestPassword123!';
-    final username = 'TestUser';
+    final username = 'TestUser$timestamp';
 
     // Register
-    final user = await authService.register(email, password, username: username);
+    final user = await authService.register(email, password, username);
     expect(user, isNotNull);
 
     // Sign out
@@ -35,31 +36,34 @@ void main() {
   });
 
   testWidgets('register with existing email should fail', (WidgetTester tester) async {
-    final email = 'duplicateuser${DateTime.now().millisecondsSinceEpoch}@example.com';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final email = 'duplicateuser$timestamp@example.com';
     final password = 'TestPassword123!';
-    final username = 'TestUser';
+    final username1 = 'TestUser1_$timestamp';
+    final username2 = 'TestUser2_$timestamp';
 
     // Register first time
-    final user1 = await authService.register(email, password, username: username);
+    final user1 = await authService.register(email, password, username1);
     expect(user1, isNotNull);
 
-    // Register second time with same email
+    // Register second time with same email but different username
     try {
-      await authService.register(email, password, username: username);
+      await authService.register(email, password, username2);
       fail('Expected an exception for duplicate email');
     } catch (e) {
-      expect(e.toString(), contains('email-already-in-use'));
+      expect(e.toString().toLowerCase(), contains('already in use'));
     }
   });
 
   testWidgets('sign in with wrong password should fail', (WidgetTester tester) async {
-    final email = 'wrongpwuser${DateTime.now().millisecondsSinceEpoch}@example.com';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final email = 'wrongpwuser$timestamp@example.com';
     final password = 'TestPassword123!';
-    final wrongPassword = 'WrongPassword!';
-    final username = 'TestUser';
+    final wrongPassword = 'WrongPassword1!';
+    final username = 'TestUser$timestamp';
 
     // Register
-    final user = await authService.register(email, password, username: username);
+    final user = await authService.register(email, password, username);
     expect(user, isNotNull);
 
     // Try to sign in with wrong password
@@ -67,12 +71,16 @@ void main() {
       await authService.signIn(email, wrongPassword);
       fail('Expected an exception for wrong password');
     } catch (e) {
-      expect(e.toString(), contains('invalid-credential'));
+      expect(
+        e.toString().toLowerCase(),
+        anyOf(contains('incorrect'), contains('credential')),
+      );
     }
   });
 
   testWidgets('sign in with non-existent email should fail', (WidgetTester tester) async {
-    final email = 'nonexistent${DateTime.now().millisecondsSinceEpoch}@example.com';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final email = 'nonexistent$timestamp@example.com';
     final password = 'TestPassword123!';
 
     // Try to sign in with email that was never registered
@@ -80,29 +88,33 @@ void main() {
       await authService.signIn(email, password);
       fail('Expected an exception for user not found');
     } catch (e) {
-      expect(e.toString(), contains('invalid-credential'));
+      expect(
+        e.toString().toLowerCase(),
+        anyOf(contains('incorrect'), contains('credential')),
+      );
     }
   });
 
   testWidgets('onAuthStateChanged restores state after app restart', (WidgetTester tester) async {
-    final email = 'restartuser${DateTime.now().millisecondsSinceEpoch}@example.com';
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final email = 'restartuser$timestamp@example.com';
     final password = 'TestPassword123!';
-    final username = 'RestartUser';
+    final username = 'RestartUser$timestamp';
 
-    // Register and stay signed in
-    final user = await authService.register(email, password, username: username);
+    // Register and sign in
+    final user = await authService.register(email, password, username);
     expect(user, isNotNull);
 
-    // Simulate app restart by creating a new instance of AuthService
+    // Simulate app restart (reinitialize AuthService)
     final newAuthService = AuthService();
 
-    // Expect the stream to emit the signed-in user
+    // We expect the stream to emit the logged-in user
     expect(
       newAuthService.onAuthStateChanged,
       emits(predicate((u) => u is User && u.email == email)),
     );
 
-    // Sign out and reinitialize
+    // Sign out and expect the stream to emit null
     await newAuthService.signOut();
     final afterSignOutAuthService = AuthService();
     expect(afterSignOutAuthService.onAuthStateChanged, emits(null));
