@@ -65,7 +65,16 @@ class SyncService {
     final errors = <String, dynamic>{};
     for (var result in pending) {
       final ref = _firestore.collection('user_results').doc(result.sessionId);
-      batch.set(ref, result.toMap(), SetOptions(merge: true));
+      // Deduplication: check if document exists before adding to batch
+      final doc = await ref.get();
+      if (!doc.exists) {
+        batch.set(ref, result.toMap(), SetOptions(merge: true));
+      } else {
+        // Optionally, update if needed, or skip if duplicate
+        // batch.set(ref, result.toMap(), SetOptions(merge: true)); // If you want to always update
+        // For now, skip if duplicate
+        continue;
+      }
     }
     try {
       await batch.commit();
