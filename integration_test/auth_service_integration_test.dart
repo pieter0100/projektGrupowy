@@ -89,20 +89,20 @@ void main() {
     final password = 'TestPassword123!';
     final username = 'RestartUser';
 
-    // Rejestracja i logowanie
+    // Register and stay signed in
     final user = await authService.register(email, password, username: username);
     expect(user, isNotNull);
 
-    // Symulacja restartu aplikacji (ponowna inicjalizacja AuthService)
+    // Simulate app restart by creating a new instance of AuthService
     final newAuthService = AuthService();
 
-    // Oczekujemy, że stream odtworzy zalogowanego użytkownika
+    // Expect the stream to emit the signed-in user
     expect(
       newAuthService.onAuthStateChanged,
       emits(predicate((u) => u is User && u.email == email)),
     );
 
-    // Wylogowanie i ponowna inicjalizacja
+    // Sign out and reinitialize
     await newAuthService.signOut();
     final afterSignOutAuthService = AuthService();
     expect(afterSignOutAuthService.onAuthStateChanged, emits(null));
