@@ -164,5 +164,31 @@ void main() {
       expect(newer.syncPending, false);
       expect(older.syncPending, true); // or removed, depending on logic
     });
+
+    test('SyncService deduplication by sessionId: does not add duplicate if Firestore doc exists', () async {
+      final result = GameResult(
+        sessionId: 'dedupTest',
+        uid: 'u1',
+        timestamp: DateTime.now(),
+        stageResults: [],
+        score: 42,
+        gameType: 'MC',
+        syncPending: true,
+      );
+      when(resultsBox.values).thenReturn([result]);
+      // Simulate Firestore doc exists for this sessionId
+      when(docRef.get()).thenAnswer((_) async => _FakeDocSnapshot(exists: true));
+      when(batch.set(any, any, any)).thenReturn(null);
+      when(batch.commit()).thenAnswer((_) async => null);
+      await syncService.syncNow();
+      // Should NOT call batch.set since doc exists
+      verifyNever(batch.set(any, any, any));
+    });
   });
+}
+
+class _FakeDocSnapshot extends Mock implements DocumentSnapshot<Map<String, dynamic>> {
+  @override
+  final bool exists;
+  _FakeDocSnapshot({required this.exists});
 }
