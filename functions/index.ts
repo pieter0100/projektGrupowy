@@ -1,13 +1,16 @@
 import * as functions from 'firebase-functions/v1';
 import * as admin from 'firebase-admin';
 
-admin.initializeApp();
+// Initialize only if not already initialized (allows tests to initialize first)
+if (!admin.apps.length) {
+  admin.initializeApp();
+}
 const db = admin.firestore();
 
-// onUserCreate: Tworzy users/{uid}/profile, users/{uid}/stats, users/{uid}/settings
+// onUserCreate: Tworzy users/{uid} zgodnie z firebase_db_structure.md
 export const onUserCreate = functions.auth.user().onCreate(async (user: admin.auth.UserRecord) => {
   const { uid, displayName } = user;
-  // Profile
+  // Profile - only displayName and age as per structure
   const profile = {
     displayName: displayName || '',
     age: null,
@@ -22,7 +25,11 @@ export const onUserCreate = functions.auth.user().onCreate(async (user: admin.au
   // Settings
   const settings = {};
 
-  await db.collection('users').doc(uid).set({ profile, stats, settings });
+  await db.collection('users').doc(uid).set({ 
+    profile, 
+    stats, 
+    settings,
+  });
 });
 
 // onResultWrite: Ac users/{uid}/stats (nie podkolekcję)
