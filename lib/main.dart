@@ -18,9 +18,6 @@ void main() async {
   // Initialize Hive and all adapters
   await LocalSaves.init();
 
-  // Run tests
-  await LocalSaves.testAllClasses();
-
   runApp(MyApp());
 }
 
