@@ -1,46 +1,38 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/models/cards/card_item.dart';
-import 'package:projekt_grupowy/services/mc_game_engine.dart';
+import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
-import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
 class McScreen extends StatefulWidget {
-  final int level;
+  final MultipleChoiceData data;
+  final VoidCallback onSuccess;
 
-  const McScreen({super.key, required this.level});
+  const McScreen({
+    super.key,
+    required this.data,
+    required this.onSuccess,
+  });
 
   @override
-  _McScreenState createState() => _McScreenState();
+  State<McScreen> createState() => _McScreenState();
 }
 
 class _McScreenState extends State<McScreen> {
-  String question = "Loading...";
-  bool _isLocked = false;
-
-  final engine = MCGameEngine(
-    onComplete: (result) {
-      print('Correct: ${result.isCorrect}');
-      print('Answer: ${result.userAnswer}');
-    },
-  );
-
-  List<CardItem> cards = [];
+  late List<CardItem> cards;
+  bool _locked = false;
 
   @override
   void initState() {
     super.initState();
 
-    engine.initialize(widget.level);
+    cards = [];
 
-    question = engine.question.prompt;
-
-    for (var index = 0; index < engine.question.options.length; index++) {
+    for (var i = 0; i < widget.data.options.length; i++) {
       cards.add(
         CardItem(
-          id: "$index",
+          id: "$i",
           pairId: "-1",
-          value: engine.question.options[index],
+          value: widget.data.options[i].toString(),
           isMatched: false,
           isFailed: false,
         ),
@@ -48,121 +40,98 @@ class _McScreenState extends State<McScreen> {
     }
   }
 
-  void onOptionSelected(int index) {
-    if (_isLocked) return; // Prevent multiple selections
+  void _onOptionSelected(int index) {
+    if (_locked) return;
 
-    engine.selectOption(index);
+    final isCorrect = widget.data.options[index] == widget.data.correctAnswer;
 
     setState(() {
-      if (index == engine.correctIndex) {
+      if (isCorrect) {
         cards[index].isMatched = true;
       } else {
         cards[index].isFailed = true;
       }
-      _isLocked = true; // Lock further selections
+      _locked = true;
     });
 
-    // Show feedback for 1.5 seconds then proceed
-    Future.delayed(const Duration(milliseconds: 1500), () {
-      if (mounted) {
-        // For now, just go back
-        context.pop();
+    Future.delayed(const Duration(milliseconds: 1200), () {
+      if (!mounted) return;
+
+      if (isCorrect) {
+        widget.onSuccess();
+      } else {
+        setState(() {
+          cards[index].isFailed = false;
+          _locked = false;
+        });
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("(np Multiply x 2) dane z Question provider"),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => context.pop(), // akcja powrotu
+    return Column(
+      children: [
+        const SizedBox(height: 20),
+
+        Text(
+          "Choose the correct answer",
+          style: const TextStyle(fontSize: 30),
+          textAlign: TextAlign.center,
         ),
-        backgroundColor: Color(0xFFE5E5E5),
-      ),
-      body: Center(
-        child: Column(
-          children: [
-            Container(
-              margin: EdgeInsets.only(top: 20.0),
-              child: ProgressBarWidget(),
-            ),
-            Container(
-              margin: EdgeInsets.only(top: 10.0),
-              child: Text(
-                "Choose the correct \n answer",
-                style: TextStyle(fontSize: 30.0),
-                textAlign: TextAlign.center,
+
+        const SizedBox(height: 10),
+
+        Text(
+          widget.data.question,
+          style: const TextStyle(fontSize: 48),
+          textAlign: TextAlign.center,
+        ),
+
+        Expanded(
+          child: FittedBox(
+            alignment: Alignment.topCenter,
+            child: Padding(
+              padding: const EdgeInsets.only(
+                top: 10,
+                right: 40,
+                left: 40,
+                bottom: 100,
               ),
-            ),
-            Text(
-              question,
-              style: TextStyle(fontSize: 48.0),
-              textAlign: TextAlign.center,
-            ),
-            Expanded(
-              child: FittedBox(
-                alignment: AlignmentGeometry.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    top: 10.0,
-                    right: 40.0,
-                    left: 40.0,
-                    bottom: 100.0,
-                  ),
-                  child: Column(
+              child: Column(
+                children: [
+                  Row(
                     children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              cards[0],
-                              isMatched: cards[0].isMatched,
-                              onTap: () => onOptionSelected(0),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              cards[1],
-                              isMatched: cards[1].isMatched,
-                              onTap: () => onOptionSelected(1),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                            margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              cards[2],
-                              isMatched: cards[2].isMatched,
-                              onTap: () => onOptionSelected(2),
-                            ),
-                          ),
-                          Container(
-                            margin: EdgeInsets.all(20.0),
-                            child: MatchPairsWidget(
-                              cards[3],
-                              isMatched: cards[3].isMatched,
-                              onTap: () => onOptionSelected(3),
-                            ),
-                          ),
-                        ],
-                      ),
+                      _buildCard(0),
+                      const SizedBox(width: 40),
+                      _buildCard(1),
                     ],
                   ),
-                ),
+                  const SizedBox(height: 40),
+                  Row(
+                    children: [
+                      _buildCard(2),
+                      const SizedBox(width: 40),
+                      _buildCard(3),
+                    ],
+                  ),
+                ],
               ),
             ),
-          ],
+          ),
         ),
+      ],
+    );
+  }
+
+  Widget _buildCard(int index) {
+    return Container(
+      margin: const EdgeInsets.all(20),
+      child: MatchPairsWidget(
+        cards[index],
+        isMatched: cards[index].isMatched,
+        isSelected: false,
+        onTap: () => _onOptionSelected(index),
       ),
     );
   }

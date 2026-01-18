@@ -124,7 +124,7 @@ class TypedScreenState extends State<TypedScreen> {
         children: [
           Container(
             margin: EdgeInsets.only(top: 20.0),
-            child: ProgressBarWidget(),
+            //child: ProgressBarWidget(),
           ),
           Padding(
             padding: const EdgeInsets.all(30.0),

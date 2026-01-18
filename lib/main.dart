@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:projekt_grupowy/screens/typed_screen.dart';
-import 'package:projekt_grupowy/screens/MC_screen.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -14,19 +12,14 @@ import 'screens/practice_end_screen.dart';
 import 'game_logic/local_saves.dart';
 
 void main() async {
-  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Hive and all adapters
   await LocalSaves.init();
-
-  // Run tests
   await LocalSaves.testAllClasses();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-// router configuration
 final GoRouter _router = GoRouter(
   initialLocation: '/level',
   routes: [
@@ -35,9 +28,7 @@ final GoRouter _router = GoRouter(
         return ScaffoldWithNav(navigationShell: navigationShell);
       },
 
-      // branches definitiion
       branches: [
-        // --- BRANCH 1: LEVEL ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -47,7 +38,6 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- BRANCH 2: SZUKAJ ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -57,7 +47,6 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- BRANCH 3: PROFIL ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -67,7 +56,6 @@ final GoRouter _router = GoRouter(
           ],
         ),
 
-        // --- BRANCH 4: SETTINGS ---
         StatefulShellBranch(
           routes: [
             GoRoute(
@@ -79,20 +67,6 @@ final GoRouter _router = GoRouter(
       ],
     ),
 
-     GoRoute(
-      path: '/level/learn/practice/typedAnswer',
-      builder: (context, state) {
-        final level = state.uri.queryParameters['level'] ?? "1";
-        return TypedScreen(level: int.parse(level), isPracticeMode: true);
-      },
-    ),    GoRoute(
-      path: '/level/learn/practice/MC',
-      builder: (context, state) {
-        final level = state.uri.queryParameters['level'] ?? "1";
-        return McScreen(level: int.parse(level));
-      },
-    ),
-
     GoRoute(
       path: '/level/learn',
       builder: (context, state) {
@@ -100,6 +74,7 @@ final GoRouter _router = GoRouter(
         return LearnScreen(level: level);
       },
     ),
+
     GoRoute(
       path: '/level/learn/practice',
       builder: (context, state) {
@@ -107,6 +82,7 @@ final GoRouter _router = GoRouter(
         return PracticeScreen(level: level);
       },
     ),
+
     GoRoute(
       path: '/level/learn/practice/end',
       builder: (context, state) {
