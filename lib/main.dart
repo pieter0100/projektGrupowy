@@ -1,16 +1,23 @@
 import 'package:flutter/material.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+
 import 'app_router.dart';
 import 'game_logic/local_saves.dart';
 
 
 void main() async {
+  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
+  // Initialize Hive and all adapters
   await LocalSaves.init();
+  // Run tests
   await LocalSaves.testAllClasses();
 
-  runApp(const MyApp());
+  // Initialize firebase
+  await Firebase.initializeApp();
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {

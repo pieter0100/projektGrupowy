@@ -13,6 +13,7 @@ import 'package:projekt_grupowy/screens/match_pairs_screen.dart';
 import 'package:projekt_grupowy/screens/MC_screen.dart';
 
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 
 class PracticeScreen extends StatefulWidget {
   final String? level;
@@ -39,17 +40,18 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
     final int levelNum = int.tryParse(widget.level ?? '1') ?? 1;
 
-    final levelData = LevelInfo( 
-      levelNumber: levelNum, 
-      levelId: widget.level ?? "1", 
-      name: "Level $levelNum", 
-      description: "Practice multiplication", 
-      unlockRequirements: UnlockRequirements( 
-        minPoints: 0, 
-        previousLevelId: null, 
-      ), 
-      rewards: Rewards(points: 0), 
-      isRevision: false, );
+    final levelData = LevelInfo(
+      levelNumber: levelNum,
+      levelId: widget.level ?? "1",
+      name: "Level $levelNum",
+      description: "Practice multiplication",
+      unlockRequirements: UnlockRequirements(
+        minPoints: 0,
+        previousLevelId: null,
+      ),
+      rewards: Rewards(points: 0),
+      isRevision: false,
+    );
 
     sessionManager.start(levelData);
     setState(() => _initialized = true);
@@ -86,20 +88,27 @@ class _PracticeScreenState extends State<PracticeScreen> {
     }
 
     return Scaffold(
+      backgroundColor: AppColors.white,
+
       appBar: AppBar(
+        backgroundColor: AppColors.practiceAppBarBackground,
+        elevation: 0,
         title: Text(
           "Task ${sessionManager.completedCount + 1} / ${sessionManager.totalCount}",
+          style: AppTextStyles.practiceTitle,
         ),
         leading: IconButton(
-          icon: const Icon(Icons.close),
+          icon: const Icon(Icons.close, color: AppColors.practiceCloseIcon),
           onPressed: () => context.go('/level/learn?level=${widget.level}'),
         ),
       ),
+
       body: Column(
         children: [
-          const SizedBox(height: 10),
+          const SizedBox(height: AppSizes.practiceTopSpacing),
           ProgressBarWidget(value: sessionManager.getProgress()),
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSizes.practiceProgressSpacing),
+
           Expanded(
             child: _buildCurrentGame(currentStage),
           ),
@@ -137,5 +146,4 @@ class _PracticeScreenState extends State<PracticeScreen> {
         return const SizedBox.shrink();
     }
   }
-
 }

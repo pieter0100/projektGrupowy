@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
 import 'package:projekt_grupowy/game_logic/round_managers/exam_session_manager.dart';
@@ -110,24 +111,28 @@ class TypedScreenState extends State<TypedScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Exam: Typed Questions"),
+        title: const Text(
+          "Exam: Typed Questions",
+          style: AppTextStyles.typedTitle,
+        ),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
         ),
-        backgroundColor: const Color(0xFFE5E5E5),
+        backgroundColor: AppColors.typedAppBarBackground,
       ),
+
       body: Column(
         children: [
-          const SizedBox(height: 20),
+          const SizedBox(height: AppSizes.typedProgressTopMargin),
           ProgressBarWidget(value: session.getProgress()),
-          const SizedBox(height: 40),
+          const SizedBox(height: AppSizes.progressToTitleMargin),
 
           Padding(
-            padding: const EdgeInsets.all(30.0),
+            padding: const EdgeInsets.all(AppSizes.typedTitlePadding),
             child: const Text(
               'Type your answer',
-              style: TextStyle(fontSize: 30.0),
+              style: AppTextStyles.typedTitle,
             ),
           ),
 
@@ -138,49 +143,63 @@ class TypedScreenState extends State<TypedScreen> {
                   children: [
                     Text(
                       data.question,
-                      style: const TextStyle(fontSize: 48.0),
+                      style: AppTextStyles.typedQuestion,
                       textAlign: TextAlign.center,
                     ),
 
                     Padding(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 35.0,
-                        vertical: 40.0,
+                      padding: const EdgeInsetsDirectional.only(
+                        start: AppSizes.typedFieldPaddingStart,
+                        end: AppSizes.typedFieldPaddingEnd,
+                        top: AppSizes.typedFieldPaddingTop,
+                        bottom: AppSizes.typedFieldPaddingBottom,
                       ),
                       child: TextField(
                         controller: _textController,
                         enabled: !_showFeedback,
-                        style: const TextStyle(
-                          color: Colors.black87,
-                          fontSize: 25.0,
-                        ),
+                        style: AppTextStyles.typedInput,
                         decoration: InputDecoration(
                           hintText: "Type the answer",
+                          hintStyle: const TextStyle(
+                            color: AppColors.typedHint,
+                            fontSize: AppSizes.typedInputFontSize,
+                          ),
                           filled: true,
                           fillColor: _showFeedback
                               ? (_isCorrect
-                                  ? Colors.green[100]
-                                  : Colors.red[100])
-                              : const Color(0xFFD9D9D9),
+                                  ? AppColors.typedInputCorrect
+                                  : AppColors.typedInputWrong)
+                              : AppColors.typedInputDefault,
                           contentPadding: const EdgeInsets.symmetric(
-                            horizontal: 24.0,
-                            vertical: 16.0,
+                            horizontal: AppSizes.typedInputPaddingH,
+                            vertical: AppSizes.typedInputPaddingV,
                           ),
                           border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(16.0),
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.typedInputBorderRadius,
+                            ),
                             borderSide: _showFeedback
                                 ? BorderSide(
                                     color: _isCorrect
-                                        ? Colors.green
-                                        : Colors.red,
-                                    width: 3.0,
+                                        ? AppColors.typedBorderCorrect
+                                        : AppColors.typedBorderWrong,
+                                    width: AppSizes.typedInputBorderWidth,
                                   )
                                 : BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(
+                              AppSizes.typedInputBorderRadius,
+                            ),
+                            borderSide: BorderSide(
+                              color: AppColors.typedFocusedBorder,
+                              width: AppSizes.typedInputBorderWidth,
+                            ),
                           ),
                         ),
                         onSubmitted: _showFeedback ? null : onComplete,
                         textInputAction: TextInputAction.done,
-                        cursorColor: Colors.grey[600],
+                        cursorColor: AppColors.typedHint,
                       ),
                     ),
                   ],

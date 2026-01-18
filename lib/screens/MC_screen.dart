@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
+
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
@@ -72,19 +74,19 @@ class _McScreenState extends State<McScreen> {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        const SizedBox(height: 20),
+        const SizedBox(height: AppSizes.mcProgressTopMargin),
 
         Text(
           "Choose the correct answer",
-          style: const TextStyle(fontSize: 30),
+          style: AppTextStyles.mcTitle,
           textAlign: TextAlign.center,
         ),
 
-        const SizedBox(height: 10),
+        const SizedBox(height: AppSizes.mcTitleTopMargin),
 
         Text(
           widget.data.question,
-          style: const TextStyle(fontSize: 48),
+          style: AppTextStyles.mcQuestion,
           textAlign: TextAlign.center,
         ),
 
@@ -93,25 +95,25 @@ class _McScreenState extends State<McScreen> {
             alignment: Alignment.topCenter,
             child: Padding(
               padding: const EdgeInsets.only(
-                top: 10,
-                right: 40,
-                left: 40,
-                bottom: 100,
+                top: AppSizes.mcPaddingTop,
+                right: AppSizes.mcPaddingHorizontal,
+                left: AppSizes.mcPaddingHorizontal,
+                bottom: AppSizes.mcPaddingBottom,
               ),
               child: Column(
                 children: [
                   Row(
                     children: [
                       _buildCard(0),
-                      const SizedBox(width: 40),
+                      const SizedBox(width: AppSizes.mcCardMargin),
                       _buildCard(1),
                     ],
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: AppSizes.mcCardMargin),
                   Row(
                     children: [
                       _buildCard(2),
-                      const SizedBox(width: 40),
+                      const SizedBox(width: AppSizes.mcCardMargin),
                       _buildCard(3),
                     ],
                   ),
@@ -126,7 +128,7 @@ class _McScreenState extends State<McScreen> {
 
   Widget _buildCard(int index) {
     return Container(
-      margin: const EdgeInsets.all(20),
+      margin: const EdgeInsets.all(AppSizes.mcCardMargin),
       child: MatchPairsWidget(
         cards[index],
         isMatched: cards[index].isMatched,
