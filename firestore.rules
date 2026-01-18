@@ -59,16 +59,15 @@ service cloud.firestore {
       // Prevent deletion
       allow delete: if false;
     }
-    
-    // Levels collection - read-only for all authenticated users
+      // Levels collection - public read access, server-only write  
     match /levels/{levelId} {
-      allow read: if isAuthenticated();
+      allow read: if true; // Public data - no authentication required
       allow write: if false; // Only admins can write (handled by Cloud Functions)
     }
     
-    // Leaderboards - read-only for all authenticated users
+    // Leaderboards - public read access, server-only write
     match /leaderboards/{leaderboardId} {
-      allow read: if isAuthenticated();
+      allow read: if true; // Public data - no authentication required
       allow write: if false; // Only Cloud Functions can update leaderboards
     }
     
