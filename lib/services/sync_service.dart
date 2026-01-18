@@ -209,8 +209,29 @@ class SyncService {
   }
 
   // Legacy method for compatibility (now calls processQueue)
-  Future<void> syncNow() async {
-    await processQueue();
+  Future<void> syncNow({String? reason, Duration? timeout}) async {
+    final contextReason = reason ?? "manual/unknown";
+    log('🔄 Sync triggered. Reason: $contextReason');
+
+    // Create the future task
+    final syncTask = processQueue();
+
+    if (timeout != null) {
+      try {
+        // Execute with timeout
+        await syncTask.timeout(timeout);
+      } on TimeoutException {
+        log('⚠️ Sync timed out (Reason: $contextReason). Proceeding without completing sync.');
+        // We catch and suppress the TimeoutException so the caller (Logout) 
+        // doesn't crash and can proceed to sign out.
+      } catch (e) {
+        log('❌ Sync error during $contextReason: $e');
+        // Depending on strictness, you might want to rethrow or just log.
+      }
+    } else {
+      // Execute normally (no timeout)
+      await syncTask;
+    }
   }
 
   // Sync a single result (called from processQueue)
