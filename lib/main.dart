@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-
-import 'app_router.dart'; 
+import 'app_router.dart';
 import 'game_logic/local_saves.dart';
 
 void main() async {
@@ -11,13 +11,11 @@ void main() async {
 
   // Initialize Hive and all adapters
   await LocalSaves.init();
-
   // Run tests
   await LocalSaves.testAllClasses();
 
   // Initialize firebase
-  await Firebase.initializeApp();
-
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   runApp(MyApp());
 }
 

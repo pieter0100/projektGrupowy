@@ -27,6 +27,26 @@ Firestore Database
 │   │       └── ...
 │   └── ...
 │
+├── user_results/
+│   ├── {sessionId}/
+│   │   ├── uid
+│   │   ├── timestamp
+│   │   ├── stageResults
+│   │   ├── score
+│   │   ├── gameType
+│   │   └── ... (inne pola wyniku)
+│   └── ...
+│
+├── game_progress/
+│   ├── {sessionId}/
+│   │   ├── uid
+│   │   ├── gameId
+│   │   ├── completedCount
+│   │   ├── totalCount
+│   │   ├── lastUpdated
+│   │   └── ... (inne pola postępu)
+│   └── ...
+│
 ├── levels/
 │   ├── {levelId}/
 │   │   ├── levelNumber
@@ -38,12 +58,12 @@ Firestore Database
 │   └── ...
 │
 └── leaderboards/
-    ├── global/
-    │   ├── entries[]: [ { playerId, playerName, streak, dateAchieved } ]
-    │   └── lastUpdated
-    └── level_{levelId}/
-        ├── entries[]: [ { playerId, playerName, streak, dateAchieved } ]
-        └── lastUpdated
+  ├── global/
+  │   ├── entries[]: [ { playerId, playerName, streak, dateAchieved } ]
+  │   └── lastUpdated
+  └── level_{levelId}/
+    ├── entries[]: [ { playerId, playerName, streak, dateAchieved } ]
+    └── lastUpdated
 ```
 
 ## 3. Zasady
@@ -82,7 +102,28 @@ Firestore Database
 }
 ```
 
----
+
+## 6. user_results (user_results/{sessionId})
+```json
+{
+  "uid": "user1",
+  "timestamp": "2025-12-31T12:00:00Z",
+  "stageResults": [ ... ],
+  "score": 15,
+  "gameType": "MC"
+}
+```
+
+## 7. game_progress (game_progress/{sessionId})
+```json
+{
+  "uid": "user1",
+  "gameId": "gameA",
+  "completedCount": 5,
+  "totalCount": 10,
+  "lastUpdated": "2025-12-31T12:00:00Z"
+}
+```
 
 **Note:**
 - Firestore does not enforce a schema – your application must follow it in code.
