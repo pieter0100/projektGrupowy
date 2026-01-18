@@ -15,6 +15,7 @@ import 'package:firebase_auth/firebase_auth.dart';
   WriteBatch,
   CollectionReference<Map<String, dynamic>>,
   DocumentReference<Map<String, dynamic>>,
+  DocumentSnapshot<Map<String, dynamic>>,
   FirebaseAuth,
   User,
 ])
@@ -176,19 +177,62 @@ void main() {
         syncPending: true,
       );
       when(resultsBox.values).thenReturn([result]);
-      // Simulate Firestore doc exists for this sessionId
-      when(docRef.get()).thenAnswer((_) async => _FakeDocSnapshot(exists: true));
+      // Use existing MockDocumentReference and stub get()
+      final mockSnapshot = MockDocumentSnapshot<Map<String, dynamic>>();
+      when(mockSnapshot.exists).thenReturn(true);
+      when(docRef.get()).thenAnswer((_) async => mockSnapshot);
       when(batch.set(any, any, any)).thenReturn(null);
       when(batch.commit()).thenAnswer((_) async => null);
       await syncService.syncNow();
       // Should NOT call batch.set since doc exists
       verifyNever(batch.set(any, any, any));
     });
+
+    test('SyncService progress sync: only sync if local lastUpdated is newer than Firestore', () async {
+      final now = DateTime.now();
+      final localNewer = GameProgress(
+        sessionId: 'conflict1',
+        uid: 'u5',
+        gameId: 'g2',
+        completedCount: 3,
+        totalCount: 5,
+        lastUpdated: now,
+        syncPending: true,
+      );
+      final localOlder = GameProgress(
+        sessionId: 'conflict2',
+        uid: 'u6',
+        gameId: 'g3',
+        completedCount: 2,
+        totalCount: 5,
+        lastUpdated: now.subtract(Duration(minutes: 10)),
+        syncPending: true,
+      );
+      when(progressBox.values).thenReturn([localNewer, localOlder]);
+      // Firestore doc: remote lastUpdated is older for conflict1, newer for conflict2
+      final remoteOlder = {'lastUpdated': now.subtract(Duration(minutes: 5)).toIso8601String()};
+      final remoteNewer = {'lastUpdated': now.toIso8601String()};
+      // Create separate MockDocumentReference instances for each sessionId
+      final docRef1 = MockDocumentReference<Map<String, dynamic>>();
+      final docRef2 = MockDocumentReference<Map<String, dynamic>>();
+      final mockSnapshotNewer = MockDocumentSnapshot<Map<String, dynamic>>();
+      when(mockSnapshotNewer.exists).thenReturn(true);
+      when(mockSnapshotNewer.data()).thenReturn(remoteOlder);
+      final mockSnapshotOlder = MockDocumentSnapshot<Map<String, dynamic>>();
+      when(mockSnapshotOlder.exists).thenReturn(true);
+      when(mockSnapshotOlder.data()).thenReturn(remoteNewer);
+      // Stub collection().doc() to return different refs for different sessionIds
+      when(collectionRef.doc('conflict1')).thenReturn(docRef1);
+      when(collectionRef.doc('conflict2')).thenReturn(docRef2);
+      when(docRef1.get()).thenAnswer((_) async => mockSnapshotNewer);
+      when(docRef2.get()).thenAnswer((_) async => mockSnapshotOlder);
+      when(batch.set(any, any, any)).thenReturn(null);
+      when(batch.commit()).thenAnswer((_) async => null);
+      await syncService.syncNow();
+      // Should sync localNewer (since local is newer), skip localOlder (since remote is newer)
+      verify(batch.set(any, any, any)).called(1);
+    });
   });
 }
 
-class _FakeDocSnapshot extends Mock implements DocumentSnapshot<Map<String, dynamic>> {
-  @override
-  final bool exists;
-  _FakeDocSnapshot({required this.exists});
-}
+
