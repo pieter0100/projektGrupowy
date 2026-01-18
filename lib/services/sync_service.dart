@@ -24,11 +24,75 @@ class SyncService {
 
   SyncService(this._store, this._firestore, this._auth, [this._queueBox]);
 
+  /// -----------------------------------------------------------------------
+  /// BOOTSTRAP AFTER LOGIN
+  /// -----------------------------------------------------------------------
+  Future<void> bootstrapAfterLogin() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      log('Bootstrap skipped: No user logged in');
+      return;
+    }
+
+    log('Starting bootstrap for user: ${user.uid}');
+
+    try {
+      // 1. Równoległe pobieranie z dwóch kolekcji dla szybkości
+      // UWAGA: Upewnij się, że w Firestore pole z ID użytkownika nazywa się 'uid'.
+      // Jeśli nazywa się np. 'userId', zmień poniżej 'uid' na 'userId'.
+      final resultsFuture = _firestore
+          .collection('user_results')
+          .where('uid', isEqualTo: user.uid)
+          .get();
+
+      final progressFuture = _firestore
+          .collection('game_progress')
+          .where('uid', isEqualTo: user.uid)
+          .get();
+
+      // Czekamy, aż oba zapytania się wykonają
+      final snapshots = await Future.wait([resultsFuture, progressFuture]);
+      final resultsSnap = snapshots[0];
+      final progressSnap = snapshots[1];
+
+      // 2. Importowanie wyników do bazy lokalnej
+      int newResults = 0;
+      for (var doc in resultsSnap.docs) {
+        final data = doc.data();
+        // Wywołujemy nową metodę z OfflineStore (tę, która ustawia isSynced = true)
+        await _store.importResultFromCloud(data);
+        newResults++;
+      }
+
+      // 3. Importowanie postępów do bazy lokalnej
+      int newProgress = 0;
+      for (var doc in progressSnap.docs) {
+        final data = doc.data();
+        await _store.importProgressFromCloud(data);
+        newProgress++;
+      }
+
+      log(
+        'Bootstrap completed. Imported $newResults results and $newProgress progress items.',
+      );
+
+      // 4. Po pobraniu świeżych danych, wyzwalamy wysyłkę tego, co ewentualnie czeka lokalnie
+      triggerSync();
+    } catch (e) {
+      log('Bootstrap error: $e');
+      _errorLog.add({
+        'type': 'bootstrap',
+        'error': e.toString(),
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+      // Nie rzucamy błędu dalej, żeby nie zablokować UI po logowaniu
+    }
+  }
 
   Future<void> start() async {
     // Initialize queue persistence
     await _initQueuePersistence();
-    
+
     _timer?.cancel();
     _timer = Timer.periodic(Duration(minutes: 15), (_) => processQueue());
     // Real connectivity listener: triggers sync on network change (offline→online)
@@ -51,7 +115,8 @@ class SyncService {
   Future<void> _initQueuePersistence() async {
     _queueBox ??= await Hive.openBox('sync_queue');
     // Load existing queue from persistence
-    final persistedQueue = _queueBox?.get('queue', defaultValue: <dynamic>[]) as List<dynamic>;
+    final persistedQueue =
+        _queueBox?.get('queue', defaultValue: <dynamic>[]) as List<dynamic>;
     for (var item in persistedQueue) {
       if (item is Map<String, dynamic>) {
         _syncQueue.add(SyncQueueItem.fromMap(item));
@@ -68,7 +133,8 @@ class SyncService {
   // Process queue in batches (called periodically or on network change)
   Future<void> processQueue() async {
     if (_isSyncing) return;
-    if (_auth.currentUser == null) return; // Requirement: sync only with active Firebase Auth session
+    if (_auth.currentUser == null)
+      return; // Requirement: sync only with active Firebase Auth session
     _isSyncing = true;
     try {
       // Process up to _batchSize items from queue
@@ -96,12 +162,18 @@ class SyncService {
   // Sync a single queue item
   Future<void> _syncItem(SyncQueueItem item) async {
     if (item.type == 'result') {
-      final result = _store.getPendingResults().where((r) => r.sessionId == item.sessionId).firstOrNull;
+      final result = _store
+          .getPendingResults()
+          .where((r) => r.sessionId == item.sessionId)
+          .firstOrNull;
       if (result != null) {
         await _syncSingleResult(result);
       }
     } else if (item.type == 'progress') {
-      final progress = _store.getPendingProgress().where((p) => p.sessionId == item.sessionId).firstOrNull;
+      final progress = _store
+          .getPendingProgress()
+          .where((p) => p.sessionId == item.sessionId)
+          .firstOrNull;
       if (progress != null) {
         await _syncSingleProgress(progress);
       }
@@ -145,8 +217,11 @@ class SyncService {
       if (doc.exists) {
         final remote = doc.data();
         if (remote != null && remote['lastUpdated'] != null) {
-          final remoteLastUpdated = DateTime.tryParse(remote['lastUpdated'].toString());
-          if (remoteLastUpdated != null && progress.lastUpdated.isBefore(remoteLastUpdated)) {
+          final remoteLastUpdated = DateTime.tryParse(
+            remote['lastUpdated'].toString(),
+          );
+          if (remoteLastUpdated != null &&
+              progress.lastUpdated.isBefore(remoteLastUpdated)) {
             // Local is older, skip sync
             return;
           }
@@ -166,6 +241,7 @@ class SyncService {
       rethrow;
     }
   }
+
   // Enqueue a specific item for sync (called after local save)
   Future<void> enqueueItem(String sessionId, String type, String uid) async {
     final item = SyncQueueItem(
@@ -183,7 +259,7 @@ class SyncService {
   void onSignedOut() {
     stop(); // Requirement: stop immediately on sign out
   }
-  
+
   // Call this on app start or profile screen entry
   Future<void> triggerSync() async {
     await processQueue(); // Process existing queue, not sync everything immediately
@@ -191,7 +267,7 @@ class SyncService {
 
   // For testing or diagnostics: get error log
   List<Map<String, dynamic>> getErrorLog() => List.unmodifiable(_errorLog);
-  
+
   // For testing or diagnostics: get queue
   List<SyncQueueItem> getQueue() => List.unmodifiable(_syncQueue);
 }
