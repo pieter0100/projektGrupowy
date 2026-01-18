@@ -22,10 +22,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'offline_and_sync_service_test.mocks.dart';
 
 void main() {
-
+  TestWidgetsFlutterBinding.ensureInitialized();
+  
   group('OfflineStore & SyncService', () {
     late MockBox resultsBox;
     late MockBox progressBox;
+    late MockBox queueBox;
     late OfflineStore store;
     late MockFirebaseFirestore firestore;
     late MockWriteBatch batch;
@@ -35,9 +37,10 @@ void main() {
     late MockFirebaseAuth auth;
     late MockUser user;
 
-    setUp(() {
+    setUp(() async {
       resultsBox = MockBox();
       progressBox = MockBox();
+      queueBox = MockBox();
       store = OfflineStore(resultsBox, progressBox);
       firestore = MockFirebaseFirestore();
       batch = MockWriteBatch();
@@ -49,7 +52,14 @@ void main() {
       when(firestore.batch()).thenReturn(batch);
       when(firestore.collection(any)).thenReturn(collectionRef);
       when(collectionRef.doc(any)).thenReturn(docRef);
-      syncService = SyncService(store, firestore, auth);
+      // Mock queue box for persistence
+      when(queueBox.get('queue', defaultValue: anyNamed('defaultValue'))).thenReturn([]);
+      when(queueBox.put(any, any)).thenAnswer((_) async => null);
+      
+      // Inject mock queueBox to avoid Hive.openBox() call
+      syncService = SyncService(store, firestore, auth, queueBox);
+      await syncService.start();
+      
       when(resultsBox.values).thenReturn([]);
       when(progressBox.values).thenReturn([]);
     });
@@ -103,13 +113,17 @@ void main() {
       );
       await store.saveResult(result);
       expect(result.syncPending, true);
+      // Enqueue the item
+      await syncService.enqueueItem('s2', 'result', 'u2');
       when(resultsBox.values).thenReturn([result]);
-      when(batch.set(any, any, any)).thenReturn(null);
-      when(batch.commit()).thenAnswer((_) async => null);
+      final mockSnapshot = MockDocumentSnapshot<Map<String, dynamic>>();
+      when(mockSnapshot.exists).thenReturn(false);
+      when(docRef.get()).thenAnswer((_) async => mockSnapshot);
+      when(docRef.set(any, any)).thenAnswer((_) async => null);
       when(resultsBox.get('s2')).thenReturn(result);
-      await syncService.syncNow();
+      await syncService.processQueue();
       expect(result.syncPending, false);
-      verify(batch.set(any, any, any)).called(1);
+      verify(docRef.set(any, any)).called(1);
     });
 
     test('sync retries on failure (flapping network)', () async {
@@ -122,18 +136,22 @@ void main() {
         gameType: 'MC',
         syncPending: true,
       );
+      await syncService.enqueueItem('s3', 'result', 'u3');
       when(resultsBox.values).thenReturn([result]);
-      when(batch.set(any, any, any)).thenReturn(null);
-      when(batch.commit()).thenThrow(Exception('network error'));
+      final mockSnapshot = MockDocumentSnapshot<Map<String, dynamic>>();
+      when(mockSnapshot.exists).thenReturn(false);
+      when(docRef.get()).thenAnswer((_) async => mockSnapshot);
+      when(docRef.set(any, any)).thenThrow(Exception('network error'));
 
       // First sync attempt: should not throw, but syncPending remains true
-      await syncService.syncNow();
+      await syncService.processQueue();
       expect(result.syncPending, true);
 
       // Simulate network recovery: next sync attempt succeeds
-      when(batch.commit()).thenAnswer((_) async => null);
+      await syncService.enqueueItem('s3', 'result', 'u3');
+      when(docRef.set(any, any)).thenAnswer((_) async => null);
       when(resultsBox.get('s3')).thenReturn(result);
-      await syncService.syncNow();
+      await syncService.processQueue();
       expect(result.syncPending, false);
     });
 
@@ -157,13 +175,16 @@ void main() {
         lastUpdated: now,
         syncPending: true,
       );
+      await syncService.enqueueItem('s4', 'progress', 'u4');
       when(progressBox.values).thenReturn([older, newer]);
-      when(batch.set(any, any, any)).thenReturn(null);
-      when(batch.commit()).thenAnswer((_) async => null);
+      final mockSnapshot = MockDocumentSnapshot<Map<String, dynamic>>();
+      when(mockSnapshot.exists).thenReturn(false);
+      when(docRef.get()).thenAnswer((_) async => mockSnapshot);
+      when(docRef.set(any, any)).thenAnswer((_) async => null);
       when(progressBox.get('s4')).thenReturn(newer);
-      await syncService.syncNow();
+      await syncService.processQueue();
       expect(newer.syncPending, false);
-      expect(older.syncPending, true); // or removed, depending on logic
+      expect(older.syncPending, true);
     });
 
     test('SyncService deduplication by sessionId: does not add duplicate if Firestore doc exists', () async {
@@ -176,16 +197,13 @@ void main() {
         gameType: 'MC',
         syncPending: true,
       );
+      await syncService.enqueueItem('dedupTest', 'result', 'u1');
       when(resultsBox.values).thenReturn([result]);
-      // Use existing MockDocumentReference and stub get()
       final mockSnapshot = MockDocumentSnapshot<Map<String, dynamic>>();
       when(mockSnapshot.exists).thenReturn(true);
       when(docRef.get()).thenAnswer((_) async => mockSnapshot);
-      when(batch.set(any, any, any)).thenReturn(null);
-      when(batch.commit()).thenAnswer((_) async => null);
-      await syncService.syncNow();
-      // Should NOT call batch.set since doc exists
-      verifyNever(batch.set(any, any, any));
+      await syncService.processQueue();
+      verifyNever(docRef.set(any, any));
     });
 
     test('SyncService progress sync: only sync if local lastUpdated is newer than Firestore', () async {
@@ -208,11 +226,11 @@ void main() {
         lastUpdated: now.subtract(Duration(minutes: 10)),
         syncPending: true,
       );
+      await syncService.enqueueItem('conflict1', 'progress', 'u5');
+      await syncService.enqueueItem('conflict2', 'progress', 'u6');
       when(progressBox.values).thenReturn([localNewer, localOlder]);
-      // Firestore doc: remote lastUpdated is older for conflict1, newer for conflict2
       final remoteOlder = {'lastUpdated': now.subtract(Duration(minutes: 5)).toIso8601String()};
       final remoteNewer = {'lastUpdated': now.toIso8601String()};
-      // Create separate MockDocumentReference instances for each sessionId
       final docRef1 = MockDocumentReference<Map<String, dynamic>>();
       final docRef2 = MockDocumentReference<Map<String, dynamic>>();
       final mockSnapshotNewer = MockDocumentSnapshot<Map<String, dynamic>>();
@@ -221,16 +239,15 @@ void main() {
       final mockSnapshotOlder = MockDocumentSnapshot<Map<String, dynamic>>();
       when(mockSnapshotOlder.exists).thenReturn(true);
       when(mockSnapshotOlder.data()).thenReturn(remoteNewer);
-      // Stub collection().doc() to return different refs for different sessionIds
       when(collectionRef.doc('conflict1')).thenReturn(docRef1);
       when(collectionRef.doc('conflict2')).thenReturn(docRef2);
       when(docRef1.get()).thenAnswer((_) async => mockSnapshotNewer);
       when(docRef2.get()).thenAnswer((_) async => mockSnapshotOlder);
-      when(batch.set(any, any, any)).thenReturn(null);
-      when(batch.commit()).thenAnswer((_) async => null);
-      await syncService.syncNow();
-      // Should sync localNewer (since local is newer), skip localOlder (since remote is newer)
-      verify(batch.set(any, any, any)).called(1);
+      when(docRef1.set(any, any)).thenAnswer((_) async => null);
+      when(progressBox.get('conflict1')).thenReturn(localNewer);
+      await syncService.processQueue();
+      verify(docRef1.set(any, any)).called(1);
+      verifyNever(docRef2.set(any, any));
     });
   });
 }
