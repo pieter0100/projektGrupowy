@@ -9,6 +9,8 @@ import 'package:projekt_grupowy/game_logic/models/game_result.dart';
 import 'package:projekt_grupowy/game_logic/models/game_progress.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// Run with: flutter test test/services/offline_and_sync_service_test.dart
+
 @GenerateMocks([
   Box,
   FirebaseFirestore,
