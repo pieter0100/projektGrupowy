@@ -22,7 +22,7 @@ class SyncService {
   final Queue<SyncQueueItem> _syncQueue = Queue<SyncQueueItem>();
   Box? _queueBox;
 
-  SyncService(this._store, this._firestore, this._auth);
+  SyncService(this._store, this._firestore, this._auth, [this._queueBox]);
 
 
   Future<void> start() async {
@@ -49,7 +49,7 @@ class SyncService {
 
   // Initialize queue persistence across app restarts
   Future<void> _initQueuePersistence() async {
-    _queueBox = await Hive.openBox('sync_queue');
+    _queueBox ??= await Hive.openBox('sync_queue');
     // Load existing queue from persistence
     final persistedQueue = _queueBox?.get('queue', defaultValue: <dynamic>[]) as List<dynamic>;
     for (var item in persistedQueue) {
