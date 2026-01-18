@@ -96,12 +96,12 @@ describe('Firestore Security Rules', () => {
     });
   });
 
-  describe('Results collection', () => {
+  describe('User Results collection', () => {
     it('should allow users to create their own results', async () => {
       const alice = testEnv.authenticatedContext('alice');
 
       await assertSucceeds(
-        alice.firestore().collection('results').doc('result1').set({
+        alice.firestore().collection('user_results').doc('result1').set({
           uid: 'alice',
           sessionId: 'session1',
           timestamp: new Date().toISOString(),
@@ -114,7 +114,7 @@ describe('Firestore Security Rules', () => {
       const alice = testEnv.authenticatedContext('alice');
 
       await assertFails(
-        alice.firestore().collection('results').doc('result1').set({
+        alice.firestore().collection('user_results').doc('result1').set({
           uid: 'bob',
           sessionId: 'session1',
           timestamp: new Date().toISOString(),
@@ -126,7 +126,7 @@ describe('Firestore Security Rules', () => {
     it('should allow users to read their own results', async () => {
       const alice = testEnv.authenticatedContext('alice');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('results').doc('result1').set({
+        await context.firestore().collection('user_results').doc('result1').set({
           uid: 'alice',
           sessionId: 'session1',
           timestamp: new Date().toISOString(),
@@ -135,14 +135,14 @@ describe('Firestore Security Rules', () => {
       });
 
       await assertSucceeds(
-        alice.firestore().collection('results').doc('result1').get()
+        alice.firestore().collection('user_results').doc('result1').get()
       );
     });
 
     it('should deny users from reading other users results', async () => {
       const alice = testEnv.authenticatedContext('alice');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('results').doc('result1').set({
+        await context.firestore().collection('user_results').doc('result1').set({
           uid: 'bob',
           sessionId: 'session1',
           timestamp: new Date().toISOString(),
@@ -151,14 +151,14 @@ describe('Firestore Security Rules', () => {
       });
 
       await assertFails(
-        alice.firestore().collection('results').doc('result1').get()
+        alice.firestore().collection('user_results').doc('result1').get()
       );
     });
 
     it('should prevent updates to results (immutable)', async () => {
       const alice = testEnv.authenticatedContext('alice');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('results').doc('result1').set({
+        await context.firestore().collection('user_results').doc('result1').set({
           uid: 'alice',
           sessionId: 'session1',
           timestamp: new Date().toISOString(),
@@ -167,7 +167,7 @@ describe('Firestore Security Rules', () => {
       });
 
       await assertFails(
-        alice.firestore().collection('results').doc('result1').update({
+        alice.firestore().collection('user_results').doc('result1').update({
           score: 200,
         })
       );
@@ -176,7 +176,7 @@ describe('Firestore Security Rules', () => {
     it('should prevent deletion of results', async () => {
       const alice = testEnv.authenticatedContext('alice');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('results').doc('result1').set({
+        await context.firestore().collection('user_results').doc('result1').set({
           uid: 'alice',
           sessionId: 'session1',
           timestamp: new Date().toISOString(),
@@ -185,17 +185,17 @@ describe('Firestore Security Rules', () => {
       });
 
       await assertFails(
-        alice.firestore().collection('results').doc('result1').delete()
+        alice.firestore().collection('user_results').doc('result1').delete()
       );
     });
   });
 
-  describe('Progress collection', () => {
+  describe('Game Progress collection', () => {
     it('should allow users to create their own progress', async () => {
       const alice = testEnv.authenticatedContext('alice');
 
       await assertSucceeds(
-        alice.firestore().collection('progress').doc('progress1').set({
+        alice.firestore().collection('game_progress').doc('progress1').set({
           uid: 'alice',
           sessionId: 'session1',
           completedCount: 5,
@@ -207,7 +207,7 @@ describe('Firestore Security Rules', () => {
     it('should allow users to update their own progress', async () => {
       const alice = testEnv.authenticatedContext('alice');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('progress').doc('progress1').set({
+        await context.firestore().collection('game_progress').doc('progress1').set({
           uid: 'alice',
           sessionId: 'session1',
           completedCount: 5,
@@ -215,7 +215,7 @@ describe('Firestore Security Rules', () => {
       });
 
       await assertSucceeds(
-        alice.firestore().collection('progress').doc('progress1').update({
+        alice.firestore().collection('game_progress').doc('progress1').update({
           completedCount: 6,
         })
       );
@@ -224,7 +224,7 @@ describe('Firestore Security Rules', () => {
     it('should deny users from updating other users progress', async () => {
       const alice = testEnv.authenticatedContext('alice');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('progress').doc('progress1').set({
+        await context.firestore().collection('game_progress').doc('progress1').set({
           uid: 'bob',
           sessionId: 'session1',
           completedCount: 5,
@@ -232,7 +232,7 @@ describe('Firestore Security Rules', () => {
       });
 
       await assertFails(
-        alice.firestore().collection('progress').doc('progress1').update({
+        alice.firestore().collection('game_progress').doc('progress1').update({
           completedCount: 6,
         })
       );
@@ -241,14 +241,14 @@ describe('Firestore Security Rules', () => {
     it('should prevent deletion of progress', async () => {
       const alice = testEnv.authenticatedContext('alice');
       await testEnv.withSecurityRulesDisabled(async (context) => {
-        await context.firestore().collection('progress').doc('progress1').set({
+        await context.firestore().collection('game_progress').doc('progress1').set({
           uid: 'alice',
           sessionId: 'session1',
         });
       });
 
       await assertFails(
-        alice.firestore().collection('progress').doc('progress1').delete()
+        alice.firestore().collection('game_progress').doc('progress1').delete()
       );
     });
   });
