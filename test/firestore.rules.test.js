@@ -1,3 +1,8 @@
+// Run with:
+// npm install - to install dependencies
+// npm emulator:start --only firestore - to start the Firestore emulator
+// npm run test:rules - to run the tests
+
 const { initializeTestEnvironment, assertFails, assertSucceeds } = require('@firebase/rules-unit-testing');
 const fs = require('fs');
 
