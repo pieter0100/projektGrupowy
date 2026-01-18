@@ -36,7 +36,7 @@ class SyncService {
   Future<void> bootstrapAfterLogin() async {
     // Tutaj "User" pochodzi z firebase_auth (domyślnie)
     final User? firebaseUser = _auth.currentUser;
-    
+
     if (firebaseUser == null) {
       log('Bootstrap skipped: No user logged in');
       return;
@@ -47,24 +47,34 @@ class SyncService {
     try {
       // 1. POBIERANIE DANYCH Z CHMURY
       final userProfileFuture = _firestore.collection('users').doc(firebaseUser.uid).get();
-      
+
       final progressFuture = _firestore
-          .collection('game_progress') 
+          .collection('game_progress')
           .where('uid', isEqualTo: firebaseUser.uid)
           .get();
 
-      final results = await Future.wait([
+      // ---  Fetching results ---
+      final resultsFuture = _firestore
+          .collection('user_results')
+          .where('uid', isEqualTo: firebaseUser.uid)
+          .get();
+
+      // Wait for all 3 futures
+      final fetchedData = await Future.wait([
         userProfileFuture,
         progressFuture,
+        resultsFuture,
       ]);
 
-      final userDoc = results[0] as DocumentSnapshot<Map<String, dynamic>>;
-      final progressSnap = results[1] as QuerySnapshot<Map<String, dynamic>>;
+      // Cast results
+      final userDoc = fetchedData[0] as DocumentSnapshot<Map<String, dynamic>>;
+      final progressSnap = fetchedData[1] as QuerySnapshot<Map<String, dynamic>>;
+      final resultsSnap = fetchedData[2] as QuerySnapshot<Map<String, dynamic>>; // --- NEW ---
 
       // 2. IMPORTOWANIE PROFILU DO HIVE
       if (userDoc.exists && userDoc.data() != null) {
         final data = userDoc.data()!;
-        
+
         // --- ZMIANA: Używamy "model.User" zamiast "User" ---
         final usersBox = Hive.box<model.User>(LocalSaves.usersBoxName);
 
@@ -90,8 +100,15 @@ class SyncService {
         await _store.importProgressFromCloud(doc.data());
         newProgress++;
       }
+      
+      // 4. IMPORTOWANIE WYNIKÓW (RESULTS) 
+      int newResults = 0;
+      for (var doc in resultsSnap.docs) {
+        await _store.importResultFromCloud(doc.data());
+        newResults++;
+      }
 
-      log('Bootstrap completed. Imported $newProgress game levels.');
+      log('Bootstrap completed. Imported $newProgress levels and $newResults results.');
       triggerSync();
 
     } catch (e, stackTrace) {
