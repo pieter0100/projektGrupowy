@@ -106,6 +106,18 @@ class SyncService {
     final errors = <String, dynamic>{};
     for (var progress in pending) {
       final ref = _firestore.collection('game_progress').doc(progress.sessionId);
+      final doc = await ref.get();
+      // Conflict resolution: only sync if local lastUpdated is newer
+      if (doc.exists) {
+        final remote = doc.data();
+        if (remote != null && remote['lastUpdated'] != null) {
+          final remoteLastUpdated = DateTime.tryParse(remote['lastUpdated'].toString());
+          if (remoteLastUpdated != null && progress.lastUpdated.isBefore(remoteLastUpdated)) {
+            // Local is older, skip sync
+            continue;
+          }
+        }
+      }
       batch.set(ref, progress.toMap(), SetOptions(merge: true));
     }
     try {
