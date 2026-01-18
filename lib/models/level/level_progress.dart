@@ -63,6 +63,8 @@ class LevelProgress {
     );
   }
 
+  get score => null;
+
   LevelProgress copyWith({
     String? levelId,
     int? bestScore,

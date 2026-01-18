@@ -4,9 +4,13 @@ import 'dart:developer';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/models/user/user_profile.dart';
+import 'package:projekt_grupowy/models/user/user_stats.dart';
 import 'offline_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/sync/sync_queue_item.dart';
+import '../models/user/user.dart' as model;
 
 class SyncService {
   final OfflineStore _store;
@@ -24,68 +28,75 @@ class SyncService {
 
   SyncService(this._store, this._firestore, this._auth, [this._queueBox]);
 
+  FirebaseAuth get auth => _auth;
+
   /// -----------------------------------------------------------------------
   /// BOOTSTRAP AFTER LOGIN
   /// -----------------------------------------------------------------------
   Future<void> bootstrapAfterLogin() async {
-    final user = _auth.currentUser;
-    if (user == null) {
+    // Tutaj "User" pochodzi z firebase_auth (domyślnie)
+    final User? firebaseUser = _auth.currentUser;
+    
+    if (firebaseUser == null) {
       log('Bootstrap skipped: No user logged in');
       return;
     }
 
-    log('Starting bootstrap for user: ${user.uid}');
+    log('Starting bootstrap for user: ${firebaseUser.uid}');
 
     try {
-      // 1. Równoległe pobieranie z dwóch kolekcji dla szybkości
-      // UWAGA: Upewnij się, że w Firestore pole z ID użytkownika nazywa się 'uid'.
-      // Jeśli nazywa się np. 'userId', zmień poniżej 'uid' na 'userId'.
-      final resultsFuture = _firestore
-          .collection('user_results')
-          .where('uid', isEqualTo: user.uid)
-          .get();
-
+      // 1. POBIERANIE DANYCH Z CHMURY
+      final userProfileFuture = _firestore.collection('users').doc(firebaseUser.uid).get();
+      
       final progressFuture = _firestore
-          .collection('game_progress')
-          .where('uid', isEqualTo: user.uid)
+          .collection('game_progress') 
+          .where('uid', isEqualTo: firebaseUser.uid)
           .get();
 
-      // Czekamy, aż oba zapytania się wykonają
-      final snapshots = await Future.wait([resultsFuture, progressFuture]);
-      final resultsSnap = snapshots[0];
-      final progressSnap = snapshots[1];
+      final results = await Future.wait([
+        userProfileFuture,
+        progressFuture,
+      ]);
 
-      // 2. Importowanie wyników do bazy lokalnej
-      int newResults = 0;
-      for (var doc in resultsSnap.docs) {
-        final data = doc.data();
-        // Wywołujemy nową metodę z OfflineStore (tę, która ustawia isSynced = true)
-        await _store.importResultFromCloud(data);
-        newResults++;
+      final userDoc = results[0] as DocumentSnapshot<Map<String, dynamic>>;
+      final progressSnap = results[1] as QuerySnapshot<Map<String, dynamic>>;
+
+      // 2. IMPORTOWANIE PROFILU DO HIVE
+      if (userDoc.exists && userDoc.data() != null) {
+        final data = userDoc.data()!;
+        
+        // --- ZMIANA: Używamy "model.User" zamiast "User" ---
+        final usersBox = Hive.box<model.User>(LocalSaves.usersBoxName);
+
+        final profileMap = Map<String, dynamic>.from(data['profile'] ?? {});
+        final statsMap = Map<String, dynamic>.from(data['stats'] ?? {});
+
+        // --- ZMIANA: Tworzymy "model.User" ---
+        final userObj = model.User(
+          userId: firebaseUser.uid,
+          profile: UserProfile.fromJson(profileMap),
+          stats: UserStats.fromJson(statsMap),
+        );
+
+        await usersBox.put(firebaseUser.uid, userObj);
+        log('✅ User profile synced to Hive.');
+      } else {
+        log('⚠️ User profile document missing in Firestore.');
       }
 
-      // 3. Importowanie postępów do bazy lokalnej
+      // 3. IMPORTOWANIE POSTĘPU GRY
       int newProgress = 0;
       for (var doc in progressSnap.docs) {
-        final data = doc.data();
-        await _store.importProgressFromCloud(data);
+        await _store.importProgressFromCloud(doc.data());
         newProgress++;
       }
 
-      log(
-        'Bootstrap completed. Imported $newResults results and $newProgress progress items.',
-      );
-
-      // 4. Po pobraniu świeżych danych, wyzwalamy wysyłkę tego, co ewentualnie czeka lokalnie
+      log('Bootstrap completed. Imported $newProgress game levels.');
       triggerSync();
-    } catch (e) {
-      log('Bootstrap error: $e');
-      _errorLog.add({
-        'type': 'bootstrap',
-        'error': e.toString(),
-        'timestamp': DateTime.now().toIso8601String(),
-      });
-      // Nie rzucamy błędu dalej, żeby nie zablokować UI po logowaniu
+
+    } catch (e, stackTrace) {
+      log('❌ Bootstrap error: $e');
+      print(stackTrace);
     }
   }
 

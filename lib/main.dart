@@ -1,12 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/controllers/app_session_controller.dart';
-import 'package:projekt_grupowy/services/offline_store.dart';
-import 'package:projekt_grupowy/services/sync_service.dart';
+import 'package:projekt_grupowy/screens/test.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
@@ -42,6 +38,9 @@ void main() async {
       providers: [
         // Główny kontroler
         ChangeNotifierProvider.value(value: sessionController),
+
+        Provider.value(value: sessionController.syncService),
+        Provider.value(value: sessionController.store),
       ],
       child: const MyApp(),
     ),
@@ -137,6 +136,8 @@ final GoRouter _router = GoRouter(
         return PracticeEndScreen(level: level);
       },
     ),
+
+    GoRoute(path: '/test', builder: (context, state) => const TestDashboardScreen()),
   ],
 );
 
