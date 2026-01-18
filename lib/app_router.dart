@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart'; 
-import 'package:go_router/go_router.dart'; 
+import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/screens/test.dart'; 
 
 import '../widgets/scaffold_with_nav.dart'; 
 import '../screens/leaderboard_screen.dart'; 
@@ -90,5 +91,6 @@ final GoRouter appRouter = GoRouter(
         return PracticeEndScreen(level: level); 
       }, 
     ), 
+    GoRoute(path: '/test', builder: (context, state) => const TestDashboardScreen()),
   ], 
 );
