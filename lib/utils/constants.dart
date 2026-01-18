@@ -36,6 +36,24 @@ class AppColors {
   static const Color Orange = Color(0xFFEB9F4A);
   static const Color Blue = Color(0xFF338F9B);
 
+  // McScreen 
+  static const Color appBarBackgroundMC = Color(0xFFE5E5E5); 
+  static const Color mcTitleText = AppColors.black; 
+  static const Color mcQuestionText = AppColors.black;
+
+  // TypedScreen 
+  static const Color typedAppBarBackground = Color(0xFFE5E5E5); 
+  static const Color typedTitleText = AppColors.black; 
+  static const Color typedQuestionText = AppColors.black; 
+  static const Color typedInputDefault = Color(0xFFD9D9D9); 
+  static const Color typedInputCorrect = Color(0xFFB2F2BB); 
+  static const Color typedInputWrong = Color(0xFFF5C2C2); 
+  static const Color typedBorderCorrect = Colors.green; 
+  static const Color typedBorderWrong = Colors.red; 
+  static const Color typedFocusedBorder = Color(0xFF7ED4DE); 
+  static const Color typedHint = Color(0xFF757575); 
+  static const Color typedSkipText = Color(0xFF757575);
+
   // General
   static const Color white = Colors.white;
   static const Color black = Colors.black;
@@ -87,6 +105,34 @@ class AppSizes {
   static const double settingsIconGap = 8.0;
   static const double settingsArrowGap = 130.0;
 
+  // McScreen 
+  static const double mcProgressTopMargin = 20.0; 
+  static const double mcTitleTopMargin = 10.0; 
+  static const double mcTitleFontSize = 30.0; 
+  static const double mcQuestionFontSize = 48.0; 
+  static const double mcCardMargin = 20.0; 
+  static const double mcPaddingTop = 10.0; 
+  static const double mcPaddingHorizontal = 40.0; 
+  static const double mcPaddingBottom = 100.0;
+
+  // TypedScreen 
+  static const double typedProgressTopMargin = 20.0; 
+  static const double typedTitlePadding = 30.0; 
+  static const double typedTitleFontSize = 30.0; 
+  static const double typedQuestionFontSize = 48.0; 
+  static const double typedInputFontSize = 25.0; 
+  static const double typedInputPaddingH = 24.0; 
+  static const double typedInputPaddingV = 16.0; 
+  static const double typedInputBorderRadius = 16.0; 
+  static const double typedInputBorderWidth = 3.0; 
+  static const double typedFieldPaddingStart = 35.0; 
+  static const double typedFieldPaddingEnd = 35.0; 
+  static const double typedFieldPaddingTop = 35.0; 
+  static const double typedFieldPaddingBottom = 40.0; 
+  static const double typedSkipFontSize = 16.0; 
+  static const double typedSkipBottomSpacing = 180.0; 
+  static const double typedInputSpacing = 20.0;
+
   //Screen Spacings
   static const double screenPaddingTop = 40.0;
   static const double screenPaddingMedium = 29.0;
@@ -130,5 +176,39 @@ class AppTextStyles {
   
   static const TextStyle sectionTitle = TextStyle(
     fontSize: AppSizes.fontSizeSectionTitle,
+  );
+
+  static const TextStyle mcTitle = TextStyle( 
+    fontSize: AppSizes.mcTitleFontSize, 
+    color: AppColors.mcTitleText, 
+    fontWeight: FontWeight.w600, 
+  ); 
+  
+  static const TextStyle mcQuestion = TextStyle( 
+    fontSize: AppSizes.mcQuestionFontSize, 
+    color: AppColors.mcQuestionText, 
+    fontWeight: FontWeight.bold, 
+  );
+
+  static const TextStyle typedTitle = TextStyle( 
+    fontSize: AppSizes.typedTitleFontSize, 
+    color: AppColors.typedTitleText, 
+    fontWeight: FontWeight.w600, 
+  ); 
+  
+  static const TextStyle typedQuestion = TextStyle( 
+    fontSize: AppSizes.typedQuestionFontSize, 
+    color: AppColors.typedQuestionText, 
+    fontWeight: FontWeight.bold, 
+  ); 
+  
+  static const TextStyle typedInput = TextStyle( 
+    fontSize: AppSizes.typedInputFontSize, 
+    color: AppColors.black, 
+  ); 
+  
+  static const TextStyle typedSkip = TextStyle( 
+    fontSize: AppSizes.typedSkipFontSize, 
+    color: AppColors.typedSkipText, 
   );
 }

@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+
+import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/services/typed_game_engine.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
@@ -118,17 +120,17 @@ class TypedScreenState extends State<TypedScreen> {
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.pop(),
         ),
-        backgroundColor: Color(0xFFE5E5E5),
+        backgroundColor:AppColors.typedAppBarBackground,
       ),
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 20.0),
+            margin: EdgeInsets.only(top: AppSizes.typedProgressTopMargin),
             child: ProgressBarWidget(),
           ),
           Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Text('Type your answer', style: TextStyle(fontSize: 30.0)),
+            padding: const EdgeInsets.all(AppSizes.typedTitlePadding),
+            child: Text('Type your answer', style: AppTextStyles.typedTitle),
           ),
           Expanded(
             child: Center(
@@ -137,15 +139,15 @@ class TypedScreenState extends State<TypedScreen> {
                   children: [
                     Text(
                       question,
-                      style: TextStyle(fontSize: 48.0),
+                      style: AppTextStyles.typedQuestion,
                       textAlign: TextAlign.center,
                     ),
                     Padding(
                       padding: EdgeInsetsGeometry.directional(
-                        start: 35.0,
-                        end: 35.0,
-                        top: 35.0,
-                        bottom: 40.0,
+                        start: AppSizes.typedFieldPaddingStart,
+                        end: AppSizes.typedFieldPaddingEnd,
+                        top: AppSizes.typedFieldPaddingTop,
+                        bottom: AppSizes.typedFieldPaddingBottom,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -153,63 +155,60 @@ class TypedScreenState extends State<TypedScreen> {
                           TextField(
                             controller: _textController,
                             enabled: !_showFeedback, // Disable during feedback
-                            style: const TextStyle(
-                              color: Colors.black87,
-                              fontSize: 25.0,
-                            ),
+                            style: AppTextStyles.typedInput,
                             decoration: InputDecoration(
                               hintText: placeHolder,
                               hintStyle: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 25.0,
+                                color: AppColors.typedHint,
+                                fontSize: AppSizes.typedInputFontSize,
                               ),
                               filled: true,
                               fillColor: _showFeedback
                                   ? (_isCorrect
-                                        ? Colors.green[100]
-                                        : Colors.red[100])
-                                  : const Color(0xFFD9D9D9),
+                                        ? AppColors.typedInputCorrect
+                                        : AppColors.typedInputWrong)
+                                  : AppColors.typedInputDefault,
                               contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 24.0,
-                                vertical: 16.0,
+                                horizontal: AppSizes.typedInputPaddingH,
+                                vertical: AppSizes.typedInputPaddingV,
                               ),
                               border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.0),
+                                borderRadius: BorderRadius.circular(AppSizes.typedInputBorderRadius),
                                 borderSide: _showFeedback
                                     ? BorderSide(
                                         color: _isCorrect
-                                            ? Colors.green
-                                            : Colors.red,
-                                        width: 3.0,
+                                            ? AppColors.typedBorderCorrect
+                                            : AppColors.typedBorderWrong,
+                                        width: AppSizes.typedInputBorderWidth,
                                       )
                                     : BorderSide.none,
                               ),
                               enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.0),
+                                borderRadius: BorderRadius.circular(AppSizes.typedInputBorderRadius),
                                 borderSide: _showFeedback
                                     ? BorderSide(
                                         color: _isCorrect
-                                            ? Colors.green
-                                            : Colors.red,
-                                        width: 3.0,
+                                            ? AppColors.typedBorderCorrect
+                                            : AppColors.typedBorderWrong,
+                                        width: AppSizes.typedInputBorderWidth,
                                       )
                                     : BorderSide.none,
                               ),
                               focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.0),
+                                borderRadius: BorderRadius.circular(AppSizes.typedInputBorderRadius),
                                 borderSide: BorderSide(
                                   color: _showFeedback
-                                      ? (_isCorrect ? Colors.green : Colors.red)
-                                      : const Color(0xFF7ED4DE),
-                                  width: 3.0,
+                                      ? (_isCorrect ? AppColors.typedBorderCorrect : AppColors.typedBorderWrong)
+                                      : AppColors.typedFocusedBorder,
+                                  width: AppSizes.typedInputBorderWidth,
                                 ),
                               ),
                             ),
                             onSubmitted: _showFeedback ? null : onComplete,
                             textInputAction: TextInputAction.done,
-                            cursorColor: Colors.grey[600],
+                            cursorColor: AppColors.typedHint,
                           ),
-                          SizedBox(height: 20.0),
+                          SizedBox(height: AppSizes.typedInputSpacing),
                           if (widget.isPracticeMode)
                             Align(
                               alignment: Alignment.centerRight,
@@ -217,18 +216,15 @@ class TypedScreenState extends State<TypedScreen> {
                                 onTap: onSkip,
                                 child: Text(
                                   "Don't know?",
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.grey[600],
-                                    decoration: _isSkipHighlighted
-                                        ? TextDecoration.underline
-                                        : TextDecoration.none,
-                                    decorationColor: Colors.grey[600],
+                                  style: AppTextStyles.typedSkip.copyWith( 
+                                    decoration: _isSkipHighlighted 
+                                      ? TextDecoration.underline 
+                                      : TextDecoration.none,
                                   ),
                                 ),
                               ),
                             ),
-                          SizedBox(height: 180.0),
+                          SizedBox(height: AppSizes.typedSkipBottomSpacing),
                         ],
                       ),
                     ),
