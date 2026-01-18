@@ -29,8 +29,8 @@ service cloud.firestore {
       }
     }
     
-    // Results collection - immutable after creation, only owner can write
-    match /results/{resultId} {
+    // User Results collection - immutable after creation, only owner can write
+    match /user_results/{resultId} {
       // Allow read only to the owner (result.uid must match auth.uid)
       allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
       
@@ -43,8 +43,8 @@ service cloud.firestore {
       allow update, delete: if false;
     }
     
-    // Progress collection - only owner can read/write
-    match /progress/{progressId} {
+    // Game Progress collection - only owner can read/write
+    match /game_progress/{progressId} {
       // Allow read only to the owner
       allow read: if isAuthenticated() && resource.data.uid == request.auth.uid;
       
