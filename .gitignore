@@ -37,6 +37,12 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+pubspec.lock
+
+# Firebase configuration files (contain sensitive API keys)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist  
+lib/firebase_options.dart
 
 # Symbolication related
 app.*.symbols
@@ -51,3 +57,4 @@ app.*.map.json
 
 # Node modules
 node_modules/
+package-lock.json

@@ -266,9 +266,7 @@ describe('Firestore Security Rules', () => {
       await assertSucceeds(
         alice.firestore().collection('levels').doc('level1').get()
       );
-    });
-
-    it('should deny unauthenticated users from reading levels', async () => {
+    });    it('should allow unauthenticated users to read levels', async () => {
       const unauth = testEnv.unauthenticatedContext();
       await testEnv.withSecurityRulesDisabled(async (context) => {
         await context.firestore().collection('levels').doc('level1').set({
@@ -276,7 +274,7 @@ describe('Firestore Security Rules', () => {
         });
       });
 
-      await assertFails(
+      await assertSucceeds(
         unauth.firestore().collection('levels').doc('level1').get()
       );
     });
@@ -303,6 +301,19 @@ describe('Firestore Security Rules', () => {
 
       await assertSucceeds(
         alice.firestore().collection('leaderboards').doc('global').get()
+      );
+    });
+
+    it('should allow unauthenticated users to read leaderboards', async () => {
+      const unauth = testEnv.unauthenticatedContext();
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context.firestore().collection('leaderboards').doc('global').set({
+          entries: [],
+        });
+      });
+
+      await assertSucceeds(
+        unauth.firestore().collection('leaderboards').doc('global').get()
       );
     });
 
