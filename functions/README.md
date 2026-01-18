@@ -1,54 +1,165 @@
-# Firebase Cloud Functions Setup
+# Firebase Cloud Functions
 
-## Prerequisites
-- Node.js (v16 or later recommended)
-- npm (comes with Node.js)
-- Firebase CLI (`npm install -g firebase-tools`)
+## Overview
 
-## Installation Steps
+This directory contains Firebase Cloud Functions that handle server-side operations for user profile initialization and statistics aggregation.
 
-1. **Navigate to the functions directory:**
-   ```
-   cd functions
-   ```
+## Functions
 
-2. **Install dependencies:**
-   ```
-   npm install firebase-functions firebase-admin
-   ```
+### `onUserCreate`
+**Trigger:** Firebase Authentication user creation  
+**Purpose:** Automatically initializes user profile when a new account is created
 
-3. **Emulator setup (for local testing):**
-   - Install the Firebase Emulator Suite:
-     ```
-     firebase setup:emulators:firestore
-     firebase setup:emulators:auth
-     ```
-   - Start the emulator:
-     ```
-     firebase emulators:start
-     ```
+**Creates document:** `users/{uid}`
+```json
+{
+  "profile": {
+    "displayName": "User Name",
+    "age": null
+  },
+  "stats": {
+    "totalGamesPlayed": 0,
+    "totalPoints": 0,
+    "currentStreak": 0,
+    "lastPlayedAt": null
+  },
+  "settings": {}
+}
+```
 
-4. **Deploy functions to Firebase (when ready):**
-   ```
-   firebase deploy --only functions
-   ```
+### `onResultWrite`
+**Trigger:** New document created in `results/` collection  
+**Purpose:** Updates user statistics when a game result is saved
 
-5. **Testing functions locally:**
-   Since Jest is set up, you can run tests using:
-   ```
-   npm test
-   ```
-   If you haven't set up Jest yet, you can do so by installing it:
-   ```
-   npm install --save-dev jest @types/jest ts-jest
-   ```
-   
-   `npm test` will find all files with `.test.ts` or `.spec.ts` extensions and run the tests. If you want to run a specific test file, you can use:
-   ```
-   npx test functions/.test.ts
-   ```
+**Updates:** `users/{uid}/stats`
+- Increments `totalGamesPlayed`
+- Adds to `totalPoints`
+- Calculates `currentStreak` based on play frequency:
+  - **Same day:** Maintains current streak
+  - **Consecutive days:** Increments streak by 1
+  - **Missed days:** Resets streak to 1
+- Updates `lastPlayedAt` timestamp
 
-## Notes
-- Functions are defined in `functions/index.ts`.
-- Update `firebase.json` if you change the functions source directory.
+**Note:** Only triggers on CREATE, not on UPDATE (prevents duplicate stat updates)
+
+
+## Setup
+
+### Prerequisites
+- Node.js 18+
+- Firebase CLI installed globally: `npm install -g firebase-tools`
+- Firebase project configured
+
+### Install Dependencies
+```bash
+npm install
+```
+
+### Build TypeScript
+```bash
+npm run build
+```
+
+## Development
+
+### Run Emulator
+Start Firebase emulators for local testing:
+```bash
+# From project root
+firebase emulators:start --only firestore,auth,functions
+```
+
+Emulator UI available at: `http://127.0.0.1:4000`
+
+## Testing
+
+### Run All Tests
+```bash
+npm test
+```
+
+### Run Unit Tests Only
+Tests pure stat calculation logic without emulator:
+```bash
+npm run test:unit
+```
+
+### Run Emulator Tests
+**Requires emulator running first:**
+
+Terminal 1:
+```bash
+cd ..
+firebase emulators:start --only firestore,auth
+```
+
+Terminal 2:
+```bash
+cd functions
+npm test
+```
+
+### Test Files
+- **`userStats.unit.test.ts`** - Pure function tests for stat aggregation logic
+- **`index.test.ts`** - Integration tests using Firebase emulator
+
+## Deployment
+
+### Deploy All Functions
+```bash
+npm run deploy
+```
+
+### Deploy Specific Function
+```bash
+firebase deploy --only functions:onUserCreate
+firebase deploy --only functions:onResultWrite
+```
+
+## Project Structure
+
+```
+functions/
+├── index.ts              # Main functions implementation
+├── index.test.ts         # Emulator integration tests
+├── userStats.unit.test.ts # Pure unit tests
+├── package.json          # Dependencies and scripts
+├── tsconfig.json         # TypeScript configuration
+├── jest.config.js        # Jest test configuration
+├── .gitignore            # Git ignore rules
+└── lib/                  # Build output (gitignored)
+```
+
+## Scripts
+
+| Script | Description |
+|--------|-------------|
+| `npm run build` | Compile TypeScript to JavaScript |
+| `npm run build:watch` | Watch mode - auto-rebuild on changes |
+| `npm test` | Run all tests (unit + emulator) |
+| `npm run test:unit` | Run unit tests only |
+| `npm run deploy` | Deploy functions to Firebase |
+| `npm run logs` | View function logs from production |
+
+
+
+### Common Issues
+
+**Issue:** Tests fail with "Could not load credentials"  
+**Solution:** Ensure emulator is running before tests
+
+**Issue:** Functions don't trigger in emulator  
+**Solution:** Check emulator UI at `http://127.0.0.1:4000` for errors
+
+**Issue:** TypeScript compilation errors  
+**Solution:** Run `npm run build` to see detailed errors
+
+
+**Emulator detection:**
+- `FIRESTORE_EMULATOR_HOST=localhost:8080`
+- `FIREBASE_AUTH_EMULATOR_HOST=localhost:9099`
+
+
+
+
 
