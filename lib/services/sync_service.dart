@@ -7,6 +7,7 @@ import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user_profile.dart';
 import 'package:projekt_grupowy/models/user/user_stats.dart';
+import 'package:projekt_grupowy/services/profile_service.dart';
 import 'offline_store.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../models/sync/sync_queue_item.dart';
@@ -25,8 +26,15 @@ class SyncService {
   final List<Map<String, dynamic>> _errorLog = [];
   final Queue<SyncQueueItem> _syncQueue = Queue<SyncQueueItem>();
   Box? _queueBox;
+  final ProfileService _profileService;
 
-  SyncService(this._store, this._firestore, this._auth, [this._queueBox]);
+  SyncService(
+    this._store,
+    this._firestore,
+    this._auth,
+    this._queueBox,
+    this._profileService, 
+  );
 
   FirebaseAuth get auth => _auth;
 
@@ -34,7 +42,6 @@ class SyncService {
   /// BOOTSTRAP AFTER LOGIN
   /// -----------------------------------------------------------------------
   Future<void> bootstrapAfterLogin() async {
-    // Tutaj "User" pochodzi z firebase_auth (domyślnie)
     final User? firebaseUser = _auth.currentUser;
 
     if (firebaseUser == null) {
@@ -46,14 +53,15 @@ class SyncService {
 
     try {
       // 1. POBIERANIE DANYCH Z CHMURY
-      final userProfileFuture = _firestore.collection('users').doc(firebaseUser.uid).get();
+
+      // [UPDATED]: Use ProfileService instead of direct Firestore call
+      final userProfileFuture = _profileService.fetchProfile(firebaseUser.uid);
 
       final progressFuture = _firestore
           .collection('game_progress')
           .where('uid', isEqualTo: firebaseUser.uid)
           .get();
-
-      // ---  Fetching results ---
+      
       final resultsFuture = _firestore
           .collection('user_results')
           .where('uid', isEqualTo: firebaseUser.uid)
@@ -69,19 +77,16 @@ class SyncService {
       // Cast results
       final userDoc = fetchedData[0] as DocumentSnapshot<Map<String, dynamic>>;
       final progressSnap = fetchedData[1] as QuerySnapshot<Map<String, dynamic>>;
-      final resultsSnap = fetchedData[2] as QuerySnapshot<Map<String, dynamic>>; // --- NEW ---
+      final resultsSnap = fetchedData[2] as QuerySnapshot<Map<String, dynamic>>;
 
       // 2. IMPORTOWANIE PROFILU DO HIVE
       if (userDoc.exists && userDoc.data() != null) {
         final data = userDoc.data()!;
-
-        // --- ZMIANA: Używamy "model.User" zamiast "User" ---
         final usersBox = Hive.box<model.User>(LocalSaves.usersBoxName);
 
         final profileMap = Map<String, dynamic>.from(data['profile'] ?? {});
         final statsMap = Map<String, dynamic>.from(data['stats'] ?? {});
 
-        // --- ZMIANA: Tworzymy "model.User" ---
         final userObj = model.User(
           userId: firebaseUser.uid,
           profile: UserProfile.fromJson(profileMap),
@@ -100,8 +105,8 @@ class SyncService {
         await _store.importProgressFromCloud(doc.data());
         newProgress++;
       }
-      
-      // 4. IMPORTOWANIE WYNIKÓW (RESULTS) 
+
+      // 4. IMPORTOWANIE WYNIKÓW
       int newResults = 0;
       for (var doc in resultsSnap.docs) {
         await _store.importResultFromCloud(doc.data());
@@ -109,8 +114,9 @@ class SyncService {
       }
 
       log('Bootstrap completed. Imported $newProgress levels and $newResults results.');
-      triggerSync();
-
+      // (Optional: If you implemented the stream trigger in Controller, 
+      // you don't call triggerSync() here, but simply finish the future).
+      
     } catch (e, stackTrace) {
       log('❌ Bootstrap error: $e');
       print(stackTrace);

@@ -3,13 +3,17 @@ import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 import 'package:hive/hive.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:projekt_grupowy/services/offline_store.dart';
-import 'package:projekt_grupowy/services/sync_service.dart';
-import 'package:projekt_grupowy/game_logic/models/game_result.dart';
-import 'package:projekt_grupowy/game_logic/models/game_progress.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
+// Importy Twoich klas
+import 'package:projekt_grupowy/services/offline_store.dart';
+import 'package:projekt_grupowy/services/sync_service.dart';
+import 'package:projekt_grupowy/services/profile_service.dart'; // [NOWY IMPORT]
+import 'package:projekt_grupowy/game_logic/models/game_result.dart';
+import 'package:projekt_grupowy/game_logic/models/game_progress.dart';
+
 // Run with: flutter test test/services/offline_and_sync_service_test.dart
+// Remember to run: flutter pub run build_runner build
 
 @GenerateMocks([
   Box,
@@ -20,6 +24,7 @@ import 'package:firebase_auth/firebase_auth.dart';
   DocumentSnapshot<Map<String, dynamic>>,
   FirebaseAuth,
   User,
+  ProfileService, // [NOWY MOCK]
 ])
 import 'offline_and_sync_service_test.mocks.dart';
 
@@ -38,6 +43,7 @@ void main() {
     late MockDocumentReference<Map<String, dynamic>> docRef;
     late MockFirebaseAuth auth;
     late MockUser user;
+    late MockProfileService profileService; // [NOWA ZMIENNA]
 
     setUp(() async {
       resultsBox = MockBox();
@@ -50,16 +56,20 @@ void main() {
       docRef = MockDocumentReference<Map<String, dynamic>>();
       auth = MockFirebaseAuth();
       user = MockUser();
+      profileService = MockProfileService(); // [INICJALIZACJA]
+
       when(auth.currentUser).thenReturn(user);
       when(firestore.batch()).thenReturn(batch);
       when(firestore.collection(any)).thenReturn(collectionRef);
       when(collectionRef.doc(any)).thenReturn(docRef);
+      
       // Mock queue box for persistence
       when(queueBox.get('queue', defaultValue: anyNamed('defaultValue'))).thenReturn([]);
       when(queueBox.put(any, any)).thenAnswer((_) async => null);
       
-      // Inject mock queueBox to avoid Hive.openBox() call
-      syncService = SyncService(store, firestore, auth, queueBox);
+      // [POPRAWIONY KONSTRUKTOR] - dodano profileService
+      syncService = SyncService(store, firestore, auth, queueBox, profileService);
+      
       await syncService.start();
       
       when(resultsBox.values).thenReturn([]);
@@ -101,7 +111,7 @@ void main() {
       );
       when(resultsBox.values).thenReturn([result1, result2]);
       final pending = store.getPendingResults();
-      expect(pending.length, 2); // deduplication logic can be tested in sync layer
+      expect(pending.length, 2); 
     });
 
     test('offline save, then online syncs to Firestore', () async {
@@ -253,5 +263,3 @@ void main() {
     });
   });
 }
-
-

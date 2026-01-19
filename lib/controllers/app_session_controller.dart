@@ -9,6 +9,7 @@ import 'package:hive/hive.dart';
 // Modele i stałe
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/level/level_progress.dart';
+import 'package:projekt_grupowy/services/profile_service.dart';
 
 // Serwisy
 import '../services/sync_service.dart';
@@ -67,7 +68,16 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
 
     // 2. Wstrzykiwanie zależności
     final store = OfflineStore(resultsBox, progressBox);
-    final syncService = SyncService(store, firestore, auth, queueBox);
+
+    final profileService = ProfileService(firestore);
+
+    final syncService = SyncService(
+      store, 
+      firestore, 
+      auth, 
+      queueBox, 
+      profileService // Pass the new service here
+    );
 
     final controller = AppSessionController._(auth, syncService, store);
     controller._initialize();

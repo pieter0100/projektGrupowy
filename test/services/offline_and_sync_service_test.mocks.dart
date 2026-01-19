@@ -16,6 +16,7 @@ import 'package:firebase_core/firebase_core.dart' as _i2;
 import 'package:hive/hive.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
 import 'package:mockito/src/dummies.dart' as _i9;
+import 'package:projekt_grupowy/services/profile_service.dart' as _i11;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -2536,6 +2537,51 @@ class MockUser extends _i1.Mock implements _i7.User {
           [
             newEmail,
             actionCodeSettings,
+          ],
+        ),
+        returnValue: _i5.Future<void>.value(),
+        returnValueForMissingStub: _i5.Future<void>.value(),
+      ) as _i5.Future<void>);
+}
+
+/// A class which mocks [ProfileService].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockProfileService extends _i1.Mock implements _i11.ProfileService {
+  MockProfileService() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i5.Future<_i4.DocumentSnapshot<Map<String, dynamic>>> fetchProfile(
+          String? uid) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #fetchProfile,
+          [uid],
+        ),
+        returnValue:
+            _i5.Future<_i4.DocumentSnapshot<Map<String, dynamic>>>.value(
+                _FakeDocumentSnapshot_11<Map<String, dynamic>>(
+          this,
+          Invocation.method(
+            #fetchProfile,
+            [uid],
+          ),
+        )),
+      ) as _i5.Future<_i4.DocumentSnapshot<Map<String, dynamic>>>);
+
+  @override
+  _i5.Future<void> updateProfile(
+    String? uid,
+    Map<String, dynamic>? data,
+  ) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #updateProfile,
+          [
+            uid,
+            data,
           ],
         ),
         returnValue: _i5.Future<void>.value(),
