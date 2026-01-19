@@ -34,6 +34,11 @@ describe('Cloud Functions (emulator)', () => {
     const fakeUser = {
       uid: 'testuid',
       displayName: 'TestUser',
+      email: 'testuser@example.com',
+      photoURL: 'https://example.com/avatar.jpg',
+      metadata: {
+        creationTime: '2026-01-19T12:00:00Z',
+      },
     } as any;
     await testEnv.wrap(onUserCreate)(fakeUser);
     const userDoc = await admin.firestore().collection('users').doc('testuid').get();
@@ -41,19 +46,16 @@ describe('Cloud Functions (emulator)', () => {
     const data = userDoc.data();
     
     // Verify structure matches firebase_db_structure.md
-    expect(data?.profile.displayName).toBe('TestUser');
+    expect(data?.profile.username).toBe('TestUser');
+    expect(data?.profile.email).toBe('testuser@example.com');
+    expect(data?.profile.creation_date).toBe('2026-01-19T12:00:00Z');
+    expect(data?.profile.avatar_url).toBe('https://example.com/avatar.jpg');
     expect(data?.profile.age).toBe(null);
     expect(data?.stats.totalGamesPlayed).toBe(0);
     expect(data?.stats.totalPoints).toBe(0);
     expect(data?.stats.currentStreak).toBe(0);
     expect(data?.stats.lastPlayedAt).toBe(null);
     expect(data?.settings).toEqual({});
-    
-    // Should NOT have these fields
-    expect(data?.profile.username).toBeUndefined();
-    expect(data?.profile.email).toBeUndefined();
-    expect(data?.profile.avatar_url).toBeUndefined();
-    expect(data?.creation_date).toBeUndefined();
   });
 
   it('should update stats on result write', async () => {
