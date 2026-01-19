@@ -9,10 +9,13 @@ const db = admin.firestore();
 
 // onUserCreate: Tworzy users/{uid} zgodnie z firebase_db_structure.md
 export const onUserCreate = functions.auth.user().onCreate(async (user: admin.auth.UserRecord) => {
-  const { uid, displayName } = user;
-  // Profile - only displayName and age as per structure
+  const { uid, displayName, email, metadata, photoURL } = user;
+  // Profile - with required fields: username, email, creation_date, avatar_url?
   const profile = {
-    displayName: displayName || '',
+    username: displayName || email?.split('@')[0] || 'User',
+    email: email || '',
+    creation_date: metadata.creationTime,
+    avatar_url: photoURL || null,
     age: null,
   };
   // Stats
