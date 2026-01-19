@@ -1,3 +1,8 @@
+# Flutter generated plugin registrant files
+macos/Flutter/GeneratedPluginRegistrant.swift
+windows/flutter/generated_plugin_registrant.cc
+windows/flutter/generated_plugins.cmake
+
 # Miscellaneous
 *.class
 *.log
@@ -32,6 +37,11 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
+pubspec.lock
+
+# Firebase configuration files (contain sensitive API keys)
+android/app/google-services.json
+ios/Runner/GoogleService-Info.plist  
 
 # Symbolication related
 app.*.symbols
@@ -55,3 +65,7 @@ functions/*.js.map
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+# Node modules
+node_modules/
+package-lock.json
