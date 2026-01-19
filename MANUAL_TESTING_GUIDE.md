@@ -79,7 +79,7 @@ Before starting, ensure you have:
    del firestore.rules.backup
    ```
 
-**Expected Result:** ✅ Command completes without errors, file contains Firestore security rules
+**Expected Result:** Command completes without errors, file contains Firestore security rules
 
 ### Test 2b: Backup Indexes
 
@@ -110,7 +110,7 @@ Before starting, ensure you have:
    del firestore.indexes.json.backup
    ```
 
-**Expected Result:** ✅ Command completes without errors, file contains valid JSON with indexes array
+**Expected Result:** Command completes without errors, file contains valid JSON with indexes array
 
 ### Test 2c: Backup All
 
@@ -126,7 +126,7 @@ Before starting, ensure you have:
    dir firestore.indexes.json
    ```
 
-**Expected Result:** ✅ Both backup commands run successfully
+**Expected Result:** Both backup commands run successfully
 
 ---
 
@@ -155,7 +155,7 @@ Before starting, ensure you have:
    firebase firestore:rules
    ```
 
-**Expected Result:** ✅ Deploy completes without errors, rules are shown
+**Expected Result:** Deploy completes without errors, rules are shown
 
 ### Test 3b: Deploy Indexes
 
@@ -172,7 +172,7 @@ Before starting, ensure you have:
 
 3. Check that `users.profile.nickname` index is listed
 
-**Expected Result:** ✅ Deploy completes, nickname index is shown in the list
+**Expected Result:** Deploy completes, nickname index is shown in the list
 
 ### Test 3c: Deploy Functions
 
@@ -199,7 +199,7 @@ Before starting, ensure you have:
    - `onUserCreate`
    - `onResultWrite`
 
-**Expected Result:** ✅ Functions deploy successfully and are listed
+**Expected Result:** Functions deploy successfully and are listed
 
 ### Test 3d: Deploy All
 
@@ -248,7 +248,7 @@ Before starting, ensure you have:
    firebase use
    ```
 
-**Expected Result:** ✅ Can switch between projects, correct project is active
+**Expected Result:** Can switch between projects, correct project is active
 
 ---
 
@@ -319,7 +319,7 @@ type firestore.rules
 ```
 Your comment should be gone
 
-**Expected Result:** ✅ Complete cycle works: change → commit → deploy → backup → revert → deploy
+**Expected Result:** Complete cycle works: change → commit → deploy → backup → revert → deploy
 
 ---
 
@@ -351,7 +351,7 @@ Open browser to: `http://localhost:4000`
 - Go to Firestore tab
 - Check indexes section
 
-**Expected Result:** ✅ Rules and indexes deploy to emulator, tests pass
+**Expected Result:** Rules and indexes deploy to emulator, tests pass
 
 ---
 
@@ -376,7 +376,7 @@ Open browser to: `http://localhost:4000`
    - Where: `profile.nickname == 'testuser'`
 3. Query should execute without "index required" error
 
-**Expected Result:** ✅ Index exists and queries work without errors
+**Expected Result:** Index exists and queries work without errors
 
 ---
 
@@ -440,73 +440,4 @@ type firestore.rules
 ```
 Rules should be back to normal
 
-**Expected Result:** ✅ Can recover from bad deployment using Git history
-
----
-
-## Troubleshooting
-
-### Problem: "Firebase CLI not found"
-**Solution:**
-```bash
-npm install -g firebase-tools
-firebase login
-```
-
-### Problem: "Permission denied" during deploy
-**Solution:**
-```bash
-firebase login --reauth
-firebase projects:list
-firebase use projektgrupowy-ba8f2
-```
-
-### Problem: Backup command outputs empty file
-**Solution:**
-- No rules/indexes deployed yet in Firebase
-- Deploy first, then backup will work:
-  ```bash
-  npm run deploy:all
-  npm run backup:all
-  ```
-
-### Problem: Tests fail with connection errors
-**Solution:**
-- Start Firebase emulator:
-  ```bash
-  firebase emulators:start
-  ```
-- Or ensure internet connection for cloud deployment
-
----
-
-## Summary Checklist
-
-After completing all tests, you should have verified:
-
-- ✅ All configuration files exist in repository
-- ✅ `users.profile.nickname` index is defined
-- ✅ Backup commands export rules and indexes
-- ✅ Deploy commands upload to Firebase
-- ✅ Can switch between dev/prod environments
-- ✅ Full cycle works: export → commit → deploy
-- ✅ Works with Firebase emulator
-- ✅ Nickname index enables queries
-- ✅ Can rollback using Git history
-
-## Next Steps
-
-Once all manual tests pass:
-- ✅ Commit your changes
-- ✅ Create a Pull Request
-- ✅ Document any issues encountered
-- ✅ Set up CI/CD for automated deployments
-
----
-
-## Additional Resources
-
-- [Firebase CLI Documentation](https://firebase.google.com/docs/cli)
-- [Firestore Security Rules](https://firebase.google.com/docs/firestore/security/get-started)
-- [Firestore Indexes](https://firebase.google.com/docs/firestore/query-data/indexing)
-- [Cloud Functions](https://firebase.google.com/docs/functions)
+**Expected Result:** Can recover from bad deployment using Git history
