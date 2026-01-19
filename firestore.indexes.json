@@ -11,6 +11,16 @@
       ]
     },
     {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "profile.nickname",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
       "collectionGroup": "results",
       "queryScope": "COLLECTION",
       "fields": [
