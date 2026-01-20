@@ -94,10 +94,8 @@ class _PracticeScreenState extends State<PracticeScreen> {
       appBar: AppBar(
         backgroundColor: AppColors.practiceAppBarBackground,
         elevation: 0,
-        title: Text(
-          "Task ${sessionManager.completedCount + 1} / ${sessionManager.totalCount}",
-          style: AppTextStyles.practiceTitle,
-        ),
+        centerTitle: true,
+        title: Text("Multiply x ${widget.level}", style: AppTextStyles.practiceTitle),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.practiceCloseIcon),
           onPressed: () => context.go('/level/learn?level=${widget.level}'),

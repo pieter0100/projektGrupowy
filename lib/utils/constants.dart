@@ -22,6 +22,7 @@ class AppColors {
 
   // ProgressBar
   static const Color progressBackground = Color(0xFFE8E8E8);
+  static const Color progressFill = Color(0xFFF3C324);
 
   // Navigation (ScaffoldWithNav)
   static const Color navBackground = Color(0xFFE5E5E5);
@@ -102,7 +103,7 @@ class AppSizes {
   static const double fontSizeCardSmall = 56.0;
 
   // ProgressBar
-  static const double progressWidth = 270.0;
+  static const double progressWidth = 340.0;
   static const double progressHeight = 38.0;
   static const double progressRadius = 16.0;
 
@@ -228,8 +229,7 @@ class AppTextStyles {
   
   static const TextStyle typedQuestion = TextStyle( 
     fontSize: AppSizes.typedQuestionFontSize, 
-    color: AppColors.typedQuestionText, 
-    fontWeight: FontWeight.bold, 
+    color: AppColors.typedQuestionText,
   ); 
   
   static const TextStyle typedInput = TextStyle( 

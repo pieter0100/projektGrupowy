@@ -63,7 +63,6 @@ class _TypedScreenState extends State<TypedScreen> {
   void _onSkip() {
     if (_showFeedback) return;
     
-    // Ta funkcja jest wywoływana tylko w Practice (przycisk jest ukryty w Exam)
     setState(() {
       _isSkipHighlighted = true;
       _hintText = "Correct: ${_currentData.correctAnswer}";
@@ -87,13 +86,10 @@ class _TypedScreenState extends State<TypedScreen> {
       if (!mounted) return;
       
       if (widget.isPracticeMode) {
-        // W Practice: sukces zwiększa pasek, błąd traktujemy jak skip (zmiana pytania, pasek stoi)
         widget.onResult?.call(_isCorrect 
             ? StageResult(isCorrect: true, skipped: false) 
             : StageResult.skipped());
       } else {
-        // W EXAM: Zawsze idziemy dalej. 
-        // Nawet jeśli _isCorrect jest false, pasek w ExamSessionManager się przesunie.
         _moveToNextExamStage(_isCorrect);
       }
       _resetUI();
@@ -101,7 +97,6 @@ class _TypedScreenState extends State<TypedScreen> {
   }
 
   void _moveToNextExamStage(bool wasCorrect) {
-    // StageResult(skipped: false) sprawia, że pasek postępu idzie dalej
     _examManager!.nextStage(StageResult(isCorrect: wasCorrect, skipped: false));
     
     if (_examManager!.isFinished) {
@@ -139,7 +134,7 @@ class _TypedScreenState extends State<TypedScreen> {
           backgroundColor: AppColors.typedAppBarBackground,
           elevation: 0,
           centerTitle: true,
-          title: Text("Multiply by ${widget.level} ×", style: AppTextStyles.practiceTitle),
+          title: Text("Multiply x ${widget.level}", style: AppTextStyles.practiceTitle),
         ),
         body: Column(
           children: [

@@ -24,7 +24,7 @@ class ProgressBarWidget extends StatelessWidget {
             widthFactor: value.clamp(0.0, 1.0),
             child: Container(
               decoration: BoxDecoration(
-                color: AppColors.matchDefault,
+                color: AppColors.progressFill,
                 borderRadius: BorderRadius.circular(AppSizes.progressRadius),
               ),
             ),
