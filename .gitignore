@@ -49,6 +49,18 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
+# Node.js/NPM related
+node_modules/
+package-lock.json
+
+# Firebase Functions
+functions/lib/
+functions/node_modules/
+functions/*.js
+functions/*.js.map
+!functions/jest.config.js
+.firebase/
+
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
