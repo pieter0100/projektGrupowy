@@ -36,7 +36,7 @@ export const onUserCreate = functions.auth.user().onCreate(async (user: admin.au
 
 // onResultWrite: Ac users/{uid}/stats (nie podkolekcję)
 export const onResultWrite = functions.firestore
-  .document('results/{resultId}')
+  .document('user_results/{resultId}')
   .onCreate(async (snap: functions.firestore.QueryDocumentSnapshot, context: functions.EventContext) => {
     const result = snap.data() as { uid: string; score?: number; time?: number };
     const uid = result.uid;

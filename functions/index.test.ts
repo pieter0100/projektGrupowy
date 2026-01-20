@@ -21,6 +21,9 @@ const testEnv = functionsTest({
 
 
 describe('Cloud Functions (emulator)', () => {
+  // Increase timeout for emulator tests
+  jest.setTimeout(30000);
+
   beforeAll(async () => {
     // Admin already initialized above
   });
@@ -60,7 +63,7 @@ describe('Cloud Functions (emulator)', () => {
   it('should update stats on result write', async () => {
     const fakeSnap = testEnv.firestore.makeDocumentSnapshot(
       { uid: 'testuid', score: 100, time: 60 },
-      'results/testresultid'
+      'user_results/testresultid'
     );
     await testEnv.wrap(onResultWrite)(fakeSnap, {});
     const userDoc = await admin.firestore().collection('users').doc('testuid').get();
