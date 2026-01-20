@@ -4,20 +4,21 @@ import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
+import 'package:projekt_grupowy/models/level/level_progress.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
 
 class ExamSessionManager extends GameSessionManager {
-  
   static const int _totalStagesCount = 10;
-  
+
   int _correctCount = 0;
-  
+
   int get correctCount => _correctCount;
-  
+
   double getAccuracy() {
     if (totalCount == 0) return 0.0;
     return _correctCount / totalCount;
   }
-  
+
   @override
   void processStageResult(result) {
     if (result.isCorrect == true) {
@@ -25,14 +26,16 @@ class ExamSessionManager extends GameSessionManager {
     }
     super.processStageResult(result);
   }
-  
+
   @override
   List<GameStage> generateStages(LevelInfo level) {
     final stages = <GameStage>[];
     _correctCount = 0;
 
     // Get a shuffled set of 10 unique questions for the exam
-    final questions = QuestionProvider.getTypedQuestionsSet(level: level.levelNumber);
+    final questions = QuestionProvider.getTypedQuestionsSet(
+      level: level.levelNumber,
+    );
 
     for (final questionTyped in questions) {
       final data = TypedData(
@@ -44,14 +47,52 @@ class ExamSessionManager extends GameSessionManager {
 
     return stages;
   }
-  
+
   @override
   bool canSkipStage() {
     return false;
   }
-  
+
   @override
   bool shouldFinish() {
     return completedCount >= _totalStagesCount;
+  }
+
+  Future<void> saveProgress(String userId, String levelId) async {
+    // Kryterium zaliczenia (zgodne z TypedScreenEnd)
+    final bool isPassed = correctCount == 10;
+
+    // Pobierz istniejący postęp (jeśli jest)
+    final existingProgress = LocalSaves.getLevelProgress(userId, levelId);
+
+    // Oblicz nowe wartości
+    final int newAttempts = (existingProgress?.attempts ?? 0) + 1;
+    final int currentBestScore = existingProgress?.bestScore ?? 0;
+    final int newBestScore = correctCount > currentBestScore
+        ? correctCount
+        : currentBestScore;
+    final bool wasCompleted = existingProgress?.completed ?? false;
+
+    // Ustal datę pierwszego ukończenia
+    DateTime? firstCompleted;
+    if (existingProgress?.firstCompletedAt != null) {
+      firstCompleted = existingProgress!.firstCompletedAt;
+    } else if (isPassed) {
+      firstCompleted = DateTime.now();
+    }
+
+    // Stwórz nowy obiekt postępu
+    final newProgress = LevelProgress(
+      levelId: levelId,
+      bestScore: newBestScore,
+      bestTimeSeconds: 0, // Możesz tu dodać logikę czasu, jeśli ją mierzysz
+      attempts: newAttempts,
+      completed: wasCompleted || isPassed,
+      firstCompletedAt: firstCompleted,
+      lastPlayedAt: DateTime.now(),
+    );
+
+    // Zapisz do Hive
+    await LocalSaves.saveLevelProgress(userId, newProgress);
   }
 }
