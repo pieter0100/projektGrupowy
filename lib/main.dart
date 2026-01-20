@@ -3,19 +3,23 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'app_router.dart';
-import 'game_logic/local_saves.dart';
+//import 'game_logic/local_saves.dart';
 
 void main() async {
   // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
 
   // Initialize Hive and all adapters
-  await LocalSaves.init();
+  // await LocalSaves.init();
   // Run tests
-  await LocalSaves.testAllClasses();
+  // await LocalSaves.testAllClasses();
 
   // Initialize firebase
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  } catch (e) {
+    // Firebase already initialized, continue
+  }
   runApp(MyApp());
 }
 
