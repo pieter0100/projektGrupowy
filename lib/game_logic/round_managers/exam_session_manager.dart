@@ -85,7 +85,7 @@ class ExamSessionManager extends GameSessionManager {
     final newProgress = LevelProgress(
       levelId: levelId,
       bestScore: newBestScore,
-      bestTimeSeconds: 0, // Możesz tu dodać logikę czasu, jeśli ją mierzysz
+      bestTimeSeconds: 0,
       attempts: newAttempts,
       completed: wasCompleted || isPassed,
       firstCompletedAt: firstCompleted,
