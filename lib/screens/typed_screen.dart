@@ -138,11 +138,8 @@ class _TypedScreenState extends State<TypedScreen> {
         ),
         body: Column(
           children: [
-            const SizedBox(height: AppSizes.typedProgressTopMargin),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 50.0),
-              child: ProgressBarWidget(value: _examManager!.getProgress()),
-            ),
+            const SizedBox(height: AppSizes.practiceTopSpacing),
+            ProgressBarWidget(value: _examManager!.getProgress()),
             Expanded(child: _buildMainContent()),
           ],
         ),

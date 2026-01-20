@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:firebase_core/firebase_core.dart';
+//import 'package:firebase_core/firebase_core.dart';
 
 import 'app_router.dart';
 import 'game_logic/local_saves.dart';
@@ -16,7 +16,7 @@ void main() async {
   await LocalSaves.testAllClasses();
 
   // Initialize firebase
-  await Firebase.initializeApp();
+  //await Firebase.initializeApp();
   runApp(MyApp());
 }
 
