@@ -102,7 +102,7 @@ class AppSizes {
   static const double fontSizeCardSmall = 56.0;
 
   // ProgressBar
-  static const double progressWidth = 371.0;
+  static const double progressWidth = 270.0;
   static const double progressHeight = 38.0;
   static const double progressRadius = 16.0;
 

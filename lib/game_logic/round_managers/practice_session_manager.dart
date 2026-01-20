@@ -4,6 +4,7 @@ import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
+import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/services/card_generator.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 
@@ -11,11 +12,50 @@ class PracticeSessionManager extends GameSessionManager {
   
   static const int _totalStagesCount = 6;
   static const int _pairsAmount = 3;
+
+  @override
+  int get totalCount => _totalStagesCount;
   
   // for anti-series logic
   final List<StageType> _typeHistory = [];
   final Random _random = Random();
+  LevelInfo? _currentLevel;
   
+  @override
+  void start(LevelInfo level) {
+    _currentLevel = level;
+    _typeHistory.clear();
+    super.start(level);
+  }
+
+  @override
+  void nextStage(StageResult result) {
+    // Jeśli użytkownik użył "Don't know" (skip) lub odpowiedział błędnie w Practice:
+    // Dodajemy nowe pytanie, aby musiał "odrobić" tę stratę.
+    if (result.skipped || !result.isCorrect) {
+      final type = selectNextType();
+      final data = generateStageData(type, _currentLevel!);
+      stages.add(GameStage(type: type, data: data));
+      
+      // Zawsze wywołujemy super jako skipped, aby NIE zwiększać completedCount (paska)
+      super.nextStage(StageResult.skipped());
+    } else {
+      // Poprawna odpowiedź - standardowy postęp
+      super.nextStage(result);
+    }
+  }
+
+  @override
+  double getProgress() {
+    // Pasek postępu bazuje na stałej liczbie 6, a nie na długości listy stages
+    return completedCount / _totalStagesCount;
+  }
+
+  @override
+  bool shouldFinish() {
+    return completedCount >= _totalStagesCount;
+  }
+
   @override
   List<GameStage> generateStages(LevelInfo level) {
     final stages = <GameStage>[];
@@ -33,11 +73,6 @@ class PracticeSessionManager extends GameSessionManager {
   @override
   bool canSkipStage() {
     return currentType == StageType.typed;
-  }
-  
-  @override
-  bool shouldFinish() {
-    return completedCount >= _totalStagesCount;
   }
 
   StageType selectNextType() {

@@ -97,8 +97,13 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: '/level/learn/exam/end',
       builder: (context, state) {
-        final level = state.uri.queryParameters['level'] ?? "1";
-        return ExamTypedEndScreen(level: level);
+        final levelStr = state.uri.queryParameters['level'] ?? "1";
+        final scoreStr = state.uri.queryParameters['score'] ?? "0";
+
+        return ExamTypedEndScreen(
+          level: int.tryParse(levelStr) ?? 1,
+          score: int.tryParse(scoreStr) ?? 0,
+        );
       },
     ),
   ], 

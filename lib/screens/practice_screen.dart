@@ -99,7 +99,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
           style: AppTextStyles.practiceTitle,
         ),
         leading: IconButton(
-          icon: const Icon(Icons.close, color: AppColors.practiceCloseIcon),
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.practiceCloseIcon),
           onPressed: () => context.go('/level/learn?level=${widget.level}'),
         ),
       ),
@@ -143,7 +143,9 @@ class _PracticeScreenState extends State<PracticeScreen> {
             level: int.tryParse(widget.level ?? '1') ?? 1,
             isPracticeMode: true,
             data: stage.data as TypedData,
-            onSuccess: onComplete,
+            onResult: (result) {
+              sessionManager.nextStage(result);
+            },
           );
 
       case StageType.pairs:

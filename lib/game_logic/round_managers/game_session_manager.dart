@@ -7,7 +7,7 @@ import 'package:projekt_grupowy/models/level/level.dart';
 abstract class GameSessionManager extends ChangeNotifier {
   
   int? _currentStage;
-  List<GameStage> _stages = [];
+  List<GameStage> stages = [];
   int _completedCount = 0;
   bool _isFinished = false;
     
@@ -16,22 +16,22 @@ abstract class GameSessionManager extends ChangeNotifier {
   
   int get completedCount => _completedCount;
   
-  int get totalCount => _stages.length;  
+  int get totalCount => stages.length;  
   
   bool get isFinished => _isFinished;
   
   GameStage? get currentStageObject {
-    if (_currentStage == null || _currentStage! >= _stages.length) {
+    if (_currentStage == null || _currentStage! >= stages.length) {
       return null;
     }
-    return _stages[_currentStage!];
+    return stages[_currentStage!];
   }
   
   StageType? get currentType {
-    if (_currentStage == null || _currentStage! >= _stages.length) {
+    if (_currentStage == null || _currentStage! >= stages.length) {
       return null;
     }
-    return _stages[_currentStage!].type;
+    return stages[_currentStage!].type;
   }
   
   // starts the game session with the given level
@@ -39,7 +39,7 @@ abstract class GameSessionManager extends ChangeNotifier {
   // can be called multiple times to restart/retake a level
   void start(LevelInfo level) {
     // reset all state to allow restarting
-    _stages = generateStages(level);
+    stages = generateStages(level);
     _currentStage = 0;
     _completedCount = 0;
     _isFinished = false;
@@ -84,7 +84,7 @@ abstract class GameSessionManager extends ChangeNotifier {
       _currentStage = _currentStage! + 1;
 
       // check if we exceeded the number of stages (player completed the last stage)
-      if (_currentStage! >= _stages.length) {
+      if (_currentStage! >= stages.length) {
         _isFinished = true;
         _currentStage = null;
       }
