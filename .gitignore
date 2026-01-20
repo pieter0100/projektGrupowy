@@ -1,0 +1,92 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code
+.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+build/
+coverage/
+
+# Duplicate application folder (not needed)
+aplication/
+
+# Symbolication related
+app.*.symbols
+
+# Obfusculation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+android/
+
+# iOS generated files
+ios/
+
+# macOS generated files
+macos/
+
+# Windows generated files
+windows/
+
+# Linux generated files
+linux/
+
+
+# Firebase
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+
+# Node.js / Functions
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Functions build artifacts
+functions/node_modules/
+functions/lib/
+functions/.runtimeconfig.json
+functions/package-lock.json
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Test coverage
+coverage/
+*.lcov
+
+# Generated files
+*.g.dart
+*.freezed.dart
+*.mocks.dart
