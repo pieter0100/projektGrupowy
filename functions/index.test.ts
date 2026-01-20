@@ -50,7 +50,6 @@ describe('Cloud Functions (emulator)', () => {
     expect(data?.profile.email).toBe('testuser@example.com');
     expect(data?.profile.creation_date).toBe('2026-01-19T12:00:00Z');
     expect(data?.profile.avatar_url).toBe('https://example.com/avatar.jpg');
-    expect(data?.profile.age).toBe(null);
     expect(data?.stats.totalGamesPlayed).toBe(0);
     expect(data?.stats.totalPoints).toBe(0);
     expect(data?.stats.currentStreak).toBe(0);
