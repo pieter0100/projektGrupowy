@@ -11,6 +11,7 @@ import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
 
 import 'package:projekt_grupowy/screens/match_pairs_screen.dart';
 import 'package:projekt_grupowy/screens/MC_screen.dart';
+import 'package:projekt_grupowy/screens/typed_screen.dart';
 
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 import 'package:projekt_grupowy/utils/constants.dart';
@@ -134,6 +135,16 @@ class _PracticeScreenState extends State<PracticeScreen> {
           data: stage.data as MultipleChoiceData,
           onSuccess: onComplete,
         );
+
+      case StageType.typed:
+        case StageType.typed:
+          return TypedScreen(
+            key: ValueKey(sessionManager.currentStage),
+            level: int.tryParse(widget.level ?? '1') ?? 1,
+            isPracticeMode: true,
+            data: stage.data as TypedData,
+            onSuccess: onComplete,
+          );
 
       case StageType.pairs:
         return MatchPairsScreen(

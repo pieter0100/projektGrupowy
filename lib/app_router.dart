@@ -87,7 +87,10 @@ final GoRouter appRouter = GoRouter(
       path: '/level/learn/exam',
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
-        return TypedScreen(level: int.parse(level));
+        return TypedScreen(
+          level: int.parse(level), 
+          isPracticeMode: false,
+        );
       },
     ),
 

@@ -43,6 +43,7 @@ class PracticeSessionManager extends GameSessionManager {
   StageType selectNextType() {
     final available = [
       StageType.multipleChoice,
+      StageType.typed,
       StageType.pairs,
     ];
     // anti-series: avoid repeating the same type more than twice in a row
