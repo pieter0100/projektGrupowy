@@ -59,13 +59,10 @@ class ExamSessionManager extends GameSessionManager {
   }
 
   Future<void> saveProgress(String userId, String levelId) async {
-    // Kryterium zaliczenia (zgodne z TypedScreenEnd)
     final bool isPassed = correctCount == 10;
 
-    // Pobierz istniejący postęp (jeśli jest)
     final existingProgress = LocalSaves.getLevelProgress(userId, levelId);
 
-    // Oblicz nowe wartości
     final int newAttempts = (existingProgress?.attempts ?? 0) + 1;
     final int currentBestScore = existingProgress?.bestScore ?? 0;
     final int newBestScore = correctCount > currentBestScore
@@ -73,7 +70,6 @@ class ExamSessionManager extends GameSessionManager {
         : currentBestScore;
     final bool wasCompleted = existingProgress?.completed ?? false;
 
-    // Ustal datę pierwszego ukończenia
     DateTime? firstCompleted;
     if (existingProgress?.firstCompletedAt != null) {
       firstCompleted = existingProgress!.firstCompletedAt;
@@ -81,7 +77,6 @@ class ExamSessionManager extends GameSessionManager {
       firstCompleted = DateTime.now();
     }
 
-    // Stwórz nowy obiekt postępu
     final newProgress = LevelProgress(
       levelId: levelId,
       bestScore: newBestScore,
@@ -92,7 +87,6 @@ class ExamSessionManager extends GameSessionManager {
       lastPlayedAt: DateTime.now(),
     );
 
-    // Zapisz do Hive
     await LocalSaves.saveLevelProgress(userId, newProgress);
   }
 }
