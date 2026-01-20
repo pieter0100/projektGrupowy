@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class ProgressBarWidget extends StatelessWidget {
 
   const ProgressBarWidget({super.key});
@@ -7,11 +9,11 @@ class ProgressBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 371,
-      height: 38,
+      width: AppSizes.progressWidth,
+      height: AppSizes.progressHeight,
       decoration: BoxDecoration(
-        color: const Color(0xFFE8E8E8),
-        borderRadius: BorderRadius.circular(16),
+        color: AppColors.progressBackground,
+        borderRadius: BorderRadius.circular(AppSizes.progressRadius),
       ),
     );
   }

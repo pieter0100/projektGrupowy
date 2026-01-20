@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class LevelWidget extends StatelessWidget {
   final String textInside;
   final bool isLocked;
@@ -9,35 +11,31 @@ class LevelWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: EdgeInsets.all(AppSizes.levelCircleMargin),
       decoration: BoxDecoration(
         shape: BoxShape.circle,
-        border: Border.all(color: Color(0xFFC4C4C4), width: 10),
+        border: Border.all(color: AppColors.levelCircleBorder, width: AppSizes.levelCircleBorderOuter),
       ),
-      width: 140,
-      height: 140,
+      width: AppSizes.levelCircleSize,
+      height: AppSizes.levelCircleSize,
       child: Center(
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 5),
-            color: Color(0xFF72BFC7),
+            border: Border.all(color: AppColors.levelCircleInnerBorder, width: AppSizes.levelCircleBorderInner),
+            color: AppColors.levelCircleFill,
           ),
           child: (isLocked)
               ? Center(
                   child: Opacity(
                     opacity: 0.5,
-                    child: Icon(Icons.lock, color: Colors.black, size: 50.0),
+                    child: Icon(Icons.lock, color: AppColors.black, size: AppSizes.iconLarge),
                   ),
                 )
               : Center(
                   child: Text(
                     textInside,
-                    style: TextStyle(
-                      fontFamily: 'Roboto',
-                      fontSize: 40.0,
-                      color: Colors.white,
-                    ),
+                    style: AppTextStyles.levelText,
                   ),
                 ),
         ),

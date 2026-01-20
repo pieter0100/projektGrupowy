@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/settings_data_widget.dart';
 import 'package:projekt_grupowy/widgets/settings_delete_widget.dart';
 
@@ -17,19 +18,19 @@ class SettingsScreen extends StatelessWidget {
         ),
         title: Text('Settings'),
         centerTitle: true,
-        backgroundColor: Color(0xFFE5E5E5),
+        backgroundColor: AppColors.appBarBackground,
         scrolledUnderElevation: 0.0,
       ),
       body: ListView(
         children: [
-          SizedBox(height: 40),
+          SizedBox(height: AppSizes.screenPaddingTop),
           Center(child: SettingsDataWidget("Personal data")),
-          SizedBox(height: 40),
+          SizedBox(height: AppSizes.screenPaddingTop),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               SettingsDeleteWidget("Delete account"),
-              SizedBox(height: 8),
+              SizedBox(height: AppSizes.spacingSmall),
             ],
           ),
         ],
