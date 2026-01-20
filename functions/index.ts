@@ -16,7 +16,6 @@ export const onUserCreate = functions.auth.user().onCreate(async (user: admin.au
     email: email || '',
     creation_date: metadata.creationTime,
     avatar_url: photoURL || null,
-    age: null,
   };
   // Stats
   const stats = {
