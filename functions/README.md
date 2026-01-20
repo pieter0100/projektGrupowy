@@ -14,8 +14,10 @@ This directory contains Firebase Cloud Functions that handle server-side operati
 ```json
 {
   "profile": {
-    "displayName": "User Name",
-    "age": null
+    "username": "User Name",
+    "email": "user@example.com",
+    "creation_date": "2026-01-19T12:00:00Z",
+    "avatar_url": null
   },
   "stats": {
     "totalGamesPlayed": 0,
@@ -28,7 +30,7 @@ This directory contains Firebase Cloud Functions that handle server-side operati
 ```
 
 ### `onResultWrite`
-**Trigger:** New document created in `results/` collection  
+**Trigger:** New document created in `user_results/` collection  
 **Purpose:** Updates user statistics when a game result is saved
 
 **Updates:** `users/{uid}/stats`
