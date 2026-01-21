@@ -1,20 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
-void main() {
-  runApp(const MainApp());
+import 'app_router.dart';
+import 'game_logic/local_saves.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await LocalSaves.init();
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint("Firebase initialization error: $e");
+  }
+
+  runApp(const MyApp());
 }
 
-class MainApp extends StatelessWidget {
-  const MainApp({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
-        ),
-      ),
+    return MaterialApp.router(
+      routerConfig: appRouter,
+      title: 'Multiplication Game',
+      debugShowCheckedModeBanner: false,
     );
   }
 }
