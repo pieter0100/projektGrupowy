@@ -10,7 +10,7 @@ import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
 
 import 'package:projekt_grupowy/screens/match_pairs_screen.dart';
-import 'package:projekt_grupowy/screens/MC_screen.dart';
+import 'package:projekt_grupowy/screens/mc_screen.dart';
 import 'package:projekt_grupowy/screens/typed_screen.dart';
 
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
@@ -76,16 +76,12 @@ class _PracticeScreenState extends State<PracticeScreen> {
   @override
   Widget build(BuildContext context) {
     if (!_initialized) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     final currentStage = sessionManager.currentStageObject;
     if (currentStage == null) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     return Scaffold(
@@ -95,9 +91,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
         backgroundColor: AppColors.practiceAppBarBackground,
         elevation: 0,
         centerTitle: true,
-        title: Text("Multiply x ${widget.level}", style: AppTextStyles.practiceTitle),
+        title: Text(
+          "Multiply x ${widget.level}",
+          style: AppTextStyles.practiceTitle,
+        ),
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.practiceCloseIcon),
+          icon: const Icon(
+            Icons.arrow_back_ios_new,
+            color: AppColors.practiceCloseIcon,
+          ),
           onPressed: () => context.go('/level/learn?level=${widget.level}'),
         ),
       ),
@@ -108,9 +110,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
           ProgressBarWidget(value: sessionManager.getProgress()),
           const SizedBox(height: AppSizes.practiceProgressSpacing),
 
-          Expanded(
-            child: _buildCurrentGame(currentStage),
-          ),
+          Expanded(child: _buildCurrentGame(currentStage)),
         ],
       ),
     );
@@ -118,12 +118,7 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
   Widget _buildCurrentGame(GameStage stage) {
     void onComplete() {
-      sessionManager.nextStage(
-        StageResult(
-          isCorrect: true,
-          skipped: false,
-        ),
-      );
+      sessionManager.nextStage(StageResult(isCorrect: true, skipped: false));
     }
 
     switch (stage.type) {
@@ -135,16 +130,15 @@ class _PracticeScreenState extends State<PracticeScreen> {
         );
 
       case StageType.typed:
-        case StageType.typed:
-          return TypedScreen(
-            key: ValueKey(sessionManager.currentStage),
-            level: int.tryParse(widget.level ?? '1') ?? 1,
-            isPracticeMode: true,
-            data: stage.data as TypedData,
-            onResult: (result) {
-              sessionManager.nextStage(result);
-            },
-          );
+        return TypedScreen(
+          key: ValueKey(sessionManager.currentStage),
+          level: int.tryParse(widget.level ?? '1') ?? 1,
+          isPracticeMode: true,
+          data: stage.data as TypedData,
+          onResult: (result) {
+            sessionManager.nextStage(result);
+          },
+        );
 
       case StageType.pairs:
         return MatchPairsScreen(
@@ -152,9 +146,6 @@ class _PracticeScreenState extends State<PracticeScreen> {
           data: stage.data as PairsData,
           onSuccess: onComplete,
         );
-
-      default:
-        return const SizedBox.shrink();
     }
   }
 }

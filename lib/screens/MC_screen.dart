@@ -9,11 +9,7 @@ class McScreen extends StatefulWidget {
   final MultipleChoiceData data;
   final VoidCallback onSuccess;
 
-  const McScreen({
-    super.key,
-    required this.data,
-    required this.onSuccess,
-  });
+  const McScreen({super.key, required this.data, required this.onSuccess});
 
   @override
   State<McScreen> createState() => _McScreenState();
@@ -127,14 +123,11 @@ class _McScreenState extends State<McScreen> {
   }
 
   Widget _buildCard(int index) {
-    return Container(
-      margin: const EdgeInsets.all(AppSizes.mcCardMargin),
-      child: MatchPairsWidget(
-        cards[index],
-        isMatched: cards[index].isMatched,
-        isSelected: false,
-        onTap: () => _onOptionSelected(index),
-      ),
+    return MatchPairsWidget(
+      cards[index],
+      isMatched: cards[index].isMatched,
+      isSelected: false,
+      onTap: () => _onOptionSelected(index),
     );
   }
 }

@@ -8,7 +8,6 @@ import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
-import 'package:projekt_grupowy/services/auth_service.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
@@ -176,12 +175,6 @@ class TypedScreenState extends State<TypedScreen> {
   }
 
   Widget _buildContent() {
-    // Logika koloru tła:
-    // Jeśli feedback jest włączony:
-    //  - Jeśli to "Don't Know" -> Domyślny (neutralny/szary)
-    //  - Jeśli Poprawne -> Zielony
-    //  - Jeśli Błędne -> Czerwony
-    // W przeciwnym razie -> Domyślny
     Color fillColor;
     if (_showFeedback) {
       if (_isDontKnow) {
@@ -205,12 +198,10 @@ class TypedScreenState extends State<TypedScreen> {
               textAlign: TextAlign.center,
             ),
 
-            // Kontener z paddingiem zawierający TextField i Przycisk
             Padding(
               padding: const EdgeInsets.all(35.0),
               child: Column(
-                crossAxisAlignment:
-                    CrossAxisAlignment.end, // Wyrównanie do prawej
+                crossAxisAlignment: CrossAxisAlignment.end,
                 children: [
                   TextField(
                     controller: _textController,
@@ -220,7 +211,25 @@ class TypedScreenState extends State<TypedScreen> {
                     decoration: InputDecoration(
                       hintText: placeHolder,
                       filled: true,
-                      fillColor: fillColor, // Używamy nowej logiki kolorów
+                      fillColor: fillColor,
+
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.typedInputBorderRadius,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.typedInputBorderRadius,
+                        ),
+                        borderSide: const BorderSide(
+                          color: AppColors.typedFocusedBorder,
+                          width: 3.0,
+                        ),
+                      ),
+
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(
                           AppSizes.typedInputBorderRadius,
@@ -231,7 +240,6 @@ class TypedScreenState extends State<TypedScreen> {
                     textInputAction: TextInputAction.done,
                   ),
 
-                  // Przycisk "Don't know" - tylko w trybie Practice i gdy nie ma jeszcze wyniku
                   if (widget.isPracticeMode && !_showFeedback)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -241,7 +249,7 @@ class TypedScreenState extends State<TypedScreen> {
                           "Don't know",
                           style: TextStyle(
                             color: AppColors.typedSkipText,
-                            fontSize: 16, // Nieco mniejsza czcionka
+                            fontSize: 16,
                             decoration: TextDecoration.underline,
                           ),
                         ),

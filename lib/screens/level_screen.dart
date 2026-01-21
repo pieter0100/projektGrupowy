@@ -5,7 +5,6 @@ import '../game_logic/local_saves.dart';
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
 // Imports for initalizing user data
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
 import 'package:projekt_grupowy/models/user/user_stats.dart';
 import 'package:projekt_grupowy/models/user/user_profile.dart';
@@ -63,9 +62,7 @@ class _LevelScreenState extends State<LevelScreen> {
         );
         await LocalSaves.saveLevel(levelInfo);
       }
-      print("Zainicjowano informacje o poziomach.");
-
-      // Odśwież widok po zapisie danych
+      // Refresh the view after saving data
       if (mounted) setState(() {});
     }
   }
@@ -87,7 +84,7 @@ class _LevelScreenState extends State<LevelScreen> {
             const SizedBox(width: AppSizes.spacingSmall),
             Icon(
               Icons.local_fire_department,
-              color: AppColors.Orange,
+              color: AppColors.orange,
               size: AppSizes.iconMedium,
             ),
             const SizedBox(width: AppSizes.spacingTiny),
@@ -95,13 +92,13 @@ class _LevelScreenState extends State<LevelScreen> {
               '3',
               style: TextStyle(
                 fontSize: AppSizes.fontSizeStats,
-                color: AppColors.Orange,
+                color: AppColors.orange,
               ),
             ),
             const SizedBox(width: AppSizes.spacingSmall),
             Icon(
               Icons.diamond,
-              color: AppColors.Blue,
+              color: AppColors.blue,
               size: AppSizes.iconMedium,
             ),
             const SizedBox(width: AppSizes.spacingTiny),
@@ -109,7 +106,7 @@ class _LevelScreenState extends State<LevelScreen> {
               '1432 XP',
               style: TextStyle(
                 fontSize: AppSizes.fontSizeStats,
-                color: AppColors.Blue,
+                color: AppColors.blue,
               ),
             ),
           ],

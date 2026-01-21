@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import 'widgets/scaffold_with_nav.dart';
@@ -87,10 +86,7 @@ final GoRouter appRouter = GoRouter(
       path: '/level/learn/exam',
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
-        return TypedScreen(
-          level: int.parse(level),
-          isPracticeMode: false,
-        );
+        return TypedScreen(level: int.parse(level), isPracticeMode: false);
       },
     ),
 

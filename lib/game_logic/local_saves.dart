@@ -71,7 +71,10 @@ class LocalSaves {
     }
   }
 
-  static Future<void> updateUserProfile(String userId, UserProfile newProfile) async {
+  static Future<void> updateUserProfile(
+    String userId,
+    UserProfile newProfile,
+  ) async {
     final user = getUser(userId);
     if (user != null) {
       final updatedUser = user.copyWith(profile: newProfile);
@@ -87,7 +90,10 @@ class LocalSaves {
 
   // === LEVEL PROGRESS OPERATIONS ===
 
-  static Future<void> saveLevelProgress(String userId, LevelProgress progress) async {
+  static Future<void> saveLevelProgress(
+    String userId,
+    LevelProgress progress,
+  ) async {
     final box = Hive.box<LevelProgress>(levelProgressBoxName);
     final key = '${userId}_${progress.levelId}';
     await box.put(key, progress);
@@ -141,15 +147,16 @@ class LocalSaves {
     final requirements = levelInfo.unlockRequirements;
 
     // Check points requirement
-    if (requirements.minPoints != null &&
-        requirements.minPoints! > user.stats.totalPoints) {
+    if (requirements.minPoints > user.stats.totalPoints) {
       return false;
     }
 
     // Check previous level requirement
     if (requirements.previousLevelId != null) {
-      final previousProgress =
-          getLevelProgress(userId, requirements.previousLevelId!);
+      final previousProgress = getLevelProgress(
+        userId,
+        requirements.previousLevelId!,
+      );
 
       if (previousProgress == null || !previousProgress.completed) {
         return false;
