@@ -12,7 +12,7 @@ import 'screens/practice_end_screen.dart';
 import 'screens/typed_screen.dart';
 import 'screens/typed_screen_end.dart';
 
-final GoRouter appRouter = GoRouter( 
+final GoRouter appRouter = GoRouter(
   initialLocation: '/level',
   routes: [
     StatefulShellRoute.indexedStack(
@@ -88,7 +88,7 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
         return TypedScreen(
-          level: int.parse(level), 
+          level: int.parse(level),
           isPracticeMode: false,
         );
       },
@@ -106,5 +106,5 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
-  ], 
+  ],
 );

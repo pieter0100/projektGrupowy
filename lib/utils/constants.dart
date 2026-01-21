@@ -60,13 +60,13 @@ class AppColors {
   static const Color typedSkipText = Color(0xFF757575);
 
   // TypedScreenEnd
-  static const Color examEndTitle = AppColors.black; 
-  static const Color examEndButtonBackground = AppColors.levelCircleFill; 
+  static const Color examEndTitle = AppColors.black;
+  static const Color examEndButtonBackground = AppColors.levelCircleFill;
   static const Color examEndButtonText = AppColors.white;
 
   // PracticeScreen
-  static const Color practiceAppBarBackground = AppColors.appBarBackground; 
-  static const Color practiceTitle = AppColors.black; 
+  static const Color practiceAppBarBackground = AppColors.appBarBackground;
+  static const Color practiceTitle = AppColors.black;
   static const Color practiceCloseIcon = AppColors.black;
 
   // General
@@ -153,15 +153,15 @@ class AppSizes {
   static const double typedInputSpacing = 20.0;
 
   // TypedScreenEnd
-  static const double examEndTitleSize = 32.0; 
-  static const double examEndSpacing = 20.0; 
-  static const double examEndButtonFontSize = 20.0; 
-  static const double examEndButtonWidth = 200.0; 
-  static const double examEndButtonHeight = 55.0; 
+  static const double examEndTitleSize = 32.0;
+  static const double examEndSpacing = 20.0;
+  static const double examEndButtonFontSize = 20.0;
+  static const double examEndButtonWidth = 200.0;
+  static const double examEndButtonHeight = 55.0;
 
   // PracticeScreen
-  static const double practiceAppBarFontSize = 20.0; 
-  static const double practiceTopSpacing = 10.0; 
+  static const double practiceAppBarFontSize = 20.0;
+  static const double practiceTopSpacing = 10.0;
   static const double practiceProgressSpacing = 20.0;
 
   //Screen Spacings
@@ -254,10 +254,10 @@ class AppTextStyles {
     fontWeight: FontWeight.w600,
   );
 
-  static const TextStyle practiceTitle = TextStyle( 
-    fontSize: AppSizes.practiceAppBarFontSize, 
-    color: AppColors.practiceTitle, 
-    fontWeight: FontWeight.w600, 
+  static const TextStyle practiceTitle = TextStyle(
+    fontSize: AppSizes.practiceAppBarFontSize,
+    color: AppColors.practiceTitle,
+    fontWeight: FontWeight.w600,
   );
 
   static const TextStyle learnLabel = TextStyle(

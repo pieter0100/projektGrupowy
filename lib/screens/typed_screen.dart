@@ -56,13 +56,13 @@ class _TypedScreenState extends State<TypedScreen> {
     _examManager!.start(levelData);
   }
 
-  TypedData get _currentData => widget.isPracticeMode 
-      ? widget.data! 
+  TypedData get _currentData => widget.isPracticeMode
+      ? widget.data!
       : (_examManager!.currentStageObject!.data as TypedData);
 
   void _onSkip() {
     if (_showFeedback) return;
-    
+
     setState(() {
       _isSkipHighlighted = true;
       _hintText = "Correct: ${_currentData.correctAnswer}";
@@ -84,10 +84,10 @@ class _TypedScreenState extends State<TypedScreen> {
 
     Future.delayed(const Duration(milliseconds: 1000), () {
       if (!mounted) return;
-      
+
       if (widget.isPracticeMode) {
-        widget.onResult?.call(_isCorrect 
-            ? StageResult(isCorrect: true, skipped: false) 
+        widget.onResult?.call(_isCorrect
+            ? StageResult(isCorrect: true, skipped: false)
             : StageResult.skipped());
       } else {
         _moveToNextExamStage(_isCorrect);
@@ -98,11 +98,11 @@ class _TypedScreenState extends State<TypedScreen> {
 
   void _moveToNextExamStage(bool wasCorrect) {
     _examManager!.nextStage(StageResult(isCorrect: wasCorrect, skipped: false));
-    
+
     if (_examManager!.isFinished) {
       context.go('/level/learn/exam/end?level=${widget.level}&score=${_examManager!.correctCount}');
     } else {
-      setState(() {}); 
+      setState(() {});
     }
   }
 
@@ -182,7 +182,7 @@ class _TypedScreenState extends State<TypedScreen> {
               ),
               onSubmitted: _handleSubmit,
             ),
-            
+
             if (widget.isPracticeMode) ...[
               const SizedBox(height: AppSizes.typedInputSpacing),
               Align(
@@ -190,7 +190,7 @@ class _TypedScreenState extends State<TypedScreen> {
                 child: TextButton(
                   onPressed: _showFeedback ? null : _onSkip,
                   child: Text(
-                    "Don't know?", 
+                    "Don't know?",
                     style: AppTextStyles.typedSkip.copyWith(
                       decoration: _isSkipHighlighted ? TextDecoration.underline : TextDecoration.none
                     )
