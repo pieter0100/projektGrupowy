@@ -37,8 +37,8 @@ class AppColors {
   static const Color settingsAccountIcon = Color.fromARGB(255, 206, 190, 245);
 
   // LevelScreen
-  static const Color Orange = Color(0xFFEB9F4A);
-  static const Color Blue = Color(0xFF338F9B);
+  static const Color orange = Color(0xFFEB9F4A);
+  static const Color blue = Color(0xFF338F9B);
 
   // McScreen
   static const Color appBarBackgroundMC = Color(0xFFE5E5E5);

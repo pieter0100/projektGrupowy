@@ -8,7 +8,6 @@ import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
-import 'package:projekt_grupowy/services/auth_service.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
