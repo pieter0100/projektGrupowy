@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
+import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
+
 import 'package:projekt_grupowy/game_logic/round_managers/exam_session_manager.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
-import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
+import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
-import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
-import 'package:projekt_grupowy/utils/constants.dart';
+import 'package:projekt_grupowy/services/auth_service.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
@@ -23,184 +25,274 @@ class TypedScreen extends StatefulWidget {
   });
 
   @override
-  State<TypedScreen> createState() => _TypedScreenState();
+  TypedScreenState createState() => TypedScreenState();
 }
 
-class _TypedScreenState extends State<TypedScreen> {
+class TypedScreenState extends State<TypedScreen> {
+  ExamSessionManager? sessionManager;
+
   final TextEditingController _textController = TextEditingController();
-  ExamSessionManager? _examManager;
+
+  String questionText = "Loading...";
+  String placeHolder = "Type the answer";
   bool _showFeedback = false;
   bool _isCorrect = false;
-  bool _isSkipHighlighted = false;
-  String? _hintText;
+  // Nowa zmienna, aby rozróżnić błąd od "nie wiem"
+  bool _isDontKnow = false;
 
   @override
   void initState() {
     super.initState();
-    if (!widget.isPracticeMode) {
-      _examManager = ExamSessionManager();
-      _startExam();
-    }
-  }
 
-  void _startExam() {
-    final levelData = LevelInfo(
-      levelNumber: widget.level,
-      levelId: widget.level.toString(),
-      name: "Exam",
-      description: "",
-      unlockRequirements: UnlockRequirements(minPoints: 0, previousLevelId: null),
-      rewards: Rewards(points: 0),
-      isRevision: false,
-    );
-    _examManager!.start(levelData);
-  }
-
-  TypedData get _currentData => widget.isPracticeMode
-      ? widget.data!
-      : (_examManager!.currentStageObject!.data as TypedData);
-
-  void _onSkip() {
-    if (_showFeedback) return;
-
-    setState(() {
-      _isSkipHighlighted = true;
-      _hintText = "Correct: ${_currentData.correctAnswer}";
-    });
-
-    Future.delayed(const Duration(seconds: 2), () {
-      if (!mounted) return;
-      widget.onResult?.call(StageResult.skipped());
-      _resetUI();
-    });
-  }
-
-  void _handleSubmit(String value) {
-    if (value.trim().isEmpty || _showFeedback) return;
-    final userAnswer = int.tryParse(value.trim());
-    _isCorrect = userAnswer == _currentData.correctAnswer;
-
-    setState(() => _showFeedback = true);
-
-    Future.delayed(const Duration(milliseconds: 1000), () {
-      if (!mounted) return;
-
-      if (widget.isPracticeMode) {
-        widget.onResult?.call(_isCorrect
-            ? StageResult(isCorrect: true, skipped: false)
-            : StageResult.skipped());
-      } else {
-        _moveToNextExamStage(_isCorrect);
-      }
-      _resetUI();
-    });
-  }
-
-  void _moveToNextExamStage(bool wasCorrect) {
-    _examManager!.nextStage(StageResult(isCorrect: wasCorrect, skipped: false));
-
-    if (_examManager!.isFinished) {
-      context.go('/level/learn/exam/end?level=${widget.level}&score=${_examManager!.correctCount}');
+    if (widget.data != null) {
+      questionText = widget.data!.question;
     } else {
-      setState(() {});
+      sessionManager = ExamSessionManager();
+
+      final currentLevelInfo = LevelInfo(
+        levelId: widget.level.toString(),
+        levelNumber: widget.level,
+        name: "Level ${widget.level}",
+        description: "Exam level",
+        unlockRequirements: UnlockRequirements(minPoints: 0),
+        rewards: Rewards(points: 0),
+        isRevision: false,
+      );
+
+      sessionManager!.start(currentLevelInfo);
+      _loadCurrentQuestion();
+
+      sessionManager!.addListener(() {
+        if (mounted) {
+          setState(() {});
+        }
+      });
     }
   }
 
-  void _resetUI() {
+  void _loadCurrentQuestion() {
+    if (sessionManager?.currentStageObject != null) {
+      final data = sessionManager!.currentStageObject!.data as TypedData;
+      setState(() {
+        questionText = data.question;
+        _textController.clear();
+        _isDontKnow = false; // Reset flagi przy nowym pytaniu
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _textController.dispose();
+    sessionManager?.dispose();
+    super.dispose();
+  }
+
+  void onDontKnow() async {
+    // 1. Pobierz poprawną odpowiedź
+    int correctAnswer;
+    if (widget.data != null) {
+      correctAnswer = widget.data!.correctAnswer;
+    } else if (sessionManager != null &&
+        sessionManager!.currentStageObject != null) {
+      final currentData = sessionManager!.currentStageObject!.data as TypedData;
+      correctAnswer = currentData.correctAnswer;
+    } else {
+      return;
+    }
+
+    // 2. Wpisz ją w pole i pokaż feedback
     setState(() {
-      _showFeedback = false;
-      _isSkipHighlighted = false;
-      _hintText = null;
-      _textController.clear();
+      _textController.text = correctAnswer.toString();
+      _showFeedback = true;
+      _isCorrect = false;
+      _isDontKnow = true; // Oznaczamy, że to "Don't know" (nie będzie czerwone)
     });
+
+    // 3. Odczekaj chwilę
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    // 4. Przejdź dalej (nadal traktujemy jako błąd w logice gry)
+    _processResult(userAnswer: correctAnswer, isCorrect: false);
+  }
+
+  void onComplete(String value) async {
+    if (value.trim().isEmpty) return;
+
+    final userAnswer = int.tryParse(value.trim());
+    bool isCorrect = false;
+
+    if (widget.data != null) {
+      isCorrect = userAnswer == widget.data!.correctAnswer;
+    } else if (sessionManager != null) {
+      final currentData = sessionManager!.currentStageObject!.data as TypedData;
+      isCorrect = userAnswer == currentData.correctAnswer;
+    }
+
+    setState(() {
+      _showFeedback = true;
+      _isCorrect = isCorrect;
+      _isDontKnow = false; // To jest normalna odpowiedź użytkownika
+    });
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    _processResult(userAnswer: userAnswer, isCorrect: isCorrect);
+  }
+
+  void _processResult({
+    required int? userAnswer,
+    required bool isCorrect,
+  }) async {
+    final result = StageResult(
+      isCorrect: isCorrect,
+      skipped: !isCorrect && widget.isPracticeMode,
+      userAnswer: userAnswer,
+    );
+
+    if (widget.onResult != null) {
+      widget.onResult!(result);
+    } else if (sessionManager != null) {
+      sessionManager!.nextStage(result);
+
+      if (sessionManager!.isFinished) {
+        const userId = "user1";
+        await sessionManager!.saveProgress(userId, widget.level.toString());
+
+        if (mounted) {
+          context.go(
+            '/level/learn/exam/end?level=${widget.level}&score=${sessionManager!.correctCount}',
+          );
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _showFeedback = false;
+            _loadCurrentQuestion();
+          });
+        }
+      }
+    }
+  }
+
+  Widget _buildContent() {
+    // Logika koloru tła:
+    // Jeśli feedback jest włączony:
+    //  - Jeśli to "Don't Know" -> Domyślny (neutralny/szary)
+    //  - Jeśli Poprawne -> Zielony
+    //  - Jeśli Błędne -> Czerwony
+    // W przeciwnym razie -> Domyślny
+    Color fillColor;
+    if (_showFeedback) {
+      if (_isDontKnow) {
+        fillColor = AppColors.typedInputDefault;
+      } else {
+        fillColor = _isCorrect
+            ? AppColors.typedInputCorrect
+            : AppColors.typedInputWrong;
+      }
+    } else {
+      fillColor = AppColors.typedInputDefault;
+    }
+
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text(
+              questionText,
+              style: AppTextStyles.typedQuestion,
+              textAlign: TextAlign.center,
+            ),
+
+            // Kontener z paddingiem zawierający TextField i Przycisk
+            Padding(
+              padding: const EdgeInsets.all(35.0),
+              child: Column(
+                crossAxisAlignment:
+                    CrossAxisAlignment.end, // Wyrównanie do prawej
+                children: [
+                  TextField(
+                    controller: _textController,
+                    enabled: !_showFeedback,
+                    style: AppTextStyles.typedInput,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: placeHolder,
+                      filled: true,
+                      fillColor: fillColor, // Używamy nowej logiki kolorów
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.typedInputBorderRadius,
+                        ),
+                      ),
+                    ),
+                    onSubmitted: _showFeedback ? null : onComplete,
+                    textInputAction: TextInputAction.done,
+                  ),
+
+                  // Przycisk "Don't know" - tylko w trybie Practice i gdy nie ma jeszcze wyniku
+                  if (widget.isPracticeMode && !_showFeedback)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextButton(
+                        onPressed: onDontKnow,
+                        child: const Text(
+                          "Don't know",
+                          style: TextStyle(
+                            color: AppColors.typedSkipText,
+                            fontSize: 16, // Nieco mniejsza czcionka
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    if (!widget.isPracticeMode) {
-      return Scaffold(
-        backgroundColor: AppColors.white,
-        appBar: AppBar(
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.black),
-            onPressed: () {
-              if (context.canPop()) {
-                context.pop();
-              } else {
-                context.go('/level/learn?level=${widget.level}');
-              }
-            },
-          ),
-          backgroundColor: AppColors.typedAppBarBackground,
-          elevation: 0,
-          centerTitle: true,
-          title: Text("Multiply x ${widget.level}", style: AppTextStyles.practiceTitle),
-        ),
-        body: Column(
-          children: [
-            const SizedBox(height: AppSizes.practiceTopSpacing),
-            ProgressBarWidget(value: _examManager!.getProgress()),
-            Expanded(child: _buildMainContent()),
-          ],
-        ),
-      );
+    if (widget.data != null) {
+      return _buildContent();
     }
-    return _buildMainContent();
-  }
 
-  Widget _buildMainContent() {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: AppSizes.typedFieldPaddingStart),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            const SizedBox(height: AppSizes.typedFieldPaddingTop),
-            const Text('Type your answer', style: AppTextStyles.typedTitle),
-            const SizedBox(height: AppSizes.screenPaddingLarge),
-            Text(_currentData.question, style: AppTextStyles.typedQuestion, textAlign: TextAlign.center),
-            const SizedBox(height: AppSizes.typedFieldPaddingTop),
-            TextField(
-              controller: _textController,
-              enabled: !_showFeedback,
-              keyboardType: TextInputType.number,
-              autofocus: true,
-              style: AppTextStyles.typedInput,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: _hintText ?? "Answer...",
-                hintStyle: const TextStyle(color: AppColors.typedHint),
-                filled: true,
-                fillColor: _showFeedback
-                    ? (_isCorrect ? AppColors.typedInputCorrect : AppColors.typedInputWrong)
-                    : AppColors.typedInputDefault,
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(AppSizes.typedInputBorderRadius),
-                  borderSide: _showFeedback
-                      ? BorderSide(color: _isCorrect ? AppColors.typedBorderCorrect : AppColors.typedBorderWrong, width: AppSizes.typedInputBorderWidth)
-                      : BorderSide.none,
-                ),
-              ),
-              onSubmitted: _handleSubmit,
-            ),
+    double progress = 0.0;
+    if (sessionManager != null && sessionManager!.totalCount > 0) {
+      progress = sessionManager!.completedCount / sessionManager!.totalCount;
+    }
 
-            if (widget.isPracticeMode) ...[
-              const SizedBox(height: AppSizes.typedInputSpacing),
-              Align(
-                alignment: Alignment.centerRight,
-                child: TextButton(
-                  onPressed: _showFeedback ? null : _onSkip,
-                  child: Text(
-                    "Don't know?",
-                    style: AppTextStyles.typedSkip.copyWith(
-                      decoration: _isSkipHighlighted ? TextDecoration.underline : TextDecoration.none
-                    )
-                  ),
-                ),
-              ),
-            ],
-            const SizedBox(height: AppSizes.typedSkipBottomSpacing),
-          ],
+    return Scaffold(
+      appBar: AppBar(
+        title: Text("Exam: Level ${widget.level}"),
+        backgroundColor: AppColors.typedAppBarBackground,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios),
+          onPressed: () => context.go('/level/learn?level=${widget.level}'),
         ),
+      ),
+      body: Column(
+        children: [
+          Container(
+            margin: const EdgeInsets.only(top: AppSizes.typedProgressTopMargin),
+            child: ProgressBarWidget(value: progress),
+          ),
+
+          Padding(
+            padding: const EdgeInsets.all(AppSizes.typedTitlePadding),
+            child: Text(
+              'Question ${sessionManager!.completedCount + 1} / ${sessionManager!.totalCount}',
+              style: AppTextStyles.typedTitle,
+            ),
+          ),
+
+          Expanded(child: _buildContent()),
+        ],
       ),
     );
   }
