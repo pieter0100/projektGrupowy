@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../game_logic/local_saves.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
 
 class LevelScreen extends StatelessWidget {
@@ -17,29 +18,29 @@ class LevelScreen extends StatelessWidget {
           children: [
             const Text(
               'Multiply',
-              style: TextStyle(fontSize: 20, color: Colors.black),
+              style: TextStyle(fontSize: AppSizes.fontSizeAppBar, color: AppColors.black),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSizes.spacingSmall),
             Icon(
               Icons.local_fire_department,
-              color: Color(0xFFEB9F4A),
-              size: 29,
+              color: AppColors.Orange,
+              size: AppSizes.iconMedium,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSizes.spacingTiny),
             const Text(
               '3',
-              style: TextStyle(fontSize: 23, color: Color(0xFFEB9F4A)),
+              style: TextStyle(fontSize: AppSizes.fontSizeStats, color: AppColors.Orange),
             ),
-            const SizedBox(width: 8),
-            Icon(Icons.diamond, color: Color(0xFF338F9B), size: 29),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSizes.spacingSmall),
+            Icon(Icons.diamond, color: AppColors.Blue, size: AppSizes.iconMedium),
+            const SizedBox(width: AppSizes.spacingTiny),
             const Text(
               '1432 XP',
-              style: TextStyle(fontSize: 23, color: Color(0xFF338F9B)),
+              style: TextStyle(fontSize: AppSizes.fontSizeStats, color: AppColors.Blue),
             ),
           ],
         ),
-        backgroundColor: Color(0xFFE5E5E5),
+        backgroundColor: AppColors.appBarBackground,
       ),
       body: ListView.builder(
         itemCount: levelsAmount,

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class ScaffoldWithNav extends StatelessWidget {
   const ScaffoldWithNav({required this.navigationShell, Key? key})
     : super(key: key ?? const ValueKey('ScaffoldWithNav'));
@@ -20,7 +22,7 @@ class ScaffoldWithNav extends StatelessWidget {
 
     // devices that are not IOS
     if (bottomSafeAreaPadding == 0) {
-      bottomSafeAreaPadding = 10;
+      bottomSafeAreaPadding = AppSizes.navBottomMarginDefault;
     }
 
     return Scaffold(
@@ -28,23 +30,23 @@ class ScaffoldWithNav extends StatelessWidget {
       body: navigationShell,
 
       bottomNavigationBar: FractionallySizedBox(
-        widthFactor: 0.8,
+        widthFactor: AppSizes.navWidthFactor,
         child: Container(
           margin: EdgeInsets.only(bottom: bottomSafeAreaPadding),
           decoration: BoxDecoration(
-            color: Color(0xFFE5E5E5),
-            borderRadius: BorderRadius.circular(45.0),
+            color: AppColors.navBackground,
+            borderRadius: BorderRadius.circular(AppSizes.navRadius),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.1),
-                blurRadius: 10,
-                spreadRadius: 2,
+                color: AppColors.navShadow.withValues(alpha: 0.1),
+                blurRadius: AppSizes.navBlurRadius,
+                spreadRadius: AppSizes.navSpreadRadius,
               ),
             ],
           ),
 
           child: ClipRRect(
-            borderRadius: BorderRadius.circular(45.0),
+            borderRadius: BorderRadius.circular(AppSizes.navRadius),
 
             child: Row(
               // spaces between elements are even
@@ -55,28 +57,28 @@ class ScaffoldWithNav extends StatelessWidget {
                   label: 'Home',
                   isSelected: navigationShell.currentIndex == 0,
                   onTap: () => _onTap(0),
-                  selectedColor: Color(0xFF41AC78),
+                  selectedColor: AppColors.navHome,
                 ),
                 _buildNavItem(
                   icon: Icons.ads_click,
                   label: 'Leaderboard',
                   isSelected: navigationShell.currentIndex == 1,
                   onTap: () => _onTap(1),
-                  selectedColor: Color(0xFFEB9F4A),
+                  selectedColor: AppColors.navLeaderboard,
                 ),
                 _buildNavItem(
                   icon: Icons.people,
                   label: 'Profile',
                   isSelected: navigationShell.currentIndex == 2,
                   onTap: () => _onTap(2),
-                  selectedColor: Color(0xFFAB70DF),
+                  selectedColor: AppColors.navProfile,
                 ),
                 _buildNavItem(
                   icon: Icons.settings,
                   label: 'Settings',
                   isSelected: navigationShell.currentIndex == 3,
                   onTap: () => _onTap(3),
-                  selectedColor: Color(0xFF729ED8),
+                  selectedColor: AppColors.navSettings,
                 ),
               ],
             ),

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class LearnWidget extends StatelessWidget {
   final String textInside;
 
@@ -8,44 +10,50 @@ class LearnWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.all(20),
+      margin: const EdgeInsets.all(AppSizes.levelCircleMargin),
       decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          border: Border.all(color: Color(0xFFC4C4C4), width: 10)
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: AppColors.levelCircleBorder,
+          width: AppSizes.levelCircleBorderOuter,
+        ),
       ),
-      width: 140,
-      height: 140,
+      width: AppSizes.levelCircleSize,
+      height: AppSizes.levelCircleSize,
       child: Center(
         child: Container(
           decoration: BoxDecoration(
             shape: BoxShape.circle,
-            border: Border.all(color: Colors.white, width: 5),
-            color: Color(0xFF72BFC7),
+            border: Border.all(
+            color: AppColors.levelCircleInnerBorder,
+              width: AppSizes.levelCircleBorderInner,
+          ),
+          color: AppColors.levelCircleFill,
           ),
           child: (textInside == 'intro')
               ? Center(
                 child: Icon(
                   Icons.menu_book,
-                  color: Colors.white,
-                  size: 50.0,
+                  color: AppColors.white,
+                  size: AppSizes.iconLarge,
                 ),
-          )
+            )
               :
           Center(
             child: (textInside == 'practice')
                 ? Center(
               child: Icon(
                 Icons.create,
-                color: Colors.white,
-                size: 50.0,
+                color: AppColors.white,
+                size: AppSizes.iconLarge,
               ),
             )
                 :
             Center(
               child: Icon(
                 Icons.edit_document,
-                color: Colors.white,
-                size: 50.0,
+                color: AppColors.white,
+                size: AppSizes.iconLarge,
               ),
             ),
           ),

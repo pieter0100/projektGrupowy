@@ -1,51 +1,110 @@
-import 'package:go_router/go_router.dart';
 import 'package:flutter/material.dart';
-import 'package:projekt_grupowy/screens/leaderboard_screen.dart';
-import 'package:projekt_grupowy/screens/level_screen.dart';
-import 'package:projekt_grupowy/screens/profile_screen.dart';
-import 'package:projekt_grupowy/screens/learn_screen.dart';
-import 'package:projekt_grupowy/screens/settings_screen.dart';
-import 'package:projekt_grupowy/screens/practice_screen.dart';
+import 'package:go_router/go_router.dart';
 
-final GoRouter router = GoRouter(
-  routes: <RouteBase>[
-    GoRoute(
-      path: '/',
-      builder: (BuildContext context, GoRouterState state) {
-        return HomeScreen();
+import 'widgets/scaffold_with_nav.dart';
+import 'screens/leaderboard_screen.dart';
+import 'screens/level_screen.dart';
+import 'screens/profile_screen.dart';
+import 'screens/learn_screen.dart';
+import 'screens/settings_screen.dart';
+import 'screens/practice_screen.dart';
+import 'screens/practice_end_screen.dart';
+import 'screens/typed_screen.dart';
+import 'screens/typed_screen_end.dart';
+
+final GoRouter appRouter = GoRouter(
+  initialLocation: '/level',
+  routes: [
+    StatefulShellRoute.indexedStack(
+      builder: (context, state, navigationShell) {
+        return ScaffoldWithNav(navigationShell: navigationShell);
       },
-      routes: <RouteBase>[
-        GoRoute(
-          path: 'profile',
-          builder: (BuildContext context, GoRouterState state) {
-            return ProfileScreen();
-          },
+
+      branches: [
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/level',
+              builder: (context, state) => const LevelScreen(levelsAmount: 8),
+            ),
+          ],
         ),
-        GoRoute(
-          path: 'level',
-          builder: (BuildContext context, GoRouterState state) {
-            return LevelScreen(levelsAmount: 8);
-          },
+
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/leaderboard',
+              builder: (context, state) => const HomeScreen(),
+            ),
+          ],
         ),
-        GoRoute(
-          path: 'learn',
-          builder: (BuildContext context, GoRouterState state) {
-            return LearnScreen();
-          },
+
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/profile',
+              builder: (context, state) => const ProfileScreen(),
+            ),
+          ],
         ),
-        GoRoute(
-          path: 'settings',
-          builder: (BuildContext context, GoRouterState state) {
-            return SettingsScreen();
-          },
-        ),
-        GoRoute(
-          path: 'practice',
-          builder: (BuildContext context, GoRouterState state) {
-            return PracticeScreen();
-          },
+
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/settings',
+              builder: (context, state) => const SettingsScreen(),
+            ),
+          ],
         ),
       ],
+    ),
+
+    GoRoute(
+      path: '/level/learn',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return LearnScreen(level: level);
+      },
+    ),
+
+    GoRoute(
+      path: '/level/learn/practice',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return PracticeScreen(level: level);
+      },
+    ),
+
+    GoRoute(
+      path: '/level/learn/practice/end',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return PracticeEndScreen(level: level);
+      },
+    ),
+
+    GoRoute(
+      path: '/level/learn/exam',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return TypedScreen(
+          level: int.parse(level),
+          isPracticeMode: false,
+        );
+      },
+    ),
+
+    GoRoute(
+      path: '/level/learn/exam/end',
+      builder: (context, state) {
+        final levelStr = state.uri.queryParameters['level'] ?? "1";
+        final scoreStr = state.uri.queryParameters['score'] ?? "0";
+
+        return ExamTypedEndScreen(
+          level: int.tryParse(levelStr) ?? 1,
+          score: int.tryParse(scoreStr) ?? 0,
+        );
+      },
     ),
   ],
 );
