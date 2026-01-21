@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
-import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/learn_widget.dart';
 import 'package:projekt_grupowy/widgets/learn_info_widget.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 
 class LearnScreen extends StatelessWidget {
   final String? level;
@@ -16,87 +15,60 @@ class LearnScreen extends StatelessWidget {
       appBar: AppBar(
         leading: IconButton(
           onPressed: () => context.go('/level'),
-          icon: Icon(Icons.arrow_back_ios),
+          icon: const Icon(Icons.arrow_back_ios, color: AppColors.learnAppBarIcon),
         ),
-        title: Text('Learn'),
+        title: const Text(
+          'Learn',
+          style: AppTextStyles.learnTitle,
+        ),
         centerTitle: true,
-        backgroundColor: AppColors.appBarBackground,
+        backgroundColor: AppColors.learnAppBarBackground,
         scrolledUnderElevation: 0.0,
       ),
+
       body: ListView(
         children: [
-          SizedBox(height: AppSizes.screenPaddingTop),
+          const SizedBox(height: AppSizes.learnTopSpacing),
+
           Center(child: LearnInfoWidget("× $level")),
 
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               LearnWidget("intro"),
-              SizedBox(height: AppSizes.spacingSmall),
-              Text("Intro", style: TextStyle(fontSize: AppSizes.settingsFontSize)),
-              SizedBox(height: AppSizes.spacingMedium),
+              const SizedBox(height: AppSizes.learnLabelSpacing),
+              const Text("Intro", style: AppTextStyles.learnLabel),
+              const SizedBox(height: AppSizes.learnItemSpacing),
             ],
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              // MENUANCHOR for testing purpose TODO after clicking set random type of game
-              MenuAnchor(
-                // Menu elements
-                menuChildren: [
-                  MenuItemButton(
-                    child: const Text('Memory tryb'),
-                    onPressed: () {
-                      context.go('/level/learn/practice?level=$level');
-                    },
-                  ),
-                  MenuItemButton(
-                    child: const Text('MC tryb'),
-                    onPressed: () {
-                      context.push('/level/learn/practice/MC?level=$level');
-                    },
-                  ),
-                  MenuItemButton(
-                    child: const Text('Typed answer tryb'),
-                    onPressed: () {
-                      context.push(
-                        '/level/learn/practice/typedAnswer?level=$level',
-                      );
-                    },
-                  ),
-                ],
-                // Practice widget
-                builder:
-                    (
-                      BuildContext context,
-                      MenuController controller,
-                      Widget? child,
-                    ) {
-                      return GestureDetector(
-                        onTap: () {
-                          if (controller.isOpen) {
-                            controller.close();
-                          } else {
-                            controller.open();
-                          }
-                        },
 
-                        child: LearnWidget("practice"),
-                      );
-                    },
-              ),
-              SizedBox(height: AppSizes.spacingSmall),
-              Text("Practice", style: TextStyle(fontSize: AppSizes.settingsFontSize)),
-              SizedBox(height: AppSizes.spacingMedium),
-            ],
-          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LearnWidget("exam"),
-              SizedBox(height: AppSizes.spacingSmall),
-              Text("Exam", style: TextStyle(fontSize: AppSizes.settingsFontSize)),
-              SizedBox(height: AppSizes.spacingMedium),
+              GestureDetector(
+                onTap: () {
+                  context.go('/level/learn/practice?level=$level');
+                },
+                child: LearnWidget("practice"),
+              ),
+              const SizedBox(height: AppSizes.learnLabelSpacing),
+              const Text("Practice", style: AppTextStyles.learnLabel),
+              const SizedBox(height: AppSizes.learnItemSpacing),
+            ],
+          ),
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  context.go('/level/learn/exam?level=$level');
+                },
+                child: LearnWidget("exam"),
+              ),
+              const SizedBox(height: AppSizes.learnLabelSpacing),
+              const Text("Exam", style: AppTextStyles.learnLabel),
+              const SizedBox(height: AppSizes.learnItemSpacing),
             ],
           ),
         ],

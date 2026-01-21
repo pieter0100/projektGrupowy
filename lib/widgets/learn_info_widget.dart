@@ -30,4 +30,3 @@ class LearnInfoWidget extends StatelessWidget {
     );
   }
 }
-

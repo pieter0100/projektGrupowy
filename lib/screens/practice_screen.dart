@@ -1,11 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:projekt_grupowy/utils/constants.dart';
-import 'package:projekt_grupowy/widgets/match_pairs_widget.dart';
+import 'package:projekt_grupowy/game_logic/round_managers/practice_session_manager.dart';
+import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
+import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
+import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
+import 'package:projekt_grupowy/models/level/level.dart';
+import 'package:projekt_grupowy/models/level/stage_result.dart';
+import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
+
+import 'package:projekt_grupowy/screens/match_pairs_screen.dart';
+import 'package:projekt_grupowy/screens/MC_screen.dart';
+import 'package:projekt_grupowy/screens/typed_screen.dart';
+
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
-import 'package:projekt_grupowy/game_logic/round_manager.dart';
-import 'package:projekt_grupowy/models/cards/card_item.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 
 class PracticeScreen extends StatefulWidget {
   final String? level;
@@ -17,156 +26,135 @@ class PracticeScreen extends StatefulWidget {
 }
 
 class _PracticeScreenState extends State<PracticeScreen> {
-  late RoundManager roundManager;
-  bool _isLocked = false;
+  late PracticeSessionManager sessionManager;
+  bool _initialized = false;
 
   @override
   void initState() {
     super.initState();
-    final typeOfMultiplication = int.tryParse(widget.level ?? '1') ?? 1;
-    roundManager = RoundManager(
-      pairsAmount: 3,
-      typeOfMultiplication: typeOfMultiplication,
-    );
+    _startNewSession();
   }
 
-  void _onCardTap(CardItem card) {
-    if (_isLocked) return;
+  void _startNewSession() {
+    sessionManager = PracticeSessionManager();
+    sessionManager.addListener(_sessionListener);
 
-    final status = roundManager.onCardSelected(card);
+    final int levelNum = int.tryParse(widget.level ?? '1') ?? 1;
 
-    setState(() {});
+    final levelData = LevelInfo(
+      levelNumber: levelNum,
+      levelId: widget.level ?? "1",
+      name: "Level $levelNum",
+      description: "Practice multiplication",
+      unlockRequirements: UnlockRequirements(
+        minPoints: 0,
+        previousLevelId: null,
+      ),
+      rewards: Rewards(points: 0),
+      isRevision: false,
+    );
 
-    if (status == MatchStatus.matchFound) {
-      roundManager.logGameState();
-      roundManager.logMessage("Match found!");
-    } else if (status == MatchStatus.matchFailed) {
-      roundManager.logGameState();
-      roundManager.logMessage("Match failed!");
-      final failedCards = roundManager.selectedCards.toList();
+    sessionManager.start(levelData);
+    setState(() => _initialized = true);
+  }
 
-      for (var c in failedCards) {
-        c.isFailed = true;
-      }
-      _isLocked = true;
-      setState(() {});
-
-      Future.delayed(const Duration(seconds: 1), () {
-        for (var c in failedCards) {
-          c.isFailed = false;
-        }
-        roundManager.selectedCards.clear();
-        _isLocked = false;
-        setState(() {});
-      });
-    }
-
-    if (roundManager.isRoundCompleted()) {
+  void _sessionListener() {
+    if (sessionManager.isFinished) {
       context.go('/level/learn/practice/end?level=${widget.level}');
+    } else {
+      setState(() {});
     }
   }
 
   @override
+  void dispose() {
+    sessionManager.removeListener(_sessionListener);
+    sessionManager.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final cards = roundManager.currentDeck.take(6).toList();
+    if (!_initialized) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
+
+    final currentStage = sessionManager.currentStageObject;
+    if (currentStage == null) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
 
     return Scaffold(
+      backgroundColor: AppColors.white,
+
       appBar: AppBar(
-        leading: IconButton(
-          onPressed: () => context.go('/level/learn?level=${widget.level}'),
-          icon: const Icon(Icons.arrow_back_ios),
-        ),
-        title: Text('Multiply × ${widget.level ?? ''}'),
+        backgroundColor: AppColors.practiceAppBarBackground,
+        elevation: 0,
         centerTitle: true,
-        backgroundColor: AppColors.appBarBackground,
-        scrolledUnderElevation: 0.0,
+        title: Text("Multiply x ${widget.level}", style: AppTextStyles.practiceTitle),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.practiceCloseIcon),
+          onPressed: () => context.go('/level/learn?level=${widget.level}'),
+        ),
       ),
-      body: ListView(
+
+      body: Column(
         children: [
-          const SizedBox(height: AppSizes.screenPaddingMedium),
-          const Center(child: ProgressBarWidget()),
-          const SizedBox(height: AppSizes.progressToTitleMargin),
+          const SizedBox(height: AppSizes.practiceTopSpacing),
+          ProgressBarWidget(value: sessionManager.getProgress()),
+          const SizedBox(height: AppSizes.practiceProgressSpacing),
 
-          const Center(
-            child: Text("Question 1", style: TextStyle(fontSize: AppSizes.fontSizeSectionTitle)
-            ),
-          ),
-          const SizedBox(height: AppSizes.screenPaddingLarge),
-
-          Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MatchPairsWidget(
-                    cards[0],
-                    isSelected: roundManager.selectedCards.any(
-                      (c) => c.id == cards[0].id,
-                    ),
-                    isMatched: cards[0].isMatched,
-                    onTap: () => _onCardTap(cards[0]),
-                  ),
-                  const SizedBox(width: AppSizes.spacingXLarge),
-                  MatchPairsWidget(
-                    cards[1],
-                    isSelected: roundManager.selectedCards.any(
-                      (c) => c.id == cards[1].id,
-                    ),
-                    isMatched: cards[1].isMatched,
-                    onTap: () => _onCardTap(cards[1]),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSizes.spacingLarge),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MatchPairsWidget(
-                    cards[2],
-                    isSelected: roundManager.selectedCards.any(
-                      (c) => c.id == cards[2].id,
-                    ),
-                    isMatched: cards[2].isMatched,
-                    onTap: () => _onCardTap(cards[2]),
-                  ),
-                  const SizedBox(width: AppSizes.spacingXLarge),
-                  MatchPairsWidget(
-                    cards[3],
-                    isSelected: roundManager.selectedCards.any(
-                      (c) => c.id == cards[3].id,
-                    ),
-                    isMatched: cards[3].isMatched,
-                    onTap: () => _onCardTap(cards[3]),
-                  ),
-                ],
-              ),
-              const SizedBox(height: AppSizes.spacingLarge),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  MatchPairsWidget(
-                    cards[4],
-                    isSelected: roundManager.selectedCards.any(
-                      (c) => c.id == cards[4].id,
-                    ),
-                    isMatched: cards[4].isMatched,
-                    onTap: () => _onCardTap(cards[4]),
-                  ),
-                  const SizedBox(width: AppSizes.spacingXLarge),
-                  MatchPairsWidget(
-                    cards[5],
-                    isSelected: roundManager.selectedCards.any(
-                      (c) => c.id == cards[5].id,
-                    ),
-                    isMatched: cards[5].isMatched,
-                    onTap: () => _onCardTap(cards[5]),
-                  ),
-                ],
-              ),
-            ],
+          Expanded(
+            child: _buildCurrentGame(currentStage),
           ),
         ],
       ),
     );
+  }
+
+  Widget _buildCurrentGame(GameStage stage) {
+    void onComplete() {
+      sessionManager.nextStage(
+        StageResult(
+          isCorrect: true,
+          skipped: false,
+        ),
+      );
+    }
+
+    switch (stage.type) {
+      case StageType.multipleChoice:
+        return McScreen(
+          key: ValueKey(sessionManager.currentStage),
+          data: stage.data as MultipleChoiceData,
+          onSuccess: onComplete,
+        );
+
+      case StageType.typed:
+        case StageType.typed:
+          return TypedScreen(
+            key: ValueKey(sessionManager.currentStage),
+            level: int.tryParse(widget.level ?? '1') ?? 1,
+            isPracticeMode: true,
+            data: stage.data as TypedData,
+            onResult: (result) {
+              sessionManager.nextStage(result);
+            },
+          );
+
+      case StageType.pairs:
+        return MatchPairsScreen(
+          key: ValueKey(sessionManager.currentStage),
+          data: stage.data as PairsData,
+          onSuccess: onComplete,
+        );
+
+      default:
+        return const SizedBox.shrink();
+    }
   }
 }

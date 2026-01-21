@@ -1,8 +1,3 @@
-# Flutter generated plugin registrant files
-macos/Flutter/GeneratedPluginRegistrant.swift
-windows/flutter/generated_plugin_registrant.cc
-windows/flutter/generated_plugins.cmake
-
 # Miscellaneous
 *.class
 *.log
@@ -37,11 +32,6 @@ migrate_working_dir/
 .pub/
 /build/
 /coverage/
-pubspec.lock
-
-# Firebase configuration files (contain sensitive API keys)
-android/app/google-services.json
-ios/Runner/GoogleService-Info.plist  
 
 # Symbolication related
 app.*.symbols
@@ -49,23 +39,7 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Node.js/NPM related
-node_modules/
-package-lock.json
-
-# Firebase Functions
-functions/lib/
-functions/node_modules/
-functions/*.js
-functions/*.js.map
-!functions/jest.config.js
-.firebase/
-
 # Android Studio will place build artifacts here
 /android/app/debug
 /android/app/profile
 /android/app/release
-
-# Node modules
-node_modules/
-package-lock.json

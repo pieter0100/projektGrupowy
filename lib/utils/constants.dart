@@ -9,6 +9,10 @@ class AppColors {
   static const Color levelCircleBorder = Color(0xFFC4C4C4);
   static const Color levelCircleFill = Color(0xFF72BFC7);
   static const Color levelCircleInnerBorder = Colors.white;
+  static const Color learnAppBarBackground = AppColors.appBarBackground;
+  static const Color learnAppBarIcon = AppColors.black;
+  static const Color learnTitle = AppColors.black;
+
 
   // MatchPairsWidget
   static const Color matchDefault = Color(0xFF7ED4DE);
@@ -18,6 +22,7 @@ class AppColors {
 
   // ProgressBar
   static const Color progressBackground = Color(0xFFE8E8E8);
+  static const Color progressFill = Color(0xFFF3C324);
 
   // Navigation (ScaffoldWithNav)
   static const Color navBackground = Color(0xFFE5E5E5);
@@ -54,6 +59,16 @@ class AppColors {
   static const Color typedHint = Color(0xFF757575); 
   static const Color typedSkipText = Color(0xFF757575);
 
+  // TypedScreenEnd
+  static const Color examEndTitle = AppColors.black;
+  static const Color examEndButtonBackground = AppColors.levelCircleFill;
+  static const Color examEndButtonText = AppColors.white;
+
+  // PracticeScreen
+  static const Color practiceAppBarBackground = AppColors.appBarBackground;
+  static const Color practiceTitle = AppColors.black;
+  static const Color practiceCloseIcon = AppColors.black;
+
   // General
   static const Color white = Colors.white;
   static const Color black = Colors.black;
@@ -76,6 +91,10 @@ class AppSizes {
   static const double levelCircleBorderOuter = 10.0;
   static const double levelCircleBorderInner = 5.0;
   static const double levelCircleMargin = 20.0;
+  static const double learnTopSpacing = 40.0;
+  static const double learnItemSpacing = 16.0;
+  static const double learnLabelSpacing = 8.0;
+  static const double learnLabelFontSize = 20.0;
 
   // MatchPairs
   static const double matchCardSize = 130.0;
@@ -84,7 +103,7 @@ class AppSizes {
   static const double fontSizeCardSmall = 56.0;
 
   // ProgressBar
-  static const double progressWidth = 371.0;
+  static const double progressWidth = 330.0;
   static const double progressHeight = 38.0;
   static const double progressRadius = 16.0;
 
@@ -132,6 +151,18 @@ class AppSizes {
   static const double typedSkipFontSize = 16.0; 
   static const double typedSkipBottomSpacing = 180.0; 
   static const double typedInputSpacing = 20.0;
+
+  // TypedScreenEnd
+  static const double examEndTitleSize = 32.0;
+  static const double examEndSpacing = 20.0;
+  static const double examEndButtonFontSize = 20.0;
+  static const double examEndButtonWidth = 200.0;
+  static const double examEndButtonHeight = 55.0;
+
+  // PracticeScreen
+  static const double practiceAppBarFontSize = 20.0;
+  static const double practiceTopSpacing = 10.0;
+  static const double practiceProgressSpacing = 20.0;
 
   //Screen Spacings
   static const double screenPaddingTop = 40.0;
@@ -198,8 +229,7 @@ class AppTextStyles {
   
   static const TextStyle typedQuestion = TextStyle( 
     fontSize: AppSizes.typedQuestionFontSize, 
-    color: AppColors.typedQuestionText, 
-    fontWeight: FontWeight.bold, 
+    color: AppColors.typedQuestionText,
   ); 
   
   static const TextStyle typedInput = TextStyle( 
@@ -210,5 +240,35 @@ class AppTextStyles {
   static const TextStyle typedSkip = TextStyle( 
     fontSize: AppSizes.typedSkipFontSize, 
     color: AppColors.typedSkipText, 
+  );
+
+  static const TextStyle examEndTitle = TextStyle(
+    fontSize: AppSizes.examEndTitleSize,
+    fontWeight: FontWeight.bold,
+    color: AppColors.examEndTitle,
+  );
+
+  static const TextStyle examEndButtonText = TextStyle(
+    fontSize: AppSizes.examEndButtonFontSize,
+    color: AppColors.examEndButtonText,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle practiceTitle = TextStyle(
+    fontSize: AppSizes.practiceAppBarFontSize,
+    color: AppColors.practiceTitle,
+    fontWeight: FontWeight.w600,
+  );
+
+  static const TextStyle learnLabel = TextStyle(
+    fontSize: AppSizes.learnLabelFontSize,
+    color: AppColors.black,
+    fontWeight: FontWeight.w500,
+  );
+
+  static const TextStyle learnTitle = TextStyle(
+    fontSize: AppSizes.fontSizeAppBar,
+    color: AppColors.learnTitle,
+    fontWeight: FontWeight.w600,
   );
 }
