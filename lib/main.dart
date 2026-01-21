@@ -6,19 +6,14 @@ import 'app_router.dart';
 import 'game_logic/local_saves.dart';
 
 void main() async {
-  // Ensure Flutter is initialized
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Hive and all adapters (from HEAD)
   await LocalSaves.init();
-
-  runApp(MyApp());
-}
-  // Initialize firebase (from dev)
   try {
-    await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
   } catch (e) {
-    // Firebase already initialized, continue
+    debugPrint("Firebase initialization error: $e");
   }
 
   runApp(const MyApp());
@@ -31,7 +26,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       routerConfig: appRouter,
-      title: 'GoRouter Bottom Nav',
+      title: 'Multiplication Game',
+      debugShowCheckedModeBanner: false,
     );
   }
 }
