@@ -1,3 +1,8 @@
+Prezentacja: 
+
+https://pgedupl-my.sharepoint.com/:p:/g/personal/s198143_student_pg_edu_pl/IQBS6P9-woQ4T5cIz5LSUHtfAUEyKWYJIpA9tVFRZUeVi3k?e=THNnud
+
+
 # Aplikacja dla dzieci do nauki tabliczki mnożenia - slajd 1
 
 ## Autorzy - slajd 2
