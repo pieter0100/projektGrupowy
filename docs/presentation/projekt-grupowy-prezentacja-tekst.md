@@ -1,6 +1,6 @@
 Prezentacja: 
 
-https://pgedupl-my.sharepoint.com/:p:/g/personal/s198143_student_pg_edu_pl/IQBS6P9-woQ4T5cIz5LSUHtfAUEyKWYJIpA9tVFRZUeVi3k?e=THNnud
+https://pgedupl-my.sharepoint.com/:p:/g/personal/s198143_student_pg_edu_pl/I QBS6P9-woQ4T5cIz5LSUHtfAUEyKWYJIpA9tVFRZUeVi3k?e=THNnud
 
 
 # Aplikacja dla dzieci do nauki tabliczki mnożenia - slajd 1
@@ -188,6 +188,9 @@ Backend:​
   - zabezpieczenie danych przechowywanych w bazie Firestore poprzez reguły bezpieczeństwa danych
 
 ## Backend i zarządzanie danymi - slajd 15
+
+
+
 - struktura cloud Firestore
 
   - kolekcje i dokumenty przechowujące dane użytkowników, wyniki nauki oraz postępy w aplikacji
@@ -216,29 +219,35 @@ Backend:​
 
 - uwierzytelnianie użytkowników (firebase authentication)
 
-  - mechanizmy rejestracji, logowania i zarządzania sesjami użytkowników
+  - **STATUS: Logika zaimplementowana, UI niezaimplementowane**
   
-  - zapewnienie bezpieczeństwa danych osobowych i dostępu do aplikacji
-
-  - Firebase Authentication pomogło skrócić czas implementacji i zwiększyć bezpieczeństwo (umożliwia korzystanie z gotowych rozwiązań i usług takich jak Google Sign-In itp.)
-  
-  - zaimplementowano `AuthService` w aplikacji Flutter do obsługi procesów uwierzytelniania - NA RAZIE BEZ UI, JEDYNIE LOGIKA I TESTY
+  - zaimplementowano `AuthService` w aplikacji Flutter do obsługi procesów uwierzytelniania
 
     - rejestracja nowych użytkowników za pomocą email i hasła
 
     - walidacja hasła - min 8 znaków, wielka litera, cyfra, znak specjalny
 
+    - sprawdzanie unikalności username w bazie Firestore
+
     - reset hasła poprzez email
 
     - logowanie z obslugą błędów (nieprawidłowy email, złe hasło, brak konta)
+
+    - tworzenie dokumentu użytkownika w Firestore przy rejestracji
+  
+  - **BRAKUJE**: ekran logowania i rejestracji - aplikacja obecnie działa bez uwierzytelniania
+  
+  - **KONSEKWENCJA**: użytkownicy nie mogą tworzyć kont, więc dane nie są synchronizowane z Firebase
   
 - automatyzacja statystyk
+
+  - **STATUS: Cloud Functions zaimplementowane i przetestowane**
 
   - wcześniej opisana cloud functions do automatycznego aktualizowania statystyk użytkowników po każdej sesji nauki - `onResultsWrite`
 
   - zbieranie i analiza danych dotyczących postępów użytkowników w nauce tabliczki mnożenia
 
-  - BEZ UI, JEDYNIE LOGIKA I TESTY
+  - **OGRANICZENIE**: funkcje działają, ale nie są wywoływane w praktyce, ponieważ wyniki nie są zapisywane do Firestore (brak połączenia logiki gry z ResultsService)
 
 - bezpieczeństwo danych
 
@@ -256,23 +265,31 @@ Backend:​
 
 - kolekcja "users" - dane użytkowników
 
-  - "profile" - dane profilowe użytkownika - username, email, data utworzenia profilu, (opcjonalny) avatar
+  - "profile" - dane profilowe użytkownika - username, email, data utworzenia profilu
 
-  - "stats" - statystyki nauki - liczba ukończonych sesji, wyniki, czas nauki (streak), data ostatniej sesji ALE NA RAZIE BEZ UI
+  - "stats" - statystyki nauki - liczba ukończonych sesji, wyniki, czas nauki (streak), data ostatniej sesji
+  
+  - **STATUS**: struktura zdefiniowana i tworzona przy rejestracji, ale nie jest używana (brak UI logowania)
 
 - kolekcja "users results" - historia wyników
   
   - przechowująca wyniki z sesji po każdej ukończonej sesji gry
 
   - immutable - nieedytowalne po zapisaniu
+  
+  - **STATUS**: kolekcja zdefiniowana, ale wyniki gier NIE są zapisywane do Firestore (logika gry używa tylko LocalSaves)
 
 - kolekcja "game progress" - synchronizacja postępów gry
   
   - przechowująca informacje o postępach w trakcie trwania rozgrywki w trybie offline, umożliwiająca kontynuację gry po przerwaniu lub utracie połączenia internetowego
+  
+  - **STATUS**: struktura zdefiniowana, ale nie jest używana (logika gry nie wywołuje ProgressService)
 
 ## Synchronizacja danych - slajd 17
 
 - architekutura **offline-first**
+  
+  - **STATUS: Zaimplementowana, ale niepołączona z logiką gry**
   
   - dane zapisywane lokalnie na urządzeniu użytkownika
   
@@ -281,27 +298,47 @@ Backend:​
   - aplikacja działa płynnie nawet przy niestabilnym lub braku połączenia sieciowego
 
 
-- lokalny storage
+- lokalny storage - **DWA NIEZALEŻNE SYSTEMY**
   
   - technologia: **Hive** - lekka baza NoSQL dla Fluttera
 
-  - przechowywanie danych tymczasowych na urządzeniu użytkownika podczas braku połączenia z internetem
+  - **System 1: LocalSaves** - używany przez grę
+    
+    - przechowuje: dane użytkownika, postępy poziomów, odblokowane poziomy, leaderboard
+    
+    - działa z hardcoded userId: "user1"
+    
+    - **NIE synchronizowany z Firebase**
   
-  - umożliwia dostęp do ostatnio pobranych danych i kontynuację nauki
-
-  - aplikacja działa w trybie offline
+  - **System 2: OfflineStore** - dla synchronizacji
+    
+    - przechowuje: wyniki gier (GameResult), postępy gier (GameProgress)
+    
+    - **PROBLEM**: nigdy nie wywoływany przez logikę gry
+    
+    - synchronizacja zaimplementowana, ale nie ma danych do synchronizacji
 
 - kolejka synchronizacji
 
-  - wykorzystuje Hive do przechowywyania
+  - **STATUS: W pełni zaimplementowana**
+
+  - wykorzystuje Hive do przechowywania
 
   - po przywróceniu połączenia z internetem, dane zgromadzone w lokalnym storage są automatycznie synchronizowane z bazą Firestore
   
   - kolejka persystowana - przetrwa zamknięcie aplikacji i ponowne uruchomienie urządzenia
+  
+  - **PROBLEM**: kolejka pozostaje pusta, ponieważ:
+    
+    - brak uwierzytelnionego użytkownika (wymóg: FirebaseAuth.currentUser)
+    
+    - logika gry nie wywołuje ResultsService/ProgressService
 
 - wyzwalacze i proces synchronizacji
 
-  - synchronizacja okresowa (co 15 minut) lub po zdarzeniowa (po wykryciu połączenia z internetem)
+  - **Zaimplementowane**: synchronizacja okresowa (co 15 minut) lub zdarzeniowa (po wykryciu połączenia z internetem)
+  
+  - **Działanie warunkowe**: synchronizuje tylko gdy użytkownik jest zalogowany
 
 - retry z exponential backoff
 
@@ -343,6 +380,50 @@ Przykładowe scenariusze:
   - podczas synchronizacji, najnowszy zapisany postęp gry (na podstawie timestampu) jest zachowywany w Firestore
 
   - starszy zapis jest odrzucany, zapewniając, że tylko aktualne dane są przechowywane
+
+## Stan aktualny implementacji i planowane prace
+
+### Co działa obecnie:
+
+- Aplikacja jako samodzielna gra lokalna
+  - Pełna funkcjonalność rozgrywki (tryby praktyki i egzaminy)
+  - System odblokowania poziomów
+  - Przechowywanie postępów lokalnie (LocalSaves/Hive)
+  - Interfejs użytkownika zgodny z projektem Figma
+
+- Infrastruktura backend (Firebase)
+  - Cloud Functions (onUserCreate, onResultsWrite) - przetestowane i działające
+  - Struktura bazy danych Firestore zdefiniowana
+  - Reguły bezpieczeństwa skonfigurowane
+  - AuthService z pełną logiką uwierzytelniania
+
+- Architektura offline-first
+  - OfflineStore zaimplementowany
+  - SyncService z kolejką, retry logic, exponential backoff
+  - Mechanizmy rozwiązywania konfliktów
+
+### Co wymaga uzupełnienia:
+
+1. **UI warstwy uwierzytelniania**
+   - Ekran logowania
+   - Ekran rejestracji
+   - Routing dla niezalogowanych użytkowników
+
+2. **Połączenie logiki gry z synchronizacją**
+   - Wywołanie ResultsService przy zakończeniu sesji gry
+   - Wywołanie ProgressService podczas rozgrywki
+   - Migracja z hardcoded "user1" na rzeczywisty Firebase UID
+
+3. **Integracja dwóch systemów storage**
+   - LocalSaves (obecny system gry) → pozostaje dla offline gameplay
+   - OfflineStore + Firebase → dla cross-device sync i statystyk
+   - Wspólne zarządzanie danymi między systemami
+
+### Dlaczego taka architektura:
+
+- **Modułowość**: każdy komponent działa niezależnie i jest testowalny
+- **Iteracyjny rozwój**: możliwość rozwijania aplikacji krok po kroku
+- **Separation of concerns**: logika gry oddzielona od synchronizacji danych
 
 
   
