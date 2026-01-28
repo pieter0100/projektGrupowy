@@ -222,7 +222,7 @@ Backend:​
 
   - Firebase Authentication pomogło skrócić czas implementacji i zwiększyć bezpieczeństwo (umożliwia korzystanie z gotowych rozwiązań i usług takich jak Google Sign-In itp.)
   
-  - zaimplementowano `AuthService` w aplikacji Flutter do obsługi procesów uwierzytelniania
+  - zaimplementowano `AuthService` w aplikacji Flutter do obsługi procesów uwierzytelniania - NA RAZIE BEZ UI, JEDYNIE LOGIKA I TESTY
 
     - rejestracja nowych użytkowników za pomocą email i hasła
 
@@ -237,6 +237,8 @@ Backend:​
   - wcześniej opisana cloud functions do automatycznego aktualizowania statystyk użytkowników po każdej sesji nauki - `onResultsWrite`
 
   - zbieranie i analiza danych dotyczących postępów użytkowników w nauce tabliczki mnożenia
+
+  - BEZ UI, JEDYNIE LOGIKA I TESTY
 
 - bezpieczeństwo danych
 
@@ -256,7 +258,7 @@ Backend:​
 
   - "profile" - dane profilowe użytkownika - username, email, data utworzenia profilu, (opcjonalny) avatar
 
-  - "stats" - statystyki nauki - liczba ukończonych sesji, wyniki, czas naukki (streak), data ostatniej sesji
+  - "stats" - statystyki nauki - liczba ukończonych sesji, wyniki, czas nauki (streak), data ostatniej sesji ALE NA RAZIE BEZ UI
 
 - kolekcja "users results" - historia wyników
   
@@ -303,7 +305,7 @@ Backend:​
 
 - retry z exponential backoff
 
-  - w przypadku błędu siedziowego czas przeznaczony na oczekiwanie na połączenia jest zwiększany wykładniczo (Próba n: czekaj 2^(n-1) sekund)
+  - w przypadku błędu sieciowego czas przeznaczony na oczekiwanie na połączenia jest zwiększany wykładniczo (Próba n: czekaj 2^(n-1) sekund)
   - Przy błędzie sieciowym:
 
       - Próba 1: czekaj 1 sekundę
