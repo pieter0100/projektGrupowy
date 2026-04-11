@@ -3,12 +3,12 @@
 `AuthService` provides authentication and user management using Firebase Authentication and Firestore.
 
 ## Features
-- Register new users with email, password, and optional username
+- Register new users with email, password, and username
 - Sign in users with email and password
 - Send password reset emails
 - Sign out users
 - Listen to authentication state changes
-- Create user profile documents in Firestore
+- Validate username uniqueness before registration
 
 ## API
 
@@ -22,20 +22,17 @@ Signs in a user using Firebase Authentication.
 - **Returns:**
   - The signed-in `User` object, or `null` if sign-in fails
 
-#### `Future<User?> register(String email, String password, {String? username})`
-Registers a new user and creates a profile document in Firestore.
+#### `Future<User?> register(String email, String password, String username)`
+Registers a new user in Firebase Authentication.
 - **Parameters:**
   - `email`: User's email address
   - `password`: User's password
-  - `username`: Optional display name
+  - `username`: Display name for the user
 - **Returns:**
   - The created `User` object, or `null` if registration fails
-- **Firestore:**
-  - Creates a document in the `users` collection with the user's UID
-  - Document fields:
-    - `profile`: `{ displayName, age }`
-    - `stats`: `{ totalGamesPlayed, totalPoints, currentStreak, lastPlayedAt }`
-    - `settings`: `{}`
+- **Note:**
+  - The user profile document in Firestore is automatically created by the `onUserCreate` cloud function when the user is registered
+  - The cloud function creates: `users/{uid}` with profile, stats, and settings
 
 #### `Future<void> sendPasswordReset(String email)`
 Sends a password reset email to the specified address.
@@ -76,6 +73,6 @@ await authService.signOut();
 ```
 
 ## Notes
-- Firestore document is created in the `users` collection with the user's UID as the document ID.
-- Make sure your Firestore security rules allow authenticated users to write to the `users` collection.
-- All methods are asynchronous and should be awaited.
+- User profile document is automatically created in the `users` collection by the `onUserCreate` cloud function (see `functions/index.ts`)
+- The cloud function is triggered automatically when a user registers via Firebase Authentication
+- All methods are asynchronous and should be awaited

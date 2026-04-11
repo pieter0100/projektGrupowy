@@ -66,24 +66,7 @@ class AuthService {
         email: email,
         password: password,
       );
-      final user = result.user;
-      if (user != null) {
-        // Create user document in Firestore
-        await _firestore.collection('users').doc(user.uid).set({
-          'profile': {
-            'displayName': username,
-            'age': null,
-          },
-          'stats': {
-            'totalGamesPlayed': 0,
-            'totalPoints': 0,
-            'currentStreak': 0,
-            'lastPlayedAt': null,
-          },
-          'settings': {},
-        });
-      }
-      return user;
+      return result.user;
     } on FirebaseAuthException catch (e) {
       // If the email is already in use, Firebase throws a FirebaseAuthException with code 'email-already-in-use'.
       // This is handled here and a user-friendly message can be provided if needed.

@@ -3,6 +3,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:projekt_grupowy/services/auth_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +20,10 @@ void main() {
     final password = 'TestPassword123!';
     final username = 'TestUser$timestamp';
 
-    // Register
+    // Register - only creates user in Firebase Auth
     final user = await authService.register(email, password, username);
     expect(user, isNotNull);
+    expect(user!.email, email);
 
     // Sign out
     await authService.signOut();
@@ -30,6 +32,7 @@ void main() {
     // Sign in
     final signInUser = await authService.signIn(email, password);
     expect(signInUser, isNotNull);
+    expect(signInUser!.email, email);
 
     // Send password reset (should not throw)
     await authService.sendPasswordReset(email);
@@ -93,6 +96,29 @@ void main() {
         anyOf(contains('incorrect'), contains('credential')),
       );
     }
+  });
+
+  testWidgets('cloud function creates user document in Firestore on registration', (WidgetTester tester) async {
+    final timestamp = DateTime.now().millisecondsSinceEpoch;
+    final email = 'cfuser$timestamp@example.com';
+    final password = 'TestPassword123!';
+    final username = 'CFTestUser$timestamp';
+
+    // Register
+    final user = await authService.register(email, password, username);
+    expect(user, isNotNull);
+
+    // Wait for cloud function to create document (it's async)
+    await Future.delayed(const Duration(seconds: 2));
+
+    // Verify cloud function created the Firestore document
+    final firestore = FirebaseFirestore.instance;
+    final userDoc = await firestore.collection('users').doc(user!.uid).get();
+
+    expect(userDoc.exists, true);
+    expect(userDoc.data()?['profile']['username'], isNotNull);
+    expect(userDoc.data()?['stats']['totalGamesPlayed'], 0);
+    expect(userDoc.data()?['settings'], isNotNull);
   });
 
   testWidgets('onAuthStateChanged restores state after app restart', (WidgetTester tester) async {
