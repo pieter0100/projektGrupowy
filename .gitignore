@@ -46,3 +46,11 @@ app.*.map.json
 
 # Node modules
 functions/node_modules/
+
+# Windows
+windows/flutter/ephemeral/
+windows/flutter/generated_plugins.cmake
+
+# Linux
+linux/flutter/ephemeral/
+linux/flutter/generated_plugins.cmake
