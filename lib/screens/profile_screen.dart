@@ -1,43 +1,104 @@
 import 'package:flutter/material.dart';
 import 'package:projekt_grupowy/widgets/profile_stats.dart';
+// Adjust these imports to match your project structure:
+import '../game_logic/local_saves.dart';
+import 'package:projekt_grupowy/models/user/user.dart';
+// If using Firebase Auth to get the current user's ID:
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  User? _currentUser;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserData();
+  }
+
+  Future<void> _loadUserData() async {
+    try {
+      // Assuming you're using Firebase Auth to get the ID.
+      // If you are hardcoding or using another method, adjust this.
+      final currentUserId = auth.FirebaseAuth.instance.currentUser?.uid;
+
+      if (currentUserId != null) {
+        // Retrieve the user from Hive
+        final user = LocalSaves.getUser(currentUserId);
+        
+        setState(() {
+          _currentUser = user;
+          _isLoading = false;
+        });
+      } else {
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      print("Error loading user data: $e");
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Profile'),
+        title: const Text('Profile'),
         centerTitle: true,
-        backgroundColor: Color(0xFFE5E5E5),
+        backgroundColor: const Color(0xFFE5E5E5),
         scrolledUnderElevation: 0.0,
       ),
-      body: Column(
-        children: [
-          ProfileHeader(),
-          StatisticsSection(),
-          SizedBox(height: 20),
-          InviteFriendsCard(),
-        ],
-      ),
+      body: _isLoading 
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView( // Added scroll view for smaller screens
+              child: Column(
+                children: [
+                  ProfileHeader(user: _currentUser),
+                  StatisticsSection(user: _currentUser),
+                  const SizedBox(height: 20),
+                  const InviteFriendsCard(),
+                ],
+              ),
+            ),
     );
   }
 }
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({super.key});
+  final User? user;
+
+  const ProfileHeader({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
+    // Extract data with fallbacks
+    final displayName = user?.profile.displayName ?? 'Unknown User';
+    // For nick/username, assuming displayName is used, or maybe you have another field
+    final nickName = '@${displayName.toLowerCase().replaceAll(' ', '')}'; 
+    // Format the date if it exists, otherwise placeholder
+    final joinedDate = user?.stats.lastPlayedAt != null 
+        ? '${user!.stats.lastPlayedAt!.day}/${user!.stats.lastPlayedAt!.month}/${user!.stats.lastPlayedAt!.year}' 
+        : 'Unknown Date';
+
     return Container(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         top: 25.0,
         bottom: 15.0,
         left: 10.0,
         right: 10.0,
       ),
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         border: Border(
           bottom: BorderSide(color: Color(0x33000000), width: 3.0),
         ),
@@ -49,34 +110,34 @@ class ProfileHeader extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                'Imie Nazwisko',
-                style: TextStyle(
+                displayName,
+                style: const TextStyle(
                   fontSize: 30.0,
                   color: Colors.black,
                   height: 1.0,
                 ),
               ),
               Text(
-                'pobrany nick',
-                style: TextStyle(fontSize: 20.0, color: Color(0x88000000)),
+                nickName,
+                style: const TextStyle(fontSize: 20.0, color: Color(0x88000000)),
               ),
               Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.access_time_filled,
                     size: 16.0,
                     color: Color(0x88000000),
                   ),
-                  SizedBox(width: 4.0),
+                  const SizedBox(width: 4.0),
                   Text(
-                    'pobrane data',
-                    style: TextStyle(fontSize: 15.0, height: 2.5),
+                    'Joined $joinedDate',
+                    style: const TextStyle(fontSize: 15.0, height: 2.5),
                   ),
                 ],
               ),
             ],
           ),
-          SizedBox(width: 30.0),
+          const SizedBox(width: 30.0),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
@@ -87,7 +148,9 @@ class ProfileHeader extends StatelessWidget {
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
-                child: Center(child: Text('picture')),
+                child: const Center(
+                  child: Icon(Icons.person, size: 50, color: Colors.white),
+                ),
               ),
             ],
           ),
@@ -98,12 +161,21 @@ class ProfileHeader extends StatelessWidget {
 }
 
 class StatisticsSection extends StatelessWidget {
-  const StatisticsSection({super.key});
+  final User? user;
+
+  const StatisticsSection({super.key, required this.user});
 
   @override
   Widget build(BuildContext context) {
+    // Extract stats with fallbacks
+    final dayStreak = user?.stats.currentStreak.toString() ?? '0';
+    final totalPoints = user?.stats.totalPoints.toString() ?? '0';
+    // For achievements and leaderboard, you'll need logic to calculate them later.
+    // For now, using totalGamesPlayed or placeholders.
+    final gamesPlayed = user?.stats.totalGamesPlayed.toString() ?? '0';
+
     return Container(
-      padding: EdgeInsets.only(
+      padding: const EdgeInsets.only(
         top: 15.0,
         bottom: 0.0,
         left: 10.0,
@@ -114,7 +186,7 @@ class StatisticsSection extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Column(
+              const Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
@@ -127,8 +199,8 @@ class StatisticsSection extends StatelessWidget {
                   ),
                 ],
               ),
-              SizedBox(width: 30.0),
-              Column(children: [SizedBox(width: 190)]),
+              const SizedBox(width: 30.0),
+              Column(children: const [SizedBox(width: 190)]),
             ],
           ),
           Row(
@@ -136,17 +208,17 @@ class StatisticsSection extends StatelessWidget {
             children: [
               Column(
                 children: [
-                  StatisticBox(witchBox: 'dayStreak', value: '67'),
-                  SizedBox(height: 15.0),
-                  StatisticBox(witchBox: 'achievements', value: '6 7'),
+                  StatisticBox(witchBox: 'dayStreak', value: dayStreak),
+                  const SizedBox(height: 15.0),
+                  StatisticBox(witchBox: 'achievements', value: gamesPlayed), // Placeholder for achievements
                 ],
               ),
-              SizedBox(width: 15.0),
+              const SizedBox(width: 15.0),
               Column(
                 children: [
-                  StatisticBox(witchBox: 'totalXP', value: '67'),
-                  SizedBox(height: 15.0),
-                  StatisticBox(witchBox: 'leaderBoard', value: '6 7'),
+                  StatisticBox(witchBox: 'totalXP', value: totalPoints),
+                  const SizedBox(height: 15.0),
+                  StatisticBox(witchBox: 'leaderBoard', value: 'N/A'), // Placeholder for rank
                 ],
               ),
             ],
@@ -162,8 +234,8 @@ class InviteFriendsCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final Color borderColor = Color(0x33000000);
-    final Color buttonColor = const Color(0xFF02A1FB);
+    const Color borderColor = Color(0x33000000);
+    const Color buttonColor = Color(0xFF02A1FB);
 
     return Container(
       width: 320,
@@ -175,16 +247,14 @@ class InviteFriendsCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Row(
+          const Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Icon(
-                Icons.pets, 
+                Icons.pets,
                 size: 80,
               ),
-
-              const SizedBox(width: 20),
-
+              SizedBox(width: 20),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -196,7 +266,7 @@ class InviteFriendsCard extends StatelessWidget {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 8.0),
+                    SizedBox(height: 8.0),
                     Text(
                       'Tell your friends it’s free and fun to learn on Multiply app!',
                       style: TextStyle(fontSize: 16.0, height: 1.3),
@@ -206,9 +276,7 @@ class InviteFriendsCard extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 24.0),
-
           SizedBox(
             width: double.infinity,
             height: 47.0,
@@ -219,8 +287,8 @@ class InviteFriendsCard extends StatelessWidget {
               style: ElevatedButton.styleFrom(
                 backgroundColor: buttonColor,
                 foregroundColor: Colors.white,
-                elevation: 8, 
-                shadowColor: Color(0x8802A1FB),
+                elevation: 8,
+                shadowColor: const Color(0x8802A1FB),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(16.0),
                 ),
