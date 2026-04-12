@@ -1,9 +1,13 @@
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/models/user/user.dart';
+import 'package:projekt_grupowy/models/user/user_profile.dart';
+import 'package:projekt_grupowy/models/user/user_stats.dart';
 import 'package:logger/logger.dart';
 
 class AuthService {
-  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final Logger _logger = Logger();
 
@@ -54,7 +58,7 @@ class AuthService {
   }
 
   // Register with email, password, and username
-  Future<User?> register(String email, String password, String username) async {
+  Future<firebase_auth.User?> register(String email, String password, String username) async {
     if (email.isEmpty || !_isValidEmail(email)) {
       throw Exception('Please enter a valid email address.');
     }
@@ -70,33 +74,58 @@ class AuthService {
       throw Exception('This username is already taken.');
     }
     try {
-      final UserCredential result = await _auth.createUserWithEmailAndPassword(
+      final firebase_auth.UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
       final user = result.user;
       if (user != null) {
+        // Create user profile object
+        final userProfile = UserProfile(
+          displayName: username,
+          age: 0,
+          nick: username,
+        );
+
+        // Create user stats
+        final userStats = UserStats(
+          totalGamesPlayed: 0,
+          totalPoints: 0,
+          currentStreak: 0,
+          lastPlayedAt: DateTime.now(),
+        );
+
+        // Create user object
+        final newUser = User(
+          userId: user.uid,
+          profile: userProfile,
+          stats: userStats,
+        );
+
+        // Save to Hive
+        await LocalSaves.saveUser(newUser);
+
         // Create user document in Firestore
         await _firestore.collection('users').doc(user.uid).set({
-          'profile': {'displayName': username, 'age': null},
+          'profile': {'displayName': username, 'age': 0, 'nick': username},
           'stats': {
             'totalGamesPlayed': 0,
             'totalPoints': 0,
             'currentStreak': 0,
-            'lastPlayedAt': null,
+            'lastPlayedAt': DateTime.now().toIso8601String(),
           },
           'settings': {},
         });
       }
       return user;
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       // If the email is already in use, Firebase throws a FirebaseAuthException with code 'email-already-in-use'.
       // This is handled here and a user-friendly message can be provided if needed.
       _logger.e('FirebaseAuthException code: ${e.code}');
       _logger.e('FirebaseAuthException message: ${e.message}');
       _logger.e('Full exception: $e');
       throw Exception(e.message ?? 'Registration error. Code: ${e.code}');
-    } on FirebaseException catch (e) {
+    } on firebase_auth.FirebaseException catch (e) {
       _logger.e('FirebaseException: $e');
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
@@ -112,9 +141,9 @@ class AuthService {
     }
     try {
       await _auth.sendPasswordResetEmail(email: email);
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Password reset error.');
-    } on FirebaseException catch (e) {
+    } on firebase_auth.FirebaseException catch (e) {
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
       throw Exception('An unknown error occurred.');
@@ -122,7 +151,7 @@ class AuthService {
   }
 
   // Sign in with email and password
-  Future<User?> signIn(String email, String password) async {
+  Future<firebase_auth.User?> signIn(String email, String password) async {
     if (email.isEmpty || !_isValidEmail(email)) {
       throw Exception('Please enter a valid email address.');
     }
@@ -132,14 +161,14 @@ class AuthService {
       );
     }
     try {
-      final UserCredential result = await _auth.signInWithEmailAndPassword(
+      final firebase_auth.UserCredential result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
       );
       return result.user;
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Authentication error.');
-    } on FirebaseException catch (e) {
+    } on firebase_auth.FirebaseException catch (e) {
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
       throw Exception('An unknown error occurred.');
@@ -150,9 +179,9 @@ class AuthService {
   Future<void> signOut() async {
     try {
       await _auth.signOut();
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Sign out error.');
-    } on FirebaseException catch (e) {
+    } on firebase_auth.FirebaseException catch (e) {
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
       throw Exception('An unknown error occurred.');
@@ -160,5 +189,5 @@ class AuthService {
   }
 
   // Stream of auth state changes
-  Stream<User?> get onAuthStateChanged => _auth.authStateChanges();
+  Stream<firebase_auth.User?> get onAuthStateChanged => _auth.authStateChanges();
 }

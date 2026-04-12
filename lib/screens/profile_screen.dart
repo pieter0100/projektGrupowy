@@ -83,9 +83,9 @@ class ProfileHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Extract data with fallbacks
-    final displayName = user?.profile.displayName ?? 'Unknown User';
-    // For nick/username, assuming displayName is used, or maybe you have another field
-    final nickName = '@${displayName.toLowerCase().replaceAll(' ', '')}'; 
+    final displayName = user?.profile.displayName ?? user?.profile.nick ?? 'Unknown User';
+    final nick = user?.profile.nick ?? 'unknown';
+    final nickName = '@$nick'; 
     // Format the date if it exists, otherwise placeholder
     final joinedDate = user?.stats.lastPlayedAt != null 
         ? '${user!.stats.lastPlayedAt!.day}/${user!.stats.lastPlayedAt!.month}/${user!.stats.lastPlayedAt!.year}' 
