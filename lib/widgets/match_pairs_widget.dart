@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/models/cards/card_item.dart';
 
 class MatchPairsWidget extends StatelessWidget {
@@ -20,14 +21,14 @@ class MatchPairsWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     Color backgroundColor;
     if (card.isFailed) {
-      backgroundColor = const Color(0xFFE15D5D);
+      backgroundColor = AppColors.matchError;
     } else if (isMatched) {
-      backgroundColor = const Color(0xFF7EDE81);
+      backgroundColor = AppColors.matchSuccess;
     } else {
-      backgroundColor = const Color(0xFF7ED4DE);
+      backgroundColor = AppColors.matchDefault;
     }
 
-    final double fontSize = card.value.length > 2 ? 56 : 82;
+    final double fontSize = card.value.length > 2 ? AppSizes.fontSizeCardSmall : AppSizes.fontSizeCardBig;
 
     return GestureDetector(
       onTap: onTap,
@@ -35,25 +36,25 @@ class MatchPairsWidget extends StatelessWidget {
         children: [
           AnimatedContainer(
             duration: const Duration(milliseconds: 200),
-            width: 130,
-            height: 130,
+            width: AppSizes.matchCardSize,
+            height: AppSizes.matchCardSize,
             decoration: BoxDecoration(
               color: backgroundColor,
-              borderRadius: BorderRadius.circular(12),
+              borderRadius: BorderRadius.circular(AppSizes.matchCardRadius),
             ),
             child: Stack(
               children: [
                 if (isSelected || isMatched || card.isFailed)
                   ClipRRect(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(AppSizes.matchCardRadius),
                     child: Container(
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topCenter,
                           end: Alignment.bottomCenter,
                           colors: [
-                            Colors.black.withValues(alpha: 0.2),
-                            Colors.transparent,
+                            AppColors.matchShadow.withValues(alpha: 0.2),
+                          Colors.transparent,
                           ],
                           stops: const [0.0, 0.1],
                         ),
@@ -63,7 +64,7 @@ class MatchPairsWidget extends StatelessWidget {
                 Center(
                   child: Text(
                     card.value,
-                    style: TextStyle(fontSize: fontSize, color: Colors.white),
+                    style: AppTextStyles.matchCard(fontSize),
                     textAlign: TextAlign.center,
                   ),
                 ),

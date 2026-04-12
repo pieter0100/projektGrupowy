@@ -149,7 +149,23 @@ Firestore Database
 └── leaderboards/
     └── global/
 ```
+## Level Unlocking Logic
+The logic to check if a level is accessible to the user is centralized in the static method **LocalSaves.isLevelUnlocked(userId, levelId)**.
 
+This method performs two main verifications, utilizing data stored locally in Hive:
+
+  1. Point Requirements (**minPoints**):
+    - It fetches the LevelInfo object for the given **levelId** to read the value from the **unlockRequirements.minPoints** field.
+    - It fetches the User object for the given **userId** to read the current user.stats.totalPoints.
+    - Verification: It checks if the user's totalPoints is greater than or equal to the **minPoints** required by the level.
+
+  2. Previous Level Requirement (**previousLevelId**):
+    - It reads the **unlockRequirements.previousLevelId** field from the **LevelInfo** object.
+    - If this field exists, it retrieves the user's **LevelProgress** for that prerequisite level (**previousLevelId**).
+    - Verification: It checks if **LevelProgress** exists for the previous level and if the completed field within that progress is set to true.
+
+If both conditions (or only those that are defined) are met, the method returns true.
+    
 ## Storage Strategy
 
 ### Use Hive + Classes for:

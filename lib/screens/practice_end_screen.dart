@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:go_router/go_router.dart';
+
+import 'package:projekt_grupowy/utils/constants.dart';
 
 class PracticeEndScreen extends StatefulWidget {
   final String level;
@@ -29,7 +30,7 @@ class _PracticeEndScreenState extends State<PracticeEndScreen> {
       body: Center(
         child: Text(
           "Congratulations! \nYou answered all the questions correctly!",
-          style: TextStyle(fontSize: 24),
+          style: TextStyle(fontSize: AppSizes.fontSizeCongratulations),
           textAlign: TextAlign.center,
         ),
       ),
