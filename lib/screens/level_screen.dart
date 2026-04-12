@@ -1,11 +1,71 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import '../game_logic/local_saves.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
+// Imports for initalizing user data
+import 'package:projekt_grupowy/models/user/user.dart';
+import 'package:projekt_grupowy/models/user/user_stats.dart';
+import 'package:projekt_grupowy/models/user/user_profile.dart';
+import 'package:projekt_grupowy/models/level/level.dart';
+import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
 
-class LevelScreen extends StatelessWidget {
+class LevelScreen extends StatefulWidget {
   final int levelsAmount;
   const LevelScreen({super.key, required this.levelsAmount});
+
+  @override
+  State<LevelScreen> createState() => _LevelScreenState();
+}
+
+class _LevelScreenState extends State<LevelScreen> {
+  final String userId = "user1";
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeDataIfNeeded();
+  }
+
+  Future<void> _initializeDataIfNeeded() async {
+    if (LocalSaves.getUser(userId) == null) {
+      final newUser = User(
+        userId: userId,
+        stats: UserStats(
+          totalGamesPlayed: 0,
+          totalPoints: 0,
+          currentStreak: 0,
+          lastPlayedAt: DateTime.now(),
+        ),
+        profile: UserProfile(displayName: "Player 1", age: 10),
+      );
+      await LocalSaves.saveUser(newUser);
+    }
+
+    if (LocalSaves.getLevel('2') == null) {
+      for (int i = 1; i <= widget.levelsAmount; i++) {
+        final levelId = i.toString();
+        final prevLevelId = i > 1 ? (i - 1).toString() : null;
+
+        final levelInfo = LevelInfo(
+          levelId: levelId,
+          levelNumber: i,
+          name: "Level $i",
+          description: "Nauka mnożenia przez $i",
+          unlockRequirements: UnlockRequirements(
+            minPoints: 0,
+            previousLevelId: prevLevelId,
+          ),
+          rewards: Rewards(points: 100),
+          isRevision: false,
+        );
+        await LocalSaves.saveLevel(levelInfo);
+      }
+      // Refresh the view after saving data
+      if (mounted) setState(() {});
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -16,41 +76,56 @@ class LevelScreen extends StatelessWidget {
           children: [
             const Text(
               'Multiply',
-              style: TextStyle(fontSize: 20, color: Colors.black),
+              style: TextStyle(
+                fontSize: AppSizes.fontSizeAppBar,
+                color: AppColors.black,
+              ),
             ),
-            const SizedBox(width: 8),
+            const SizedBox(width: AppSizes.spacingSmall),
             Icon(
               Icons.local_fire_department,
-              color: Color(0xFFEB9F4A),
-              size: 29,
+              color: AppColors.orange,
+              size: AppSizes.iconMedium,
             ),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSizes.spacingTiny),
             const Text(
               '3',
-              style: TextStyle(fontSize: 23, color: Color(0xFFEB9F4A)),
+              style: TextStyle(
+                fontSize: AppSizes.fontSizeStats,
+                color: AppColors.orange,
+              ),
             ),
-            const SizedBox(width: 8),
-            Icon(Icons.diamond, color: Color(0xFF338F9B), size: 29),
-            const SizedBox(width: 4),
+            const SizedBox(width: AppSizes.spacingSmall),
+            Icon(
+              Icons.diamond,
+              color: AppColors.blue,
+              size: AppSizes.iconMedium,
+            ),
+            const SizedBox(width: AppSizes.spacingTiny),
             const Text(
               '1432 XP',
-              style: TextStyle(fontSize: 23, color: Color(0xFF338F9B)),
+              style: TextStyle(
+                fontSize: AppSizes.fontSizeStats,
+                color: AppColors.blue,
+              ),
             ),
           ],
         ),
-        backgroundColor: Color(0xFFE5E5E5),
+        backgroundColor: AppColors.appBarBackground,
       ),
       body: ListView.builder(
-        itemCount: levelsAmount,
+        itemCount: widget.levelsAmount,
         itemBuilder: (BuildContext context, int index) {
-          if (index < 2) {
-            return InkWell(
-              onTap: () => context.go('/level/learn?level=${index + 1}'),
-              child: LevelWidget(textInside: "× ${index + 1}", isLocked: false),
-            );
-          } else {
-            return LevelWidget(isLocked: true);
-          }
+          final String levelId = (index + 1).toString();
+
+          final bool unlocked = LocalSaves.isLevelUnlocked("user1", levelId);
+
+          return InkWell(
+            onTap: unlocked
+                ? () => context.go('/level/learn?level=$levelId')
+                : null,
+            child: LevelWidget(textInside: "× $levelId", isLocked: !unlocked),
+          );
         },
       ),
     );
