@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/screens/personal_data.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -101,6 +102,10 @@ final GoRouter appRouter = GoRouter(
           score: int.tryParse(scoreStr) ?? 0,
         );
       },
+    ),
+    GoRoute(
+      path: '/personal-data',
+      builder: (context, state) => const PersonalData(),
     ),
   ],
 );

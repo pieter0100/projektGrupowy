@@ -24,7 +24,10 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           SizedBox(height: AppSizes.screenPaddingTop),
-          Center(child: SettingsDataWidget("Personal data")),
+          Center(child: InkWell(
+            onTap: () => context.go('/personal-data'),
+            child: SettingsDataWidget("Personal data")
+          )),
           SizedBox(height: AppSizes.screenPaddingTop),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
