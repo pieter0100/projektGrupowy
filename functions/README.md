@@ -64,6 +64,15 @@ npm run build
 
 ## Development
 
+### Firebase Emulator vs Android Studio Emulator
+
+**Firebase Emulator** and **Android Studio Emulator** are different tools:
+
+- **Firebase Emulator** - Emulates Firebase backend services (Firestore, Authentication, Cloud Functions) locally on `localhost` ports. Required for testing Cloud Functions and backend code.
+- **Android Studio Emulator** - Emulates an Android phone/device. Used for testing the Flutter app on a virtual Android device.
+
+You can run both simultaneously. For these Cloud Functions tests, you specifically need the **Firebase Emulator**.
+
 ### Run Emulator
 Start Firebase emulators for local testing:
 ```bash
