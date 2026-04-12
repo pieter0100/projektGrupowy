@@ -19,7 +19,7 @@ service cloud.firestore {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid);
       allow update: if isOwner(uid);
-      allow delete: if false; // Prevent deletion
+      allow delete: if isOwner(uid); // Allow owner to delete own account
       
       // Subcollection: levelProgress
       match /levelProgress/{levelId} {
@@ -39,7 +39,7 @@ service cloud.firestore {
                     && request.resource.data.uid == request.auth.uid
                     && request.resource.data.keys().hasAll(['uid', 'sessionId', 'timestamp']);
       
-      // Prevent updates and deletes (immutable)
+      // Prevent updates and deletes (immutable) - Cloud Functions handles deletion
       allow update, delete: if false;
     }
     
@@ -56,7 +56,7 @@ service cloud.firestore {
       // Allow update only by owner
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid;
       
-      // Prevent deletion
+      // Prevent deletion - Cloud Functions handles deletion
       allow delete: if false;
     }
       // Levels collection - public read access, server-only write  

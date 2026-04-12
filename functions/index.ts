@@ -81,3 +81,59 @@ export const onResultWrite = functions.firestore
 
     await userRef.update({ stats });
   });
+
+// onUserDelete: Cleans up all user data when Firebase Auth user is deleted
+export const onUserDelete = functions.auth.user().onDelete(async (user: admin.auth.UserRecord) => {
+  const { uid } = user;
+  console.log(`Starting cleanup for deleted user: ${uid}`);
+
+  try {
+    // 1. Delete user profile document
+    console.log(`Deleting user profile for uid: ${uid}`);
+    await db.collection('users').doc(uid).delete();
+
+    // 2. Query and delete all user_results for this uid
+    console.log(`Querying user_results for uid: ${uid}`);
+    const resultsSnapshot = await db
+      .collection('user_results')
+      .where('uid', '==', uid)
+      .get();
+
+    if (!resultsSnapshot.empty) {
+      console.log(`Found ${resultsSnapshot.size} user_results to delete`);
+      const batch = db.batch();
+      resultsSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      console.log(`Deleted ${resultsSnapshot.size} user_results documents`);
+    }
+
+    // 3. Query and delete all game_progress for this uid
+    console.log(`Querying game_progress for uid: ${uid}`);
+    const progressSnapshot = await db
+      .collection('game_progress')
+      .where('uid', '==', uid)
+      .get();
+
+    if (!progressSnapshot.empty) {
+      console.log(`Found ${progressSnapshot.size} game_progress to delete`);
+      const batch = db.batch();
+      progressSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      console.log(`Deleted ${progressSnapshot.size} game_progress documents`);
+    }
+
+    console.log(`Successfully completed cleanup for user: ${uid}`);
+  } catch (error) {
+    console.error(`Error cleaning up user data for uid: ${uid}`, error);
+    // Log error but don't throw - we want the function to complete even if cleanup fails
+    // to avoid orphaned auth users
+    throw new functions.https.HttpsError(
+      'internal',
+      `Failed to clean up user data for uid: ${uid}. Error: ${error}`,
+    );
+  }
+});

@@ -13,7 +13,7 @@ if (!admin.apps.length) {
 }
 
 // NOW import functions after admin is initialized
-import { onUserCreate, onResultWrite } from './index';
+import { onUserCreate, onResultWrite, onUserDelete } from './index';
 
 const testEnv = functionsTest({
   projectId: 'demo-project',
@@ -21,8 +21,8 @@ const testEnv = functionsTest({
 
 
 describe('Cloud Functions (emulator)', () => {
-  // Increase timeout for emulator tests
-  jest.setTimeout(30000);
+  // Increase timeout for emulator tests (120 seconds for integration tests)
+  jest.setTimeout(120000);
 
   beforeAll(async () => {
     // Admin already initialized above
@@ -69,5 +69,68 @@ describe('Cloud Functions (emulator)', () => {
     const userDoc = await admin.firestore().collection('users').doc('testuid').get();
     expect(userDoc.exists).toBe(true);
     expect(userDoc.data()?.stats.totalGamesPlayed).toBeGreaterThan(0);
+  });
+
+  it('should delete all user data on user deletion', async () => {
+    const deleteUid = 'deletetest-uid-' + Date.now();
+
+    // 1. Create user profile
+    await admin.firestore().collection('users').doc(deleteUid).set({
+      profile: { username: 'ToDelete', email: 'delete@test.com', creation_date: new Date().toISOString() },
+      stats: { totalGamesPlayed: 5, totalPoints: 500, currentStreak: 2, lastPlayedAt: new Date().toISOString() },
+      settings: {},
+    });
+
+    // 2. Create some user_results
+    const result1Ref = admin.firestore().collection('user_results').doc();
+    await result1Ref.set({
+      uid: deleteUid,
+      sessionId: 'session-1',
+      timestamp: new Date().toISOString(),
+      score: 100,
+    });
+
+    const result2Ref = admin.firestore().collection('user_results').doc();
+    await result2Ref.set({
+      uid: deleteUid,
+      sessionId: 'session-2',
+      timestamp: new Date().toISOString(),
+      score: 200,
+    });
+
+    // 3. Create some game_progress
+    const progress1Ref = admin.firestore().collection('game_progress').doc();
+    await progress1Ref.set({
+      uid: deleteUid,
+      sessionId: 'session-1',
+      gameId: 'game-1',
+      completedCount: 5,
+      totalCount: 10,
+      lastUpdated: new Date().toISOString(),
+    });
+
+    // 4. Verify data exists before deletion
+    let userDoc = await admin.firestore().collection('users').doc(deleteUid).get();
+    expect(userDoc.exists).toBe(true);
+
+    let resultsSnap = await admin.firestore().collection('user_results').where('uid', '==', deleteUid).get();
+    expect(resultsSnap.size).toBe(2);
+
+    let progressSnap = await admin.firestore().collection('game_progress').where('uid', '==', deleteUid).get();
+    expect(progressSnap.size).toBe(1);
+
+    // 5. Call onUserDelete
+    const fakeDeletedUser = { uid: deleteUid } as any;
+    await testEnv.wrap(onUserDelete)(fakeDeletedUser);
+
+    // 6. Verify all data is deleted
+    userDoc = await admin.firestore().collection('users').doc(deleteUid).get();
+    expect(userDoc.exists).toBe(false);
+
+    resultsSnap = await admin.firestore().collection('user_results').where('uid', '==', deleteUid).get();
+    expect(resultsSnap.empty).toBe(true);
+
+    progressSnap = await admin.firestore().collection('game_progress').where('uid', '==', deleteUid).get();
+    expect(progressSnap.empty).toBe(true);
   });
 });

@@ -159,6 +159,72 @@ class AuthService {
     }
   }
 
+  // Re-authenticate user with password (required for account deletion)
+  Future<void> reauthenticateUser(String password) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user currently logged in.');
+    }
+
+    if (user.email == null) {
+      throw Exception('User email not found.');
+    }
+
+    try {
+      final credential = EmailAuthProvider.credential(
+        email: user.email!,
+        password: password,
+      );
+      await user.reauthenticateWithCredential(credential);
+      _logger.i('User re-authenticated successfully for: ${user.email}');
+    } on FirebaseAuthException catch (e) {
+      _logger.e('Re-authentication failed: ${e.code} - ${e.message}');
+      if (e.code == 'wrong-password') {
+        throw Exception('Incorrect password.');
+      }
+      throw Exception(e.message ?? 'Re-authentication failed.');
+    } on FirebaseException catch (e) {
+      _logger.e('Firebase error during re-auth: $e');
+      throw Exception(e.message ?? 'Firebase error.');
+    } catch (e) {
+      _logger.e('Unexpected error during re-auth: $e');
+      throw Exception('An unknown error occurred during re-authentication.');
+    }
+  }
+
+  // Delete user account - requires re-authentication and will trigger Cloud Function cleanup
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user currently logged in.');
+    }
+
+    try {
+      final uid = user.uid;
+      _logger.w('Attempting to delete account for user: $uid');
+
+      // Delete Firebase Auth user - this triggers onUserDelete Cloud Function
+      // which will cleanup all Firestore data (users/{uid}, user_results, game_progress)
+      await user.delete();
+
+      _logger.i('Successfully deleted Firebase Auth user: $uid');
+      _logger.i(
+        'Cloud Function onUserDelete will cleanup Firestore data for: $uid',
+      );
+    } on FirebaseAuthException catch (e) {
+      _logger.e(
+        'Firebase Auth error during account deletion: ${e.code} - ${e.message}',
+      );
+      throw Exception(e.message ?? 'Account deletion failed.');
+    } on FirebaseException catch (e) {
+      _logger.e('Firebase error during account deletion: $e');
+      throw Exception(e.message ?? 'Firebase error.');
+    } catch (e) {
+      _logger.e('Unexpected error during account deletion: $e');
+      throw Exception('An unknown error occurred during account deletion.');
+    }
+  }
+
   // Stream of auth state changes
   Stream<User?> get onAuthStateChanged => _auth.authStateChanges();
 }
