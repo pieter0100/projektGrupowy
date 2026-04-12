@@ -42,7 +42,7 @@ void main() {
     test("Save and retrieve user", () async {
       final user = User(
         userId: 'u1',
-        profile: UserProfile(displayName: 'Test', age: 20),
+        profile: UserProfile(displayName: 'Test', age: 20, nick: 'TestUser'),
         stats: UserStats(
           totalGamesPlayed: 5,
           totalPoints: 100,
@@ -61,7 +61,7 @@ void main() {
     test("Update user stats", () async {
       final user = User(
         userId: 'u1',
-        profile: UserProfile(displayName: 'Test', age: 20),
+        profile: UserProfile(displayName: 'Test', age: 20, nick: 'TestUser'),
         stats: UserStats(
           totalGamesPlayed: 5,
           totalPoints: 100,
@@ -84,7 +84,7 @@ void main() {
       await LocalSaves.saveUser(
         User(
           userId: 'u1',
-          profile: UserProfile(displayName: 'A', age: 20),
+          profile: UserProfile(displayName: 'A', age: 20, nick: 'UserA'),
           stats: UserStats(
             totalGamesPlayed: 1,
             totalPoints: 10,
@@ -97,7 +97,7 @@ void main() {
       await LocalSaves.saveUser(
         User(
           userId: 'u2',
-          profile: UserProfile(displayName: 'B', age: 30),
+          profile: UserProfile(displayName: 'B', age: 30, nick: 'UserB'),
           stats: UserStats(
             totalGamesPlayed: 2,
             totalPoints: 20,
@@ -186,7 +186,7 @@ void main() {
     test("Level unlocking logic", () async {
       final user = User(
         userId: 'u1',
-        profile: UserProfile(displayName: 'Test', age: 20),
+        profile: UserProfile(displayName: 'Test', age: 20, nick: 'TestUser'),
         stats: UserStats(
           totalGamesPlayed: 1,
           totalPoints: 500,
@@ -217,7 +217,7 @@ void main() {
       await LocalSaves.saveUser(
         User(
           userId: 'u1',
-          profile: UserProfile(displayName: 'A', age: 20),
+          profile: UserProfile(displayName: 'A', age: 20, nick: 'UserA'),
           stats: UserStats(
             totalGamesPlayed: 1,
             totalPoints: 2000,

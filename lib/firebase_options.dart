@@ -41,24 +41,25 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyBwJ9vJ4oqKv7F5xNJpWQNzqZ8YZ9zKZ9A',
+    apiKey: 'AIzaSyAgd5UG2dgVR1lfg-y5eEXRVRJgAU0udKk',
     appId: '1:745790458947:web:cd218cfcc6db9db48018f6',
     messagingSenderId: '745790458947',
     projectId: 'projektgrupowy-ba8f2',
     authDomain: 'projektgrupowy-ba8f2.firebaseapp.com',
     storageBucket: 'projektgrupowy-ba8f2.firebasestorage.app',
+    measurementId: 'G-NQG4XVYZ78',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBwJ9vJ4oqKv7F5xNJpWQNzqZ8YZ9zKZ9A',
-    appId: '1:745790458947:android:562d51a25468f52a8018f6',
+    apiKey: 'AIzaSyCjsRU9PLEH88A-RIu-Vh8vDuH_RK41zxU',
+    appId: '1:745790458947:android:33ecfe4e1c0ac51d8018f6',
     messagingSenderId: '745790458947',
     projectId: 'projektgrupowy-ba8f2',
     storageBucket: 'projektgrupowy-ba8f2.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBwJ9vJ4oqKv7F5xNJpWQNzqZ8YZ9zKZ9A',
+    apiKey: 'AIzaSyBCDDoF8m9Si3F8IMiLFahQzWgVCnmRowg',
     appId: '1:745790458947:ios:2fc29a56f15d0b418018f6',
     messagingSenderId: '745790458947',
     projectId: 'projektgrupowy-ba8f2',
@@ -67,7 +68,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBwJ9vJ4oqKv7F5xNJpWQNzqZ8YZ9zKZ9A',
+    apiKey: 'AIzaSyBCDDoF8m9Si3F8IMiLFahQzWgVCnmRowg',
     appId: '1:745790458947:ios:2fc29a56f15d0b418018f6',
     messagingSenderId: '745790458947',
     projectId: 'projektgrupowy-ba8f2',
@@ -76,11 +77,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyBwJ9vJ4oqKv7F5xNJpWQNzqZ8YZ9zKZ9A',
+    apiKey: 'AIzaSyAgd5UG2dgVR1lfg-y5eEXRVRJgAU0udKk',
     appId: '1:745790458947:web:7a4c8ef33b6ad2508018f6',
     messagingSenderId: '745790458947',
     projectId: 'projektgrupowy-ba8f2',
     authDomain: 'projektgrupowy-ba8f2.firebaseapp.com',
     storageBucket: 'projektgrupowy-ba8f2.firebasestorage.app',
+    measurementId: 'G-RC4MXVJHE5',
   );
+
 }
