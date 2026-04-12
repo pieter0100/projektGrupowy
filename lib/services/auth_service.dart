@@ -78,7 +78,7 @@ class AuthService {
       if (user != null) {
         // Create user document in Firestore
         await _firestore.collection('users').doc(user.uid).set({
-          'profile': {'displayName': username, 'age': null},
+          'profile': {'displayName': username, 'age': null, 'nick': username},
           'stats': {
             'totalGamesPlayed': 0,
             'totalPoints': 0,
