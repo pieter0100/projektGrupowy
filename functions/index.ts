@@ -137,3 +137,64 @@ export const onUserDelete = functions.auth.user().onDelete(async (user: admin.au
     );
   }
 });
+
+// cleanupUserData: Callable HTTP function for deleting user data
+// Called directly from Dart app after auth user deletion
+export const cleanupUserData = functions.https.onCall(async (data, context) => {
+  const uid = data.uid as string;
+  
+  console.log(`cleanupUserData called for uid: ${uid}, auth context: ${context.auth ? 'YES' : 'NO'}`);
+  
+  if (!uid) {
+    throw new functions.https.HttpsError('invalid-argument', 'uid is required');
+  }
+
+  try {
+    // 1. Delete user profile document
+    console.log(`Deleting user profile for uid: ${uid}`);
+    await db.collection('users').doc(uid).delete();
+
+    // 2. Query and delete all user_results
+    console.log(`Querying user_results for uid: ${uid}`);
+    const resultsSnapshot = await db
+      .collection('user_results')
+      .where('uid', '==', uid)
+      .get();
+
+    if (!resultsSnapshot.empty) {
+      console.log(`Found ${resultsSnapshot.size} user_results to delete`);
+      const batch = db.batch();
+      resultsSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      console.log(`Deleted ${resultsSnapshot.size} user_results documents`);
+    }
+
+    // 3. Query and delete all game_progress
+    console.log(`Querying game_progress for uid: ${uid}`);
+    const progressSnapshot = await db
+      .collection('game_progress')
+      .where('uid', '==', uid)
+      .get();
+
+    if (!progressSnapshot.empty) {
+      console.log(`Found ${progressSnapshot.size} game_progress to delete`);
+      const batch = db.batch();
+      progressSnapshot.docs.forEach((doc) => {
+        batch.delete(doc.ref);
+      });
+      await batch.commit();
+      console.log(`Deleted ${progressSnapshot.size} game_progress documents`);
+    }
+
+    console.log(`Successfully completed cleanup for user: ${uid}`);
+    return { success: true, message: `Cleanup completed for user: ${uid}` };
+  } catch (error) {
+    console.error(`Error in cleanupUserData for uid: ${uid}`, error);
+    throw new functions.https.HttpsError(
+      'internal',
+      `Failed to clean up user data for uid: ${uid}. Error: ${error}`,
+    );
+  }
+});

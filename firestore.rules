@@ -39,8 +39,11 @@ service cloud.firestore {
                     && request.resource.data.uid == request.auth.uid
                     && request.resource.data.keys().hasAll(['uid', 'sessionId', 'timestamp']);
       
-      // Prevent updates and deletes (immutable) - Cloud Functions handles deletion
-      allow update, delete: if false;
+      // Allow delete for account deletion (owner deleting own data)
+      allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
+      
+      // Prevent updates
+      allow update: if false;
     }
     
     // Game Progress collection - only owner can read/write
@@ -56,8 +59,8 @@ service cloud.firestore {
       // Allow update only by owner
       allow update: if isAuthenticated() && resource.data.uid == request.auth.uid;
       
-      // Prevent deletion - Cloud Functions handles deletion
-      allow delete: if false;
+      // Allow delete for account deletion (owner deleting own data)
+      allow delete: if isAuthenticated() && resource.data.uid == request.auth.uid;
     }
       // Levels collection - public read access, server-only write  
     match /levels/{levelId} {

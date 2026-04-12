@@ -73,11 +73,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
           } catch (e) {
             if (mounted) {
               final errorMessage = e.toString().replaceAll('Exception: ', '');
-              _logger.e('Account deletion error: $errorMessage');
+              _logger.e('❌ Account deletion error');
+              _logger.e('Full error object: $e');
+              _logger.e('Error message: $errorMessage');
+              _logger.e('Error type: ${e.runtimeType}');
 
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text(errorMessage),
+                  content: Text('Error: $errorMessage'),
                   backgroundColor: Colors.redAccent,
                   behavior: SnackBarBehavior.floating,
                   duration: const Duration(seconds: 5),
