@@ -29,9 +29,16 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
       print("Próba zmiany hasla:");
       print("--------------------------");
 
+      // snackbar message for user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Password reset link sent to your email: ${_emailController.text}'),
+        ),
+      );
+
       // chyba cos z firebase to be removed
 
-      context.go('/login/forgot/change');
+      // context.go('/login/forgot/change');
     }
   }
 
