@@ -18,8 +18,8 @@ Concrete implementation of game session logic for Practice mode. Extends `GameSe
 ### `generateStages(LevelInfo level)`
 Generates 6 stages with random types using anti-series rule.
 - Clears stage type history
-- For each stage: selects next type via `_selectNextType()`
-- Creates `GameStage` with type and data from `_generateStageData()`
+- For each stage: selects next type via `selectNextType()`
+- Creates `GameStage` with type and data from `generateStageData()`
 
 ### `canSkipStage()`
 Returns `true` only if `currentType == StageType.typed`, `false` otherwise.
@@ -27,17 +27,12 @@ Returns `true` only if `currentType == StageType.typed`, `false` otherwise.
 ### `shouldFinish()`
 Returns `true` when `completedCount >= 6`.
 
-### `validateAnswer(dynamic userAnswer, {int? answerTime})`
-Convenience method that validates answers for current stage:
-- **MC stages:** Uses `MCValidator.checkAnswer()`
-- **Typed stages:** Uses `TypedValidator.checkAnswer()` (handles both int and String input)
-- **Pairs stages:** Throws `UnsupportedError` (must use `PairsRoundManager` directly)
-
-Returns `StageResult` with validation results or `null` if validation fails.
+### `processStageResult(StageResult result)`
+No special processing in practice mode. Calls `super.processStageResult(result)`.
 
 ## Anti-Series Algorithm
 
-### `_selectNextType()`
+### `selectNextType()`
 Never allows 3 same types in a row:
 1. Gets available types: MC, Typed, Pairs
 2. If last 2 types in history are the same, removes that type from available options
@@ -49,21 +44,27 @@ Example:
 
 ## Stage Data Generation
 
-### `_generateStageData(StageType type, LevelInfo level)`
+### `generateStageData(StageType type, LevelInfo level)`
 Generates stage data based on type:
 
-**Multiple Choice:**
-- TODO: Will use `MCQuestionGenerator` (to be implemented)
-- Currently throws `UnimplementedError`
+### `generateMultipleChoiceData(LevelInfo level)`
+Generates Multiple Choice stage data using QuestionProvider:
+- Uses `QuestionProvider.getMcQuestion()` with level number
+- Parses string options to int list
+- Returns `MultipleChoiceData` with question, correct answer, and options
 
-**Typed:**
-- TODO: Will use `TypedQuestionGenerator` (to be implemented)
-- Currently throws `UnimplementedError`
+### `generateTypedData(LevelInfo level)`
+Generates Typed stage data using QuestionProvider:
+- Uses `QuestionProvider.getTypedQuestion()` with level number
+- Returns `TypedData` with question prompt and correct answer
+- Generates questions based on the multiplication table corresponding to the level
 
-**Pairs:**
-- Uses existing `CardGenerator`
-- Creates 3 pairs (6 cards)
-- Based on random multiplication table (1-10)
+### `generatePairsData(LevelInfo level)`
+Generates Pairs stage data using QuestionProvider and CardGenerator:
+- Uses `QuestionProvider.getPairsQuestions()` with level number and 3 pairs
+- Creates card deck using `CardGenerator`
+- Returns `PairsData` with cards, pairs count, and multiplication table type
+- Uses the level's multiplication table (not random)
 
 ## Acceptance Criteria
 

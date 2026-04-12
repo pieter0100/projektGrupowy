@@ -25,4 +25,39 @@ void main() {
       expect(int.tryParse(typed.correctAnswer), isNotNull);
     });
   });
+
+  group('QuestionProvider - getTypedQuestionsSet', () {
+    test('returns 10 unique, shuffled questions for level 1', () {
+      final questions = QuestionProvider.getTypedQuestionsSet(level: 1);
+      expect(questions.length, 10);
+      final prompts = questions.map((q) => q.prompt).toSet();
+      expect(prompts.length, 10);
+      for (int i = 1; i <= 10; i++) {
+        expect(prompts.contains('1 × $i ='), isTrue);
+      }
+    });
+
+    test('returns correct number of questions if numberOfQuestions < 10', () {
+      final questions = QuestionProvider.getTypedQuestionsSet(
+        level: 2,
+        numberOfQuestions: 5,
+      );
+      expect(questions.length, 5);
+      final prompts = questions.map((q) => q.prompt).toSet();
+      expect(prompts.length, 5);
+      for (final q in questions) {
+        expect(q.prompt.startsWith('2 ×'), isTrue);
+      }
+    });
+
+    test('questions are shuffled (order is not always the same)', () {
+      final list1 = QuestionProvider.getTypedQuestionsSet(level: 3);
+      final list2 = QuestionProvider.getTypedQuestionsSet(level: 3);
+      final sameOrder = List.generate(
+        10,
+        (i) => list1[i].prompt == list2[i].prompt,
+      ).every((x) => x);
+      expect(sameOrder, isFalse);
+    });
+  });
 }
