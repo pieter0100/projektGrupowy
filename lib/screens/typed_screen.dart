@@ -1,18 +1,26 @@
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:projekt_grupowy/services/typed_game_engine.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
+
+import 'package:projekt_grupowy/game_logic/round_managers/exam_session_manager.dart';
+import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
+import 'package:projekt_grupowy/models/level/stage_result.dart';
+import 'package:projekt_grupowy/models/level/level.dart';
+import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
   final bool isPracticeMode;
+  final TypedData? data;
+  final Function(StageResult)? onResult;
 
   const TypedScreen({
     super.key,
     required this.level,
     required this.isPracticeMode,
+    this.data,
+    this.onResult,
   });
 
   @override
@@ -20,223 +28,278 @@ class TypedScreen extends StatefulWidget {
 }
 
 class TypedScreenState extends State<TypedScreen> {
-  final engine = TypedGameEngine(
-    onComplete: (result) {
-      log('Correct: ${result.isCorrect}');
-      log('Answer: ${result.userAnswer}');
-    },
-  );
-  String placeHolder = "Type the answer";
-  bool _isSkipHighlighted = false;
-  String question = "Loading...";
+  ExamSessionManager? sessionManager;
 
-  // Feedback states
+  final TextEditingController _textController = TextEditingController();
+
+  String questionText = "Loading...";
+  String placeHolder = "Type the answer";
   bool _showFeedback = false;
   bool _isCorrect = false;
-  final TextEditingController _textController = TextEditingController();
+  // Nowa zmienna, aby rozróżnić błąd od "nie wiem"
+  bool _isDontKnow = false;
+
   @override
   void initState() {
     super.initState();
-    engine.initialize(widget.level);
-    question = engine.question.prompt;
+
+    if (widget.data != null) {
+      questionText = widget.data!.question;
+    } else {
+      sessionManager = ExamSessionManager();
+
+      final currentLevelInfo = LevelInfo(
+        levelId: widget.level.toString(),
+        levelNumber: widget.level,
+        name: "Level ${widget.level}",
+        description: "Exam level",
+        unlockRequirements: UnlockRequirements(minPoints: 0),
+        rewards: Rewards(points: 0),
+        isRevision: false,
+      );
+
+      sessionManager!.start(currentLevelInfo);
+      _loadCurrentQuestion();
+
+      sessionManager!.addListener(() {
+        if (mounted) {
+          setState(() {});
+        }
+      });
+    }
+  }
+
+  void _loadCurrentQuestion() {
+    if (sessionManager?.currentStageObject != null) {
+      final data = sessionManager!.currentStageObject!.data as TypedData;
+      setState(() {
+        questionText = data.question;
+        _textController.clear();
+        _isDontKnow = false; // Reset flagi przy nowym pytaniu
+      });
+    }
   }
 
   @override
   void dispose() {
     _textController.dispose();
+    sessionManager?.dispose();
     super.dispose();
   }
 
-  void onSkip() {
-    if (!widget.isPracticeMode) {
+  void onDontKnow() async {
+    // 1. Pobierz poprawną odpowiedź
+    int correctAnswer;
+    if (widget.data != null) {
+      correctAnswer = widget.data!.correctAnswer;
+    } else if (sessionManager != null &&
+        sessionManager!.currentStageObject != null) {
+      final currentData = sessionManager!.currentStageObject!.data as TypedData;
+      correctAnswer = currentData.correctAnswer;
+    } else {
       return;
     }
 
-    engine.skip();
-
+    // 2. Wpisz ją w pole i pokaż feedback
     setState(() {
-      _isSkipHighlighted = true;
-      placeHolder = engine.question.correctAnswer;
+      _textController.text = correctAnswer.toString();
+      _showFeedback = true;
+      _isCorrect = false;
+      _isDontKnow = true; // Oznaczamy, że to "Don't know" (nie będzie czerwone)
     });
 
-    Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) {
-        setState(() {
-          _isSkipHighlighted = false;
-          placeHolder = "Type the answer";
-        });
-      }
-    });
+    // 3. Odczekaj chwilę
+    await Future.delayed(const Duration(milliseconds: 1500));
+
+    // 4. Przejdź dalej (nadal traktujemy jako błąd w logice gry)
+    _processResult(userAnswer: correctAnswer, isCorrect: false);
   }
 
-  void onComplete(String value) {
+  void onComplete(String value) async {
     if (value.trim().isEmpty) return;
 
-    // Get the result before submitting to engine
-    final userAnswer = int.tryParse(value.trim()) ?? 0;
-    final correctAnswer = int.parse(engine.question.correctAnswer);
-    final isCorrect = userAnswer == correctAnswer;
+    final userAnswer = int.tryParse(value.trim());
+    bool isCorrect = false;
 
-    // Show visual feedback only in practice mode
-    if (widget.isPracticeMode) {
-      setState(() {
-        _showFeedback = true;
-        _isCorrect = isCorrect;
-      });
+    if (widget.data != null) {
+      isCorrect = userAnswer == widget.data!.correctAnswer;
+    } else if (sessionManager != null) {
+      final currentData = sessionManager!.currentStageObject!.data as TypedData;
+      isCorrect = userAnswer == currentData.correctAnswer;
     }
 
-    // Submit to engine
-    engine.submitAnswer(value);
-
-    // Hide feedback after 1 second and move to next question
-    final delayDuration = widget.isPracticeMode
-        ? const Duration(seconds: 1)
-        : const Duration(milliseconds: 100); // Minimal delay for exam mode
-
-    Future.delayed(delayDuration, () {
-      if (mounted) {
-        setState(() {
-          _showFeedback = false;
-          _textController.clear();
-          // Update question for next round
-          question = engine.question.prompt;
-        });
-
-        // TEMPORARY: Navigate back to learn screen after answering
-        // TODO: Remove this and implement proper session flow
-        context.go('/level/learn?level=${widget.level}');
-      }
+    setState(() {
+      _showFeedback = true;
+      _isCorrect = isCorrect;
+      _isDontKnow = false; // To jest normalna odpowiedź użytkownika
     });
+
+    await Future.delayed(const Duration(milliseconds: 500));
+
+    _processResult(userAnswer: userAnswer, isCorrect: isCorrect);
+  }
+
+  void _processResult({
+    required int? userAnswer,
+    required bool isCorrect,
+  }) async {
+    final result = StageResult(
+      isCorrect: isCorrect,
+      skipped: !isCorrect && widget.isPracticeMode,
+      userAnswer: userAnswer,
+    );
+
+    if (widget.onResult != null) {
+      widget.onResult!(result);
+    } else if (sessionManager != null) {
+      sessionManager!.nextStage(result);
+
+      if (sessionManager!.isFinished) {
+        const userId = "user1";
+        await sessionManager!.saveProgress(userId, widget.level.toString());
+
+        if (mounted) {
+          context.go(
+            '/level/learn/exam/end?level=${widget.level}&score=${sessionManager!.correctCount}',
+          );
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _showFeedback = false;
+            _loadCurrentQuestion();
+          });
+        }
+      }
+    }
+  }
+
+  Widget _buildContent() {
+    Color fillColor;
+    if (_showFeedback) {
+      if (_isDontKnow) {
+        fillColor = AppColors.typedInputDefault;
+      } else {
+        fillColor = _isCorrect
+            ? AppColors.typedInputCorrect
+            : AppColors.typedInputWrong;
+      }
+    } else {
+      fillColor = AppColors.typedInputDefault;
+    }
+
+    return Center(
+      child: SingleChildScrollView(
+        child: Column(
+          children: [
+            Text(
+              questionText,
+              style: AppTextStyles.typedQuestion,
+              textAlign: TextAlign.center,
+            ),
+
+            Padding(
+              padding: const EdgeInsets.all(35.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  TextField(
+                    controller: _textController,
+                    enabled: !_showFeedback,
+                    style: AppTextStyles.typedInput,
+                    keyboardType: TextInputType.number,
+                    decoration: InputDecoration(
+                      hintText: placeHolder,
+                      filled: true,
+                      fillColor: fillColor,
+
+                      enabledBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.typedInputBorderRadius,
+                        ),
+                        borderSide: BorderSide.none,
+                      ),
+
+                      focusedBorder: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.typedInputBorderRadius,
+                        ),
+                        borderSide: const BorderSide(
+                          color: AppColors.typedFocusedBorder,
+                          width: 3.0,
+                        ),
+                      ),
+
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(
+                          AppSizes.typedInputBorderRadius,
+                        ),
+                      ),
+                    ),
+                    onSubmitted: _showFeedback ? null : onComplete,
+                    textInputAction: TextInputAction.done,
+                  ),
+
+                  if (widget.isPracticeMode && !_showFeedback)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 8.0),
+                      child: TextButton(
+                        onPressed: onDontKnow,
+                        child: const Text(
+                          "Don't know",
+                          style: TextStyle(
+                            color: AppColors.typedSkipText,
+                            fontSize: 16,
+                            decoration: TextDecoration.underline,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.data != null) {
+      return _buildContent();
+    }
+
+    double progress = 0.0;
+    if (sessionManager != null && sessionManager!.totalCount > 0) {
+      progress = sessionManager!.completedCount / sessionManager!.totalCount;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text("(np Multiply x 2) dane pobrane"),
+        title: Text("Exam: Level ${widget.level}"),
+        backgroundColor: AppColors.typedAppBarBackground,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back_ios),
-          onPressed: () => context.pop(),
+          onPressed: () => context.go('/level/learn?level=${widget.level}'),
         ),
-        backgroundColor: Color(0xFFE5E5E5),
       ),
       body: Column(
         children: [
           Container(
-            margin: EdgeInsets.only(top: 20.0),
-            child: ProgressBarWidget(),
+            margin: const EdgeInsets.only(top: AppSizes.typedProgressTopMargin),
+            child: ProgressBarWidget(value: progress),
           ),
+
           Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Text('Type your answer', style: TextStyle(fontSize: 30.0)),
-          ),
-          Expanded(
-            child: Center(
-              child: SingleChildScrollView(
-                child: Column(
-                  children: [
-                    Text(
-                      question,
-                      style: TextStyle(fontSize: 48.0),
-                      textAlign: TextAlign.center,
-                    ),
-                    Padding(
-                      padding: EdgeInsetsGeometry.directional(
-                        start: 35.0,
-                        end: 35.0,
-                        top: 35.0,
-                        bottom: 40.0,
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        children: [
-                          TextField(
-                            controller: _textController,
-                            enabled: !_showFeedback, // Disable during feedback
-                            style: const TextStyle(
-                              color: Colors.black87,
-                              fontSize: 25.0,
-                            ),
-                            decoration: InputDecoration(
-                              hintText: placeHolder,
-                              hintStyle: TextStyle(
-                                color: Colors.grey[600],
-                                fontSize: 25.0,
-                              ),
-                              filled: true,
-                              fillColor: _showFeedback
-                                  ? (_isCorrect
-                                        ? Colors.green[100]
-                                        : Colors.red[100])
-                                  : const Color(0xFFD9D9D9),
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 24.0,
-                                vertical: 16.0,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.0),
-                                borderSide: _showFeedback
-                                    ? BorderSide(
-                                        color: _isCorrect
-                                            ? Colors.green
-                                            : Colors.red,
-                                        width: 3.0,
-                                      )
-                                    : BorderSide.none,
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.0),
-                                borderSide: _showFeedback
-                                    ? BorderSide(
-                                        color: _isCorrect
-                                            ? Colors.green
-                                            : Colors.red,
-                                        width: 3.0,
-                                      )
-                                    : BorderSide.none,
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(16.0),
-                                borderSide: BorderSide(
-                                  color: _showFeedback
-                                      ? (_isCorrect ? Colors.green : Colors.red)
-                                      : const Color(0xFF7ED4DE),
-                                  width: 3.0,
-                                ),
-                              ),
-                            ),
-                            onSubmitted: _showFeedback ? null : onComplete,
-                            textInputAction: TextInputAction.done,
-                            cursorColor: Colors.grey[600],
-                          ),
-                          SizedBox(height: 20.0),
-                          if (widget.isPracticeMode)
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: GestureDetector(
-                                onTap: onSkip,
-                                child: Text(
-                                  "Don't know?",
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                    color: Colors.grey[600],
-                                    decoration: _isSkipHighlighted
-                                        ? TextDecoration.underline
-                                        : TextDecoration.none,
-                                    decorationColor: Colors.grey[600],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          SizedBox(height: 180.0),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+            padding: const EdgeInsets.all(AppSizes.typedTitlePadding),
+            child: Text(
+              'Question ${sessionManager!.completedCount + 1} / ${sessionManager!.totalCount}',
+              style: AppTextStyles.typedTitle,
             ),
           ),
+
+          Expanded(child: _buildContent()),
         ],
       ),
     );

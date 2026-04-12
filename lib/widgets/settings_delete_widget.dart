@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class SettingsDeleteWidget extends StatelessWidget {
   final String textInside;
 
@@ -8,32 +10,31 @@ class SettingsDeleteWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: 378,
-      height: 69,
+      width: AppSizes.settingsWidth,
+      height: AppSizes.settingsHeight,
       decoration: BoxDecoration(
-        color: Colors.white, // background color
+        color: AppColors.white,
         border: Border.all(
-          color: const Color(0xFFC4C4C4),
-          width: 2,
+          color: AppColors.settingsBorder,
+          width: AppSizes.settingsBorderWidth,
         ),
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(AppSizes.settingsRadius),
       ),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Padding(
-          padding: const EdgeInsets.only(left: 20),
+          padding: const EdgeInsets.only(left: AppSizes.settingsPaddingLeft),
           child: Row(
             children: [
               Icon(
                 Icons.delete, 
-                color: Colors.black, 
-                size: 35),
-              const SizedBox(width: 8),
+                color: AppColors.black, 
+                size: AppSizes.iconMedium
+              ),
+              const SizedBox(width: AppSizes.settingsIconGap),
               Text(
                 textInside,
-                style: const TextStyle(
-                  fontSize: 20, 
-                  color: Colors.black),
+                style: AppTextStyles.settingsLabel,
               ),
             ],
           ),

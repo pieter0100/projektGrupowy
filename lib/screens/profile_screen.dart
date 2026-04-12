@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:projekt_grupowy/utils/constants.dart';
+
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -9,7 +11,7 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Profile'),
         centerTitle: true,
-        backgroundColor: Color(0xFFE5E5E5),
+        backgroundColor: AppColors.appBarBackground,
         scrolledUnderElevation: 0.0,
       ),
       body: Center(child: Text('Profile page')),

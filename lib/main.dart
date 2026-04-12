@@ -14,23 +14,16 @@ import 'game_logic/local_saves.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
   await LocalSaves.init();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  try {
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+  } catch (e) {
+    debugPrint("Firebase initialization error: $e");
+  }
 
-  // 1. Inicjalizacja kontrolera
-  final sessionController = await AppSessionController.create();
-
-  runApp(
-    MultiProvider(
-      providers: [
-        ChangeNotifierProvider.value(value: sessionController),
-        Provider.value(value: sessionController.syncService),
-        Provider.value(value: sessionController.store),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -38,38 +31,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Używamy Consumer, aby "MyApp" reagował na zmiany w AppSessionController
-    return Consumer<AppSessionController>(
-      builder: (context, controller, child) {
-        
-        // --- 1. OBSŁUGA BOOTSTRAPPING (SPINNER) ---
-        // Specyfikacja wymaga, aby spinner był widoczny podczas bootstrappingu.
-        // Możemy to wymusić na poziomie samej aplikacji, zanim router w ogóle ruszy.
-        if (controller.state == SessionState.bootstrapping) {
-          return MaterialApp(
-            // home: const LoadingScreen(), // Bezpośrednio pokazujemy LoadingScreen
-            home: const TestDashboardScreen(), // Tymczasowo pokazujemy TestDashboardScreen
-            theme: ThemeData(
-              primarySwatch: Colors.blue,
-              useMaterial3: true,
-            ),
-          );
-        }
-
-        // --- 2. OBSŁUGA ROUTINGU DLA POZOSTAŁYCH STANÓW ---
-        // Tworzymy router dynamicznie w oparciu o aktualny stan kontrolera.
-        // Dzięki temu 'refreshListenable' wewnątrz routera ma zawsze świeży obiekt.
-        final router = createAppRouter(controller);
-
-        return MaterialApp.router(
-          routerConfig: router,
-          title: 'GoRouter Bottom Nav',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            useMaterial3: true,
-          ),
-        );
-      },
+    return MaterialApp.router(
+      routerConfig: appRouter,
+      title: 'Multiplication Game',
+      debugShowCheckedModeBanner: false,
     );
   }
 }
