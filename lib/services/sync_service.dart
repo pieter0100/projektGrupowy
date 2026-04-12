@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:collection';
-import 'dart:developer';
+import 'dart:developer'; // Używamy tego natywnego loggera
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hive/hive.dart';
@@ -45,11 +45,11 @@ class SyncService {
     final User? firebaseUser = _auth.currentUser;
 
     if (firebaseUser == null) {
-      log('Bootstrap skipped: No user logged in');
+      log('Bootstrap skipped: No user logged in', name: 'SyncService');
       return;
     }
 
-    log('Starting bootstrap for user: ${firebaseUser.uid}');
+    log('Starting bootstrap for user: ${firebaseUser.uid}', name: 'SyncService');
 
     try {
       // 1. POBIERANIE DANYCH Z CHMURY
@@ -94,9 +94,9 @@ class SyncService {
         );
 
         await usersBox.put(firebaseUser.uid, userObj);
-        log('✅ User profile synced to Hive.');
+        log('User profile synced to Hive.', name: 'SyncService');
       } else {
-        log('⚠️ User profile document missing in Firestore.');
+        log('User profile document missing in Firestore.', name: 'SyncService');
       }
 
       // 3. IMPORTOWANIE POSTĘPU GRY
@@ -113,13 +113,18 @@ class SyncService {
         newResults++;
       }
 
-      log('Bootstrap completed. Imported $newProgress levels and $newResults results.');
+      log('Bootstrap completed. Imported $newProgress levels and $newResults results.', name: 'SyncService');
       // (Optional: If you implemented the stream trigger in Controller, 
       // you don't call triggerSync() here, but simply finish the future).
       
     } catch (e, stackTrace) {
-      log('❌ Bootstrap error: $e');
-      print(stackTrace);
+      // ZAMIENIONE: Prawidłowe logowanie błędu i StackTrace za pomocą dart:developer
+      log(
+        'Bootstrap error',
+        name: 'SyncService',
+        error: e,
+        stackTrace: stackTrace,
+      );
     }
   }
 
@@ -217,7 +222,7 @@ class SyncService {
   // Legacy method for compatibility (now calls processQueue)
   Future<void> syncNow({String? reason, Duration? timeout}) async {
     final contextReason = reason ?? "manual/unknown";
-    log('🔄 Sync triggered. Reason: $contextReason');
+    log('Sync triggered. Reason: $contextReason', name: 'SyncService');
 
     // Create the future task
     final syncTask = processQueue();
@@ -227,12 +232,12 @@ class SyncService {
         // Execute with timeout
         await syncTask.timeout(timeout);
       } on TimeoutException {
-        log('⚠️ Sync timed out (Reason: $contextReason). Proceeding without completing sync.');
+        log('Sync timed out (Reason: $contextReason). Proceeding without completing sync.', name: 'SyncService');
         // We catch and suppress the TimeoutException so the caller (Logout) 
         // doesn't crash and can proceed to sign out.
-      } catch (e) {
-        log('❌ Sync error during $contextReason: $e');
-        // Depending on strictness, you might want to rethrow or just log.
+      } catch (e, stackTrace) {
+        // Dodano pełne logowanie błędu
+        log('Sync error during $contextReason', name: 'SyncService', error: e, stackTrace: stackTrace);
       }
     } else {
       // Execute normally (no timeout)
@@ -250,7 +255,7 @@ class SyncService {
         await ref.set(result.toMap(), SetOptions(merge: true));
       }
       await _store.markResultSynced(result.sessionId);
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Per-item error logging (requirement)
       _errorLog.add({
         'type': 'result',
@@ -258,7 +263,7 @@ class SyncService {
         'error': e.toString(),
         'timestamp': DateTime.now().toIso8601String(),
       });
-      log('Sync error (result ${result.sessionId}): $e');
+      log('Sync error (result ${result.sessionId})', name: 'SyncService', error: e, stackTrace: stackTrace);
       rethrow;
     }
   }
@@ -284,7 +289,7 @@ class SyncService {
       }
       await ref.set(progress.toMap(), SetOptions(merge: true));
       await _store.markProgressSynced(progress.sessionId);
-    } catch (e) {
+    } catch (e, stackTrace) {
       // Per-item error logging (requirement)
       _errorLog.add({
         'type': 'progress',
@@ -292,7 +297,7 @@ class SyncService {
         'error': e.toString(),
         'timestamp': DateTime.now().toIso8601String(),
       });
-      log('Sync error (progress ${progress.sessionId}): $e');
+      log('Sync error (progress ${progress.sessionId})', name: 'SyncService', error: e, stackTrace: stackTrace);
       rethrow;
     }
   }

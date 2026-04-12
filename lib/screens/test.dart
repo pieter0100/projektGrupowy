@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:logger/logger.dart';
 
 // Importy Twoich klas (dostosuj, jeśli nazwy folderów są inne)
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
@@ -22,6 +23,15 @@ class TestDashboardScreen extends StatefulWidget {
 }
 
 class _TestDashboardScreenState extends State<TestDashboardScreen> {
+  final logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,      // Ukrywa nazwy metod (czystsza konsola)
+      errorMethodCount: 8, // Pokazuje ścieżkę błędu tylko gdy coś wybuchnie
+      lineLength: 80,      // Długość linii
+      colors: true,        // Włącza kolory (np. czerwony dla błędów)
+      printEmojis: true,   // Dodaje emoji do logów
+    ),
+  );
   
   // --- Metoda Logowania ---
   Future<void> _quickLogin() async {
@@ -30,31 +40,42 @@ class _TestDashboardScreenState extends State<TestDashboardScreen> {
     final testUsername = "TestUser_${Random().nextInt(9999)}";
 
     try {
-      print("🔍 Próba logowania jako $testEmail...");
+      logger.i("Próba logowania jako $testEmail...");
+      
       try {
         await FirebaseAuth.instance.signInWithEmailAndPassword(
           email: testEmail,
           password: testPassword,
         );
-        print("✅ Zalogowano pomyślnie!");
+        logger.i("Zalogowano pomyślnie!");
       } on FirebaseAuthException catch (e) {
-        print("⚠️ Błąd logowania: ${e.code}. Próba rejestracji...");
+        logger.w("Błąd logowania: ${e.code}. Próba rejestracji...");
+        
         if (e.code == 'user-not-found' || e.code == 'invalid-credential' || e.code == 'wrong-password') {
           AuthService authService = AuthService();
-          print("🛠️ Rejestracja nowego usera: $testUsername...");
+          logger.i("Rejestracja nowego usera: $testUsername...");
+          
           await authService.register(testEmail, testPassword, testUsername);
-          print("✅ Zarejestrowano i zalogowano!");
+          logger.i("Zarejestrowano i zalogowano!");
         } else {
           rethrow; 
         }
       }
+      
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Sukces! Rozpoczynam Bootstrap...')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sukces! Rozpoczynam Bootstrap...'))
+        );
       }
-    } catch (e) {
-      print("❌ BŁĄD: $e");
+    } catch (e, stackTrace) {
+      // Przekazanie 'e' jako error i dodanie 'stackTrace' pozwala loggerowi 
+      // pięknie wyrysować ścieżkę błędu w konsoli!
+      logger.e("Wystąpił błąd podczas logowania/rejestracji", error: e, stackTrace: stackTrace);
+      
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Błąd: $e'), backgroundColor: Colors.red));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Błąd: $e'), backgroundColor: Colors.red)
+        );
       }
     }
   }

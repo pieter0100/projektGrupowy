@@ -1,4 +1,5 @@
 import 'package:hive/hive.dart';
+import 'package:logger/logger.dart'; // <-- Dodany import
 import '../game_logic/models/game_result.dart';
 import '../game_logic/models/game_progress.dart';
 
@@ -6,12 +7,23 @@ class OfflineStore {
   final Box _resultsBox;
   final Box _progressBox;
 
+  // <-- Utworzona prywatna instancja loggera dla tej klasy
+  final _logger = Logger(
+    printer: PrettyPrinter(
+      methodCount: 0,
+      errorMethodCount: 8,
+      lineLength: 80,
+      colors: true,
+      printEmojis: true,
+    ),
+  );
+
   /// Flaga blokująca zapis podczas wylogowywania
   bool _writesDisabled = false;
 
   OfflineStore(this._resultsBox, this._progressBox);
 
-  ///  Włącza/wyłącza blokadę zapisu.
+  /// Włącza/wyłącza blokadę zapisu.
   /// Używane przez AppSessionController podczas sekwencji wylogowania.
   void disableWrites(bool value) {
     _writesDisabled = value;
@@ -50,8 +62,9 @@ class OfflineStore {
         }
         await _resultsBox.put(cloudResult.sessionId, cloudResult);
       }
-    } catch (e) {
-      print('Error importing result: $e');
+    } catch (e, stackTrace) {
+      // <-- Zmiana na logowanie z przechwyceniem ścieżki błędu
+      _logger.e('Błąd podczas importowania wyniku z chmury', error: e, stackTrace: stackTrace);
     }
   }
 
@@ -77,8 +90,9 @@ class OfflineStore {
           await _progressBox.put(cloudProgress.sessionId, cloudProgress);
         }
       }
-    } catch (e) {
-      print('Error importing progress: $e');
+    } catch (e, stackTrace) {
+      // <-- Zmiana na logowanie z przechwyceniem ścieżki błędu
+      _logger.e('Błąd podczas importowania postępu z chmury', error: e, stackTrace: stackTrace);
     }
   }
 

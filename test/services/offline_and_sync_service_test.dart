@@ -70,7 +70,7 @@ void main() {
       when(queueBox.put(any, any)).thenAnswer((_) async {});
 
       // Inject mock queueBox to avoid Hive.openBox() call
-      syncService = SyncService(store, firestore, auth, queueBox);
+      syncService = SyncService(store, firestore, auth, queueBox, profileService); 
       await syncService.start();
 
       when(resultsBox.values).thenReturn([]);
