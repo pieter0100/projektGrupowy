@@ -38,7 +38,7 @@ class _LevelScreenState extends State<LevelScreen> {
           currentStreak: 0,
           lastPlayedAt: DateTime.now(),
         ),
-        profile: UserProfile(displayName: "Player 1", age: 10),
+        profile: UserProfile(displayName: "Player 1", age: 10, nick: "Player1"),
       );
       await LocalSaves.saveUser(newUser);
     }

@@ -17,19 +17,22 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return UserProfile(
-      displayName: fields[0] as String,
+      displayName: fields[0] as String?,
       age: fields[1] as int,
+      nick: fields[2] as String,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.displayName)
       ..writeByte(1)
-      ..write(obj.age);
+      ..write(obj.age)
+      ..writeByte(2)
+      ..write(obj.nick);
   }
 
   @override
