@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
+// Make sure to import your AuthService here!
+import 'package:projekt_grupowy/services/auth_service.dart'; // Adjust path as needed
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,11 +13,13 @@ class LoginScreen extends StatefulWidget {
 
 class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  
+  // 1. Initialize the AuthService and a loading state
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
-  // clean controllers after closing
   @override
   void dispose() {
     _emailController.dispose();
@@ -23,25 +27,54 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  // login logic function
-  void _handleLogin() {
+  // 2. Make the function async to handle the future from signIn
+  Future<void> _handleLogin() async {
     if (_formKey.currentState!.validate()) {
+      // 3. Set loading to true to show the spinner
+      setState(() {
+        _isLoading = true;
+      });
+
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      // businnes logic
-      print("--------------------------");
-      print("Próba logowania:");
-      print("Email: $email");
-      print("Hasło: $password");
-      print("--------------------------");
-
-      // authService.login(email, password);
-
-      // message for user
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Logging as $email...')));
+      // 4. Wrap the authentication call in a try/catch block
+      try {
+        await _authService.signIn(email, password);
+        
+        // Always check if the widget is still in the tree after an await
+        if (mounted) {
+          // Success! Navigate to the home screen (or wherever you want)
+          context.go('/'); 
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Logged in successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          // Remove the "Exception: " prefix from your custom thrown errors
+          final errorMessage = e.toString().replaceAll('Exception: ', '');
+          
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
+      } finally {
+        // 5. Ensure the loading state is turned off whether it succeeded or failed
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -108,6 +141,9 @@ class _LoginScreenState extends State<LoginScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Write password';
                         }
+                        // Note: Because of your strict regex in AuthService, 
+                        // you might want to add a regex check here too so it fails 
+                        // before even hitting Firebase, but length check is fine for now.
                         if (value.length < 6) {
                           return 'Password needs at least 6 characters';
                         }
@@ -139,21 +175,33 @@ class _LoginScreenState extends State<LoginScreen> {
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: _handleLogin,
+                        // 6. Disable the button if it's currently loading
+                        onPressed: _isLoading ? null : _handleLogin,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
+                          disabledBackgroundColor: primaryColor.withOpacity(0.6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
-                          'Log In',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        // 7. Show a progress indicator when loading
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  color: Colors.white,
+                                  strokeWidth: 2.5,
+                                ),
+                              )
+                            : const Text(
+                                'Log In',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
                     const SizedBox(height: 25),

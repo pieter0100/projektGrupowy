@@ -1,4 +1,7 @@
 import 'package:go_router/go_router.dart';
+import 'package:projekt_grupowy/screens/auth/change_password_screen.dart';
+import 'package:projekt_grupowy/screens/auth/forgot_password_screen.dart';
+import 'package:projekt_grupowy/screens/auth/login_screen.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -102,5 +105,19 @@ final GoRouter appRouter = GoRouter(
         );
       },
     ),
+
+    GoRoute(
+      path: '/login',
+       builder: (context, state) => const LoginScreen(),
+       routes: [
+          GoRoute(
+            path: 'forgot',
+            builder: (context, state) => const ForgotPasswordScreen(),
+          ),
+          GoRoute(
+            path: 'change',
+            builder: (context, state) => const ChangePasswordScreen(),
+          ),
+       ]),
   ],
 );
