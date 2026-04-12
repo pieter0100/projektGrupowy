@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
 
 class ChangePasswordScreen extends StatefulWidget {
@@ -14,6 +15,7 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
 
   final _passwordController1 = TextEditingController();
   final _passwordController2 = TextEditingController();
+  final _logger = Logger();
 
   // clean controllers after closing
   @override
@@ -29,12 +31,7 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
       final password1 = _passwordController1.text;
       final password2 = _passwordController2.text;
 
-      // businnes logic
-      print("--------------------------");
-      print("Próba zmiany hasla:");
-      print("Password1: $password1");
-      print("Password2: $password2");
-      print("--------------------------");
+      _logger.i('Password change attempt with matching passwords');
 
       // chyba cos z firebase to be removed
       if (password1 == password2) {
@@ -102,7 +99,7 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
                       },
                     ),
 
-                    SizedBox(height: 30),
+                    const SizedBox(height: 30),
 
                     // --- REAPEAT PASSWORD INPUT ---
                     LoginTextInput(
@@ -120,7 +117,7 @@ class _ChangePasswordState extends State<ChangePasswordScreen> {
                       },
                     ),
 
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
 
                     // --- SEND  BUTTON ---
                     SizedBox(

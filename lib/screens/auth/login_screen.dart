@@ -45,7 +45,7 @@ class _LoginScreenState extends State<LoginScreen> {
         // Always check if the widget is still in the tree after an await
         if (mounted) {
           // Success! Navigate to the home screen (or wherever you want)
-          context.go('/'); 
+          context.go('/level'); 
           
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -180,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
-                          disabledBackgroundColor: primaryColor.withOpacity(0.6),
+                          disabledBackgroundColor: primaryColor.withValues(alpha: 0.6),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30),
                           ),

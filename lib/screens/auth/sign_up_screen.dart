@@ -1,6 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
+import 'package:projekt_grupowy/services/auth_service.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -16,6 +19,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
 
+  // AuthService instance and loading state
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
+
   // clean controllers after closing
   @override
   void dispose() {
@@ -26,26 +33,56 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   // sign up logic function
-  void _handleSignUp() {
+  Future<void> _handleSignUp() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
+
       final nick = _nickController.text;
       final email = _emailController.text.trim();
       final password = _passwordController.text;
 
-      // businnes logic
-      print("--------------------------");
-      print("Próba rejestracji:");
-      print('Nick: $nick');
-      print("Email: $email");
-      print("Hasło: $password");
-      print("--------------------------");
+      try {
+        // Call AuthService.register() with email, password, and nick (username)
+        await _authService.register(email, password, nick);
 
-      // authService.login(email, password);
+        if (mounted) {
+          // Success! Navigate to home screen
+          context.go('/');
 
-      // message for user
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Signing as $nick...')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Account created successfully!'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          // Log the full error to console for debugging
+          log('❌ Sign up error: $e');
+
+          // Remove the "Exception: " prefix from custom thrown errors
+          final errorMessage = e.toString().replaceAll('Exception: ', '');
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      } finally {
+        // Ensure the loading state is turned off whether it succeeded or failed
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -119,8 +156,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         if (value == null || value.isEmpty) {
                           return 'Write password';
                         }
-                        if (value.length < 6) {
-                          return 'Password needs at least 6 characters';
+                        if (value.length < 8) {
+                          return 'Password must be at least 8 characters';
+                        }
+                        if (!value.contains(RegExp(r'[a-z]'))) {
+                          return 'Password must include lowercase letters';
+                        }
+                        if (!value.contains(RegExp(r'[A-Z]'))) {
+                          return 'Password must include uppercase letters';
+                        }
+                        if (!value.contains(RegExp(r'\d'))) {
+                          return 'Password must include at least one number';
+                        }
+                        if (!value.contains(
+                          RegExp(r'[!@#\$%\^&\*\-_\+=\[\]{};:\\|,.<>\/?]'),
+                        )) {
+                          return 'Password must include a special character (!@#\$%^&*-_+=\\[\\]{};:|,.<>/?\\)';
                         }
                         return null;
                       },
@@ -128,12 +179,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
                     const SizedBox(height: 50),
 
-                    // --- LOG IN BUTTON ---
+                    // --- SIGN UP BUTTON ---
                     SizedBox(
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: _handleSignUp,
+                        onPressed: _isLoading ? null : _handleSignUp,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
@@ -141,13 +192,24 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
-                          'Sign up',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                'Sign up',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import 'package:projekt_grupowy/widgets/login_text_input.dart';
+import 'package:projekt_grupowy/services/auth_service.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
   const ForgotPasswordScreen({super.key});
@@ -11,10 +12,12 @@ class ForgotPasswordScreen extends StatefulWidget {
 
 class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
-
   final _emailController = TextEditingController();
+  final _logger = Logger();
+  final AuthService _authService = AuthService();
+  bool _isLoading = false;
 
-  // clean controllers after closing 
+  // clean controllers after closing
   @override
   void dispose() {
     _emailController.dispose();
@@ -22,23 +25,50 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
   }
 
   // email logic function
-  void _handleEmail() {
+  Future<void> _handleEmail() async {
     if (_formKey.currentState!.validate()) {
-      // businnes logic
-      print("--------------------------");
-      print("Próba zmiany hasla:");
-      print("--------------------------");
+      setState(() {
+        _isLoading = true;
+      });
 
-      // snackbar message for user
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Password reset link sent to your email: ${_emailController.text}'),
-        ),
-      );
+      final email = _emailController.text.trim();
 
-      // chyba cos z firebase to be removed
+      try {
+        await _authService.sendPasswordReset(email);
+        _logger.i('Password reset email sent to: $email');
 
-      // context.go('/login/forgot/change');
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Password reset link sent to your email: $email'),
+              backgroundColor: Colors.green,
+            ),
+          );
+
+          // Clear the email field after success
+          _emailController.clear();
+        }
+      } catch (e) {
+        if (mounted) {
+          final errorMessage = e.toString().replaceAll('Exception: ', '');
+          _logger.e('Password reset error: $errorMessage');
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage),
+              backgroundColor: Colors.redAccent,
+              behavior: SnackBarBehavior.floating,
+              duration: const Duration(seconds: 5),
+            ),
+          );
+        }
+      } finally {
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
+      }
     }
   }
 
@@ -63,11 +93,19 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                     const SizedBox(height: 60),
                     const Text(
                       'Forgot',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primaryColor),
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
                     const Text(
                       'Password',
-                      style: TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: primaryColor),
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontWeight: FontWeight.bold,
+                        color: primaryColor,
+                      ),
                     ),
 
                     const SizedBox(height: 60),
@@ -87,14 +125,14 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                       },
                     ),
 
-                    SizedBox(height: 50),
+                    const SizedBox(height: 50),
 
-                    // --- SEND  BUTTON ---
+                    // --- SEND BUTTON ---
                     SizedBox(
                       width: double.infinity,
                       height: 55,
                       child: ElevatedButton(
-                        onPressed: _handleEmail,
+                        onPressed: _isLoading ? null : _handleEmail,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: primaryColor,
                           foregroundColor: Colors.white,
@@ -102,13 +140,24 @@ class _ForgotPasswordState extends State<ForgotPasswordScreen> {
                             borderRadius: BorderRadius.circular(30),
                           ),
                         ),
-                        child: const Text(
-                          'Send',
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        child: _isLoading
+                            ? const SizedBox(
+                                height: 24,
+                                width: 24,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                    Colors.white,
+                                  ),
+                                ),
+                              )
+                            : const Text(
+                                'Send',
+                                style: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
                       ),
                     ),
 

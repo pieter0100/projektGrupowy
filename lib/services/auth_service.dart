@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:logger/logger.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final Logger _logger = Logger();
 
   // Checks if the email format is valid (simple version)
   bool _isValidEmail(String email) {
@@ -23,11 +25,12 @@ class AuthService {
   // Deprecated: fetchSignInMethodsForEmail is no longer supported due to security reasons.
   // Instead, handle 'email-already-in-use' error in register method.
 
-  
   bool _isValidPassword(String password) {
-    final passwordRegex = RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*\-_\+=\[\]{};:\\|,.<>\/?]).{8,}$');
+    final passwordRegex = RegExp(
+      r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#\$%\^&\*\-_\+=\[\]{};:\\|,.<>\/?]).{8,}$',
+    );
     // Regex explanation:
-    // r                : raw string 
+    // r                : raw string
     // ^                : start of string
     // (?=.*[a-z])      : at least one lowercase letter
     // (?=.*[A-Z])      : at least one uppercase letter
@@ -43,7 +46,10 @@ class AuthService {
   }
 
   Future<bool> _isUsernameTaken(String username) async {
-    final query = await _firestore.collection('users').where('profile.displayName', isEqualTo: username).get();
+    final query = await _firestore
+        .collection('users')
+        .where('profile.displayName', isEqualTo: username)
+        .get();
     return query.docs.isNotEmpty;
   }
 
@@ -53,7 +59,9 @@ class AuthService {
       throw Exception('Please enter a valid email address.');
     }
     if (!_isValidPassword(password)) {
-      throw Exception('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
+      throw Exception(
+        'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.',
+      );
     }
     if (!_isValidUsername(username)) {
       throw Exception('Please enter a valid username.');
@@ -70,10 +78,7 @@ class AuthService {
       if (user != null) {
         // Create user document in Firestore
         await _firestore.collection('users').doc(user.uid).set({
-          'profile': {
-            'displayName': username,
-            'age': null,
-          },
+          'profile': {'displayName': username, 'age': null},
           'stats': {
             'totalGamesPlayed': 0,
             'totalPoints': 0,
@@ -87,11 +92,16 @@ class AuthService {
     } on FirebaseAuthException catch (e) {
       // If the email is already in use, Firebase throws a FirebaseAuthException with code 'email-already-in-use'.
       // This is handled here and a user-friendly message can be provided if needed.
-      throw Exception(e.message ?? 'Registration error.');
+      _logger.e('FirebaseAuthException code: ${e.code}');
+      _logger.e('FirebaseAuthException message: ${e.message}');
+      _logger.e('Full exception: $e');
+      throw Exception(e.message ?? 'Registration error. Code: ${e.code}');
     } on FirebaseException catch (e) {
+      _logger.e('FirebaseException: $e');
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
-      throw Exception('An unknown error occurred.');
+      _logger.e('Unexpected error: $e');
+      throw Exception('An unknown error occurred: $e');
     }
   }
 
@@ -110,14 +120,16 @@ class AuthService {
       throw Exception('An unknown error occurred.');
     }
   }
-  
+
   // Sign in with email and password
   Future<User?> signIn(String email, String password) async {
     if (email.isEmpty || !_isValidEmail(email)) {
       throw Exception('Please enter a valid email address.');
     }
     if (!_isValidPassword(password)) {
-      throw Exception('Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.');
+      throw Exception(
+        'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.',
+      );
     }
     try {
       final UserCredential result = await _auth.signInWithEmailAndPassword(

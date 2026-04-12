@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:projekt_grupowy/screens/auth/sign_up_screen.dart';
 
 // --- DODAJ TEN IMPORT (dostosuj ścieżkę jeśli jest inna) ---
 import 'package:projekt_grupowy/services/auth_service.dart';
@@ -186,5 +187,9 @@ final GoRouter appRouter = GoRouter(
         ),
       ]
     ),
+    GoRoute(
+      path: '/signup',
+      builder: (context, state) => const SignUpScreen(),
+    )
   ],
 );
