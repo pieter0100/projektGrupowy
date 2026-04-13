@@ -165,13 +165,60 @@ class AuthService {
         email: email,
         password: password,
       );
-      return result.user;
+      
+      final user = result.user;
+      if (user != null) {
+        // Fetch user profile from Firestore and sync to Hive
+        await _syncUserFromFirestore(user.uid);
+      }
+      
+      return user;
     } on firebase_auth.FirebaseAuthException catch (e) {
       throw Exception(e.message ?? 'Authentication error.');
     } on firebase_auth.FirebaseException catch (e) {
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
       throw Exception('An unknown error occurred.');
+    }
+  }
+
+  // Sync user data from Firestore to Hive
+  Future<void> _syncUserFromFirestore(String uid) async {
+    try {
+      final doc = await _firestore.collection('users').doc(uid).get();
+      if (doc.exists) {
+        final data = doc.data() as Map<String, dynamic>;
+        
+        // Extract profile data
+        final profileData = data['profile'] as Map<String, dynamic>? ?? {};
+        final statsData = data['stats'] as Map<String, dynamic>? ?? {};
+        
+        final userProfile = UserProfile(
+          displayName: profileData['displayName'] as String?,
+          age: profileData['age'] as int? ?? 0,
+          nick: profileData['nick'] as String? ?? 'unknown',
+        );
+        
+        final userStats = UserStats(
+          totalGamesPlayed: statsData['totalGamesPlayed'] as int? ?? 0,
+          totalPoints: statsData['totalPoints'] as int? ?? 0,
+          currentStreak: statsData['currentStreak'] as int? ?? 0,
+          lastPlayedAt: statsData['lastPlayedAt'] != null
+              ? DateTime.parse(statsData['lastPlayedAt'] as String)
+              : DateTime.now(),
+        );
+        
+        final userObj = User(
+          userId: uid,
+          profile: userProfile,
+          stats: userStats,
+        );
+        
+        // Save to Hive
+        await LocalSaves.saveUser(userObj);
+      }
+    } catch (e) {
+      _logger.e('Error syncing user from Firestore: $e');
     }
   }
 
