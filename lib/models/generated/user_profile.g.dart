@@ -19,7 +19,7 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
     return UserProfile(
       displayName: fields[0] as String?,
       age: fields[1] as int,
-      nick: fields[2] as String,
+      nick: fields[2] as String? ?? 'unknown',
     );
   }
 

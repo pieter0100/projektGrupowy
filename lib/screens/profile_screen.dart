@@ -13,14 +13,28 @@ class ProfileScreen extends StatefulWidget {
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserver {
   User? _currentUser;
   bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _loadUserData();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _loadUserData();
+    }
   }
 
   Future<void> _loadUserData() async {
@@ -43,7 +57,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         });
       }
     } catch (e) {
-      print("Error loading user data: $e");
       setState(() {
         _isLoading = false;
       });
@@ -52,6 +65,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // Reload data every time this widget is built (important for navigation)
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadUserData();
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Profile'),

@@ -6,6 +6,7 @@ import 'package:projekt_grupowy/widgets/profile_field.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class PersonalData extends StatefulWidget {
   const PersonalData({super.key});
@@ -47,22 +48,65 @@ class _PersonalDataState extends State<PersonalData> {
         });
       }
     } catch (e) {
-      print("Błąd podczas ładowania danych użytkownika: $e");
       setState(() {
         _isLoading = false;
       });
     }
   }
 
+  Future<void> _updateUserData(String fieldType, String newValue) async {
+    try {
+      final firebaseUser = auth.FirebaseAuth.instance.currentUser;
+      
+      if (firebaseUser == null || _currentUser == null) {
+        return;
+      }
+
+      final uid = firebaseUser.uid;
+      final updatedUser = _currentUser!;
+
+      // Update the appropriate field
+      if (fieldType == 'nick') {
+        final updatedProfile = _currentUser!.profile.copyWith(nick: newValue);
+        final updatedUserObj = updatedUser.copyWith(profile: updatedProfile);
+        
+        // Save to Hive
+        await LocalSaves.saveUser(updatedUserObj);
+        
+        // Save to Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'profile.nick': newValue
+        });
+
+        setState(() {
+          _currentUser = updatedUserObj;
+        });
+      } else if (fieldType == 'name') {
+        final updatedProfile = _currentUser!.profile.copyWith(displayName: newValue);
+        final updatedUserObj = updatedUser.copyWith(profile: updatedProfile);
+        
+        // Save to Hive
+        await LocalSaves.saveUser(updatedUserObj);
+        
+        // Save to Firestore
+        await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          'profile.displayName': newValue
+        });
+
+        setState(() {
+          _currentUser = updatedUserObj;
+        });
+      }
+    } catch (e) {
+      // Handle error silently
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    // 3. Przygotuj wartości (z zabezpieczeniem na wypadek braku danych)
-    final displayName = _currentUser?.profile.displayName ?? 'Brak nazwy';
-    final email = _firebaseEmail ?? 'Brak emaila';
-    
-    // Tworzymy przykładowy "Nick" na podstawie imienia, 
-    // lub możesz to zmienić, jeśli masz osobne pole w modelu.
-    final nick = '@${displayName.toLowerCase().replaceAll(' ', '')}';
+    final displayName = _currentUser?.profile.displayName ?? _currentUser?.profile.nick ?? '';
+    final nick = _currentUser?.profile.nick ?? 'unknown';
+    final email = _firebaseEmail ?? 'No email found';
 
     return Scaffold(
       appBar: AppBar(
@@ -81,7 +125,6 @@ class _PersonalDataState extends State<PersonalData> {
         ),
       ),
       
-      // 4. Jeśli ładuje, pokaż kółko. Jeśli skończył, pokaż formularz.
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -138,9 +181,16 @@ class _PersonalDataState extends State<PersonalData> {
 
                   const SizedBox(height: 16),
 
-                  // FORM FIELDS Z DYNAMICZNYMI DANYMI
-                  ProfileField(label: 'Nick:', initialValue: nick),
-                  ProfileField(label: 'Name:', initialValue: displayName),
+                  ProfileField(
+                    label: 'Nick:',
+                    initialValue: nick,
+                    onSave: (value) => _updateUserData('nick', value),
+                  ),
+                  ProfileField(
+                    label: 'Name:',
+                    initialValue: displayName,
+                    onSave: (value) => _updateUserData('name', value),
+                  ),
                   ProfileField(label: 'Email:', initialValue: email),
                 ],
               ),

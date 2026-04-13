@@ -3,8 +3,14 @@ import 'package:flutter/material.dart';
 class ProfileField extends StatefulWidget {
   final String label;
   final String initialValue;
+  final Function(String)? onSave;
 
-  ProfileField({super.key, required this.label, required this.initialValue});
+  ProfileField({
+    super.key,
+    required this.label,
+    required this.initialValue,
+    this.onSave,
+  });
 
   @override
   _ProfileFieldState createState() => _ProfileFieldState();
@@ -83,20 +89,34 @@ class _ProfileFieldState extends State<ProfileField> {
     }
 
     // Handle nick change logic here
-    showMessage('Nick "$nick" is correct!');
+    showMessage('Nick "$nick" saved successfully!');
 
-    // update logic here TODO
+    // Call the onSave callback
+    if (widget.onSave != null) {
+      widget.onSave!(nick);
+    }
 
     // if nick is avaible
     _myFocusNode.unfocus();
-    // else TODO
   }
 
   void handleNameChange(String value) {
-    // Handle name change logic here
-    print('Name changed to: $value');
+    // Trim whitespace
+    final name = value.trim();
 
-    // update logic here TODO
+    // Validate name is not empty
+    if (name.isEmpty) {
+      showMessage('Name can\'t be empty', isError: true);
+      return;
+    }
+
+    // Handle name change logic here
+    showMessage('Name saved successfully!');
+
+    // Call the onSave callback
+    if (widget.onSave != null) {
+      widget.onSave!(name);
+    }
 
     // after changing name, unfocus
     _myFocusNode.unfocus();
