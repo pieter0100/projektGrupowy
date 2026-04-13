@@ -10,6 +10,7 @@ import 'package:projekt_grupowy/services/auth_service.dart';
 import 'package:projekt_grupowy/screens/auth/change_password_screen.dart';
 import 'package:projekt_grupowy/screens/auth/forgot_password_screen.dart';
 import 'package:projekt_grupowy/screens/auth/login_screen.dart';
+import 'package:projekt_grupowy/screens/personal_data.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -170,6 +171,10 @@ final GoRouter appRouter = GoRouter(
           score: int.tryParse(scoreStr) ?? 0,
         );
       },
+    ),
+    GoRoute(
+      path: '/personal-data',
+      builder: (context, state) => const PersonalData(),
     ),
 
     // --- EKRANY AUTORYZACJI ---
