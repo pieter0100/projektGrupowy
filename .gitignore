@@ -54,3 +54,4 @@ windows/flutter/generated_plugins.cmake
 # Linux
 linux/flutter/ephemeral/
 linux/flutter/generated_plugins.cmake
+node_modules
