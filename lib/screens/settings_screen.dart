@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/settings_data_widget.dart';
 import 'package:projekt_grupowy/widgets/settings_delete_widget.dart';
+import 'package:projekt_grupowy/widgets/settings_signout_widget.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -24,16 +25,20 @@ class SettingsScreen extends StatelessWidget {
       body: ListView(
         children: [
           SizedBox(height: AppSizes.screenPaddingTop),
-          Center(child: InkWell(
-            onTap: () => context.go('/personal-data'),
-            child: SettingsDataWidget("Personal data")
-          )),
+          Center(
+            child: InkWell(
+              onTap: () => context.go('/personal-data'),
+              child: const SettingsDataWidget("Personal data"),
+            ),
+          ),
           SizedBox(height: AppSizes.screenPaddingTop),
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SettingsDeleteWidget("Delete account"),
-              SizedBox(height: AppSizes.spacingSmall),
+              const SettingsSignOutWidget("Sign Out"),
+              SizedBox(height: AppSizes.screenPaddingTop),
+              const SettingsDeleteWidget("Delete account"),
+              SizedBox(height: AppSizes.screenPaddingTop),
             ],
           ),
         ],
