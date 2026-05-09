@@ -11,7 +11,17 @@
       ]
     },
     {
-      "collectionGroup": "results",
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        {
+          "fieldPath": "profile.nick",
+          "order": "ASCENDING"
+        }
+      ]
+    },
+    {
+      "collectionGroup": "user_results",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -25,7 +35,7 @@
       ]
     },
     {
-      "collectionGroup": "progress",
+      "collectionGroup": "game_progress",
       "queryScope": "COLLECTION",
       "fields": [
         {
@@ -33,8 +43,8 @@
           "order": "ASCENDING"
         },
         {
-          "fieldPath": "lastUpdated",
-          "order": "DESCENDING"
+          "fieldPath": "sessionId",
+          "order": "ASCENDING"
         }
       ]
     },
@@ -53,8 +63,8 @@
       "queryScope": "COLLECTION",
       "fields": [
         {
-          "fieldPath": "entries",
-          "arrayConfig": "CONTAINS"
+          "fieldPath": "lastUpdated",
+          "order": "DESCENDING"
         }
       ]
     }
