@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
@@ -176,7 +177,11 @@ class TypedScreenState extends State<TypedScreen> {
       sessionManager!.nextStage(result);
 
       if (sessionManager!.isFinished) {
-        const userId = "user1";
+        final userId = auth.FirebaseAuth.instance.currentUser?.uid;
+        if (userId == null) {
+          debugPrint("User not logged in");
+          return;
+        }
         final previousBestScore = LocalSaves.getLevelProgress(userId, widget.level.toString())?.bestScore ?? 0;
         await sessionManager!.saveProgress(userId, widget.level.toString());
 

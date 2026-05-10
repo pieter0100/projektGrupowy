@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 import '../game_logic/local_saves.dart';
 
 import 'package:projekt_grupowy/utils/constants.dart';
@@ -20,7 +21,7 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
-  final String userId = "user1";
+  String? get userId => auth.FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
@@ -29,16 +30,19 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   Future<void> _initializeDataIfNeeded() async {
-    if (LocalSaves.getUser(userId) == null) {
+    final uid = userId;
+    if (uid == null) return;
+    
+    if (LocalSaves.getUser(uid) == null) {
       final newUser = User(
-        userId: userId,
+        userId: uid,
         stats: UserStats(
           totalGamesPlayed: 0,
           totalPoints: 0,
           currentStreak: 0,
           lastPlayedAt: DateTime.now(),
         ),
-        profile: UserProfile(displayName: "Player 1", age: 10, nick: "Player1"),
+        profile: UserProfile(displayName: "Player", age: 10, nick: "Player"),
       );
       await LocalSaves.saveUser(newUser);
     }
@@ -69,7 +73,8 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final user = LocalSaves.getUser(userId);
+    final uid = userId;
+    final user = uid != null ? LocalSaves.getUser(uid) : null;
     final int streak = user?.stats.currentStreak ?? 0;
     final int totalPoints = user?.stats.totalPoints ?? 0;
 
@@ -121,8 +126,8 @@ class _LevelScreenState extends State<LevelScreen> {
         itemCount: widget.levelsAmount,
         itemBuilder: (BuildContext context, int index) {
           final String levelId = (index + 1).toString();
-
-          final bool unlocked = LocalSaves.isLevelUnlocked("user1", levelId);
+          final uid = userId;
+          final bool unlocked = uid != null ? LocalSaves.isLevelUnlocked(uid, levelId) : false;
 
           return InkWell(
             onTap: unlocked

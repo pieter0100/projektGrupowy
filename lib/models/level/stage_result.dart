@@ -1,9 +1,19 @@
+import 'package:hive/hive.dart';
+
+part 'stage_result.g.dart';
+
 /// Represents the result of a single stage in a game session.
+@HiveType(typeId: 21)
 class StageResult {
+  @HiveField(0)
   final bool isCorrect;
+  @HiveField(1)
   final bool skipped;
+  @HiveField(2)
   final int? answerTime;
+  @HiveField(3)
   final dynamic userAnswer;
+  @HiveField(4)
   final int points;
 
   StageResult({

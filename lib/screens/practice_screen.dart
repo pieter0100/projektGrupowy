@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 import 'package:projekt_grupowy/game_logic/round_managers/practice_session_manager.dart';
 import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
@@ -88,7 +89,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
   }
 
   Future<void> _saveAndNavigate() async {
-    const String userId = "user1"; // TODO: Get actual user ID from auth context
+    final String? userId = auth.FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      debugPrint("User not logged in");
+      return;
+    }
     await sessionManager.saveProgress(userId, widget.level ?? "1");
     
     if (mounted) {
