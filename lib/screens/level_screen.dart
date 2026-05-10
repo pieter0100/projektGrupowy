@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
-import '../game_logic/local_saves.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/services/auth_service.dart';
 
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
@@ -33,6 +34,12 @@ class _LevelScreenState extends State<LevelScreen> {
     final uid = userId;
     if (uid == null) return;
     
+    // First, try to fetch from Firestore if not in Hive
+    if (LocalSaves.getUser(uid) == null) {
+      await AuthService().syncUserFromFirestore(uid);
+    }
+    
+    // Check again after sync attempt
     if (LocalSaves.getUser(uid) == null) {
       final newUser = User(
         userId: uid,
@@ -46,6 +53,9 @@ class _LevelScreenState extends State<LevelScreen> {
       );
       await LocalSaves.saveUser(newUser);
     }
+    
+    // Refresh the view after ensuring user data exists
+    if (mounted) setState(() {});
 
     if (LocalSaves.getLevel('2') == null) {
       for (int i = 1; i <= widget.levelsAmount; i++) {

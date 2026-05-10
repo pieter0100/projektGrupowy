@@ -106,6 +106,11 @@ class ExamSessionManager extends GameSessionManager {
 
     await LocalSaves.saveLevelProgress(userId, newProgress);
 
+    // Sync LevelProgress to Firestore
+    if (_resultsService != null) {
+      await _resultsService!.saveLevelProgress(userId, newProgress);
+    }
+
     // Update user stats locally (offline-first)
     final user = LocalSaves.getUser(userId);
     if (user != null) {

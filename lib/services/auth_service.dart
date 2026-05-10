@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
 import 'package:projekt_grupowy/models/user/user_profile.dart';
 import 'package:projekt_grupowy/models/user/user_stats.dart';
@@ -176,7 +178,7 @@ class AuthService {
       final user = result.user;
       if (user != null) {
         // Fetch user profile from Firestore and sync to Hive
-        await _syncUserFromFirestore(user.uid);
+        await syncUserFromFirestore(user.uid);
       }
       
       return user;
@@ -190,7 +192,7 @@ class AuthService {
   }
 
   // Sync user data from Firestore to Hive
-  Future<void> _syncUserFromFirestore(String uid) async {
+  Future<void> syncUserFromFirestore(String uid) async {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();
       if (doc.exists) {
@@ -223,6 +225,23 @@ class AuthService {
         
         // Save to Hive
         await LocalSaves.saveUser(userObj);
+
+        // Sync LevelProgress
+        try {
+          final progressSnapshot = await _firestore
+              .collection('users')
+              .doc(uid)
+              .collection('levelProgress')
+              .get();
+
+          for (final doc in progressSnapshot.docs) {
+            final data = doc.data();
+            final progress = LevelProgress.fromJson(data);
+            await LocalSaves.saveLevelProgress(uid, progress);
+          }
+        } catch (e) {
+          _logger.e('Error syncing levelProgress from Firestore: $e');
+        }
       }
     } catch (e) {
       _logger.e('Error syncing user from Firestore: $e');

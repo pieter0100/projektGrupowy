@@ -1,6 +1,7 @@
 import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart' as model;
+import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/utils/streak_calculator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../game_logic/models/game_result.dart';
@@ -12,6 +13,20 @@ class ResultsService {
   final SyncService _syncService;
 
   ResultsService(this._store, this._syncService);
+
+  Future<void> saveLevelProgress(String uid, LevelProgress progress) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('levelProgress')
+          .doc(progress.levelId)
+          .set(progress.toJson(), SetOptions(merge: true));
+      print('Successfully updated Firestore level progress for user $uid');
+    } catch (e) {
+      print('Error updating Firestore level progress for user $uid: $e');
+    }
+  }
 
   Future<void> saveResult(GameResult result) async {
     await _store.saveResult(result);
