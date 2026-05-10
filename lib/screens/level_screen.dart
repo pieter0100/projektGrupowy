@@ -69,6 +69,10 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = LocalSaves.getUser(userId);
+    final int streak = user?.stats.currentStreak ?? 0;
+    final int totalPoints = user?.stats.totalPoints ?? 0;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -88,9 +92,9 @@ class _LevelScreenState extends State<LevelScreen> {
               size: AppSizes.iconMedium,
             ),
             const SizedBox(width: AppSizes.spacingTiny),
-            const Text(
-              '3',
-              style: TextStyle(
+            Text(
+              '$streak',
+              style: const TextStyle(
                 fontSize: AppSizes.fontSizeStats,
                 color: AppColors.orange,
               ),
@@ -102,9 +106,9 @@ class _LevelScreenState extends State<LevelScreen> {
               size: AppSizes.iconMedium,
             ),
             const SizedBox(width: AppSizes.spacingTiny),
-            const Text(
-              '1432 XP',
-              style: TextStyle(
+            Text(
+              '$totalPoints XP',
+              style: const TextStyle(
                 fontSize: AppSizes.fontSizeStats,
                 color: AppColors.blue,
               ),

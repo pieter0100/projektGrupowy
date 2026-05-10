@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
@@ -8,6 +9,9 @@ import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/controllers/app_session_controller.dart';
+import 'package:projekt_grupowy/services/results_service.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
@@ -46,24 +50,41 @@ class TypedScreenState extends State<TypedScreen> {
     if (widget.data != null) {
       questionText = widget.data!.question;
     } else {
-      sessionManager = ExamSessionManager();
-
-      final currentLevelInfo = LevelInfo(
-        levelId: widget.level.toString(),
-        levelNumber: widget.level,
-        name: "Level ${widget.level}",
-        description: "Exam level",
-        unlockRequirements: UnlockRequirements(minPoints: 0),
-        rewards: Rewards(points: 0),
-        isRevision: false,
-      );
-
-      sessionManager!.start(currentLevelInfo);
-      _loadCurrentQuestion();
-
-      sessionManager!.addListener(() {
+      // Get ResultsService from AppSessionController via Provider
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          setState(() {});
+          // Try to get ResultsService from provider if available
+          ResultsService? resultsService;
+          try {
+            final appSessionController = context.read<AppSessionController>();
+            resultsService = appSessionController.resultsService;
+          } catch (e) {
+            // Provider not available - ResultsService will be optional
+            debugPrint('AppSessionController not available: $e');
+          }
+          
+          sessionManager = ExamSessionManager(
+            resultsService: resultsService,
+          );
+
+          final currentLevelInfo = LevelInfo(
+            levelId: widget.level.toString(),
+            levelNumber: widget.level,
+            name: "Level ${widget.level}",
+            description: "Exam level",
+            unlockRequirements: UnlockRequirements(minPoints: 0),
+            rewards: Rewards(points: 0),
+            isRevision: false,
+          );
+
+          sessionManager!.start(currentLevelInfo);
+          _loadCurrentQuestion();
+
+          sessionManager!.addListener(() {
+            if (mounted) {
+              setState(() {});
+            }
+          });
         }
       });
     }
@@ -156,11 +177,12 @@ class TypedScreenState extends State<TypedScreen> {
 
       if (sessionManager!.isFinished) {
         const userId = "user1";
+        final previousBestScore = LocalSaves.getLevelProgress(userId, widget.level.toString())?.bestScore ?? 0;
         await sessionManager!.saveProgress(userId, widget.level.toString());
 
         if (mounted) {
           context.go(
-            '/level/learn/exam/end?level=${widget.level}&score=${sessionManager!.correctCount}',
+            '/level/learn/exam/end?level=${widget.level}&score=${sessionManager!.correctCount}&previousBest=$previousBestScore',
           );
         }
       } else {
@@ -239,6 +261,40 @@ class TypedScreenState extends State<TypedScreen> {
                     onSubmitted: _showFeedback ? null : onComplete,
                     textInputAction: TextInputAction.done,
                   ),
+
+                  if (_showFeedback && widget.isPracticeMode)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Text(
+                        _isCorrect
+                            ? '+5 points!'
+                            : 'No points',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _isCorrect
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                    ),
+
+                  if (_showFeedback && !widget.isPracticeMode)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Text(
+                        _isCorrect
+                            ? 'Correct!'
+                            : 'Incorrect',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _isCorrect
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                    ),
 
                   if (widget.isPracticeMode && !_showFeedback)
                     Padding(
