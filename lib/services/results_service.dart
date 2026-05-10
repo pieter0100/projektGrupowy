@@ -46,10 +46,15 @@ class ResultsService {
       
       if (user != null) {
         // Calculate new streak based on game play
+        print('DEBUG: Before updateStreak - Stats: ${user.stats}');
         final updatedStats = StreakCalculator.updateStreak(user.stats, DateTime.now());
+        print('DEBUG: After updateStreak - Stats: $updatedStats');
         
         // Add the game score
-        final finalStats = StreakCalculator.addGameScore(updatedStats, score);
+        final finalStats = StreakCalculator.addGameScore(updatedStats, score).copyWith(
+          totalGamesPlayed: user.stats.totalGamesPlayed + 1,
+        );
+        print('DEBUG: Final Stats for Firestore: $finalStats');
         
         // Update user with new stats
         final updatedUser = model.User(
