@@ -164,11 +164,6 @@ class AuthService {
     if (email.isEmpty || !_isValidEmail(email)) {
       throw Exception('Please enter a valid email address.');
     }
-    if (!_isValidPassword(password)) {
-      throw Exception(
-        'Password must be at least 8 characters long and include uppercase, lowercase, number, and special character.',
-      );
-    }
     try {
       final firebase_auth.UserCredential result = await _auth.signInWithEmailAndPassword(
         email: email,
