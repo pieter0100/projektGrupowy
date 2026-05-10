@@ -11,6 +11,7 @@ import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/controllers/app_session_controller.dart';
+import 'package:projekt_grupowy/services/results_service.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
@@ -52,10 +53,18 @@ class TypedScreenState extends State<TypedScreen> {
       // Get ResultsService from AppSessionController via Provider
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          final appSessionController = context.read<AppSessionController>();
+          // Try to get ResultsService from provider if available
+          ResultsService? resultsService;
+          try {
+            final appSessionController = context.read<AppSessionController>();
+            resultsService = appSessionController.resultsService;
+          } catch (e) {
+            // Provider not available - ResultsService will be optional
+            debugPrint('AppSessionController not available: $e');
+          }
           
           sessionManager = ExamSessionManager(
-            resultsService: appSessionController.resultsService,
+            resultsService: resultsService,
           );
 
           final currentLevelInfo = LevelInfo(
