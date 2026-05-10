@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:projekt_grupowy/screens/test.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
 
 import 'package:projekt_grupowy/controllers/app_session_controller.dart';
-import 'app_router.dart'; 
+import 'app_router.dart';
 import 'game_logic/local_saves.dart';
-
-// Importujemy LoadingScreen (lub definiujemy go, jeśli jest w routerze)
-// Zakładam, że jest w routerze lub osobnym pliku. Tu dla pewności import:
-// import 'app_router.dart' show LoadingScreen; 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,10 +26,40 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: appRouter,
-      title: 'Multiplication Game',
-      debugShowCheckedModeBanner: false,
+    return FutureBuilder<AppSessionController>(
+      future: AppSessionController.create(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: CircularProgressIndicator(),
+              ),
+            ),
+          );
+        }
+
+        if (snapshot.hasError) {
+          return MaterialApp(
+            home: Scaffold(
+              body: Center(
+                child: Text('Error: ${snapshot.error}'),
+              ),
+            ),
+          );
+        }
+
+        final sessionController = snapshot.data!;
+
+        return ChangeNotifierProvider<AppSessionController>.value(
+          value: sessionController,
+          child: MaterialApp.router(
+            routerConfig: appRouter,
+            title: 'Multiplication Game',
+            debugShowCheckedModeBanner: false,
+          ),
+        );
+      },
     );
   }
 }
