@@ -10,6 +10,7 @@ import 'package:projekt_grupowy/services/auth_service.dart';
 import 'package:projekt_grupowy/screens/auth/change_password_screen.dart';
 import 'package:projekt_grupowy/screens/auth/forgot_password_screen.dart';
 import 'package:projekt_grupowy/screens/auth/login_screen.dart';
+import 'package:projekt_grupowy/screens/personal_data.dart';
 
 import 'widgets/scaffold_with_nav.dart';
 import 'screens/leaderboard_screen.dart';
@@ -21,6 +22,7 @@ import 'screens/practice_screen.dart';
 import 'screens/practice_end_screen.dart';
 import 'screens/typed_screen.dart';
 import 'screens/typed_screen_end.dart';
+import 'screens/intro_screen.dart';
 
 // -----------------------------------------------------------------------------
 // KLASA POMOCNICZA: Zamienia Stream z Firebase na Listenable dla GoRoutera
@@ -96,7 +98,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/level',
-              builder: (context, state) => const LevelScreen(levelsAmount: 8),
+              builder: (context, state) => const LevelScreen(levelsAmount: 10),
             ),
           ],
         ),
@@ -104,7 +106,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/leaderboard',
-              builder: (context, state) => const HomeScreen(),
+              builder: (context, state) => const LeaderboardScreen(),
             ),
           ],
         ),
@@ -132,6 +134,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
         return LearnScreen(level: level);
+      },
+    ),
+
+    GoRoute(
+      path: '/level/learn/intro',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return IntroScreen(level: level);
       },
     ),
 
@@ -164,12 +174,18 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final levelStr = state.uri.queryParameters['level'] ?? "1";
         final scoreStr = state.uri.queryParameters['score'] ?? "0";
+        final previousBestStr = state.uri.queryParameters['previousBest'] ?? "0";
 
         return ExamTypedEndScreen(
           level: int.tryParse(levelStr) ?? 1,
           score: int.tryParse(scoreStr) ?? 0,
+          previousBest: int.tryParse(previousBestStr) ?? 0,
         );
       },
+    ),
+    GoRoute(
+      path: '/personal-data',
+      builder: (context, state) => const PersonalData(),
     ),
 
     // --- EKRANY AUTORYZACJI ---

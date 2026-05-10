@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import '../game_logic/local_saves.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/services/auth_service.dart';
 
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
@@ -20,7 +22,8 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
-  final String userId = "user1";
+  bool _debugUnlockAll = false;
+  String? get userId => auth.FirebaseAuth.instance.currentUser?.uid;
 
   @override
   void initState() {
@@ -29,19 +32,31 @@ class _LevelScreenState extends State<LevelScreen> {
   }
 
   Future<void> _initializeDataIfNeeded() async {
-    if (LocalSaves.getUser(userId) == null) {
+    final uid = userId;
+    if (uid == null) return;
+    
+    // First, try to fetch from Firestore if not in Hive
+    if (LocalSaves.getUser(uid) == null) {
+      await AuthService().syncUserFromFirestore(uid);
+    }
+    
+    // Check again after sync attempt
+    if (LocalSaves.getUser(uid) == null) {
       final newUser = User(
-        userId: userId,
+        userId: uid,
         stats: UserStats(
           totalGamesPlayed: 0,
           totalPoints: 0,
           currentStreak: 0,
           lastPlayedAt: DateTime.now(),
         ),
-        profile: UserProfile(displayName: "Player 1", age: 10),
+        profile: UserProfile(displayName: "Player", age: 10, nick: "Player"),
       );
       await LocalSaves.saveUser(newUser);
     }
+    
+    // Refresh the view after ensuring user data exists
+    if (mounted) setState(() {});
 
     if (LocalSaves.getLevel('2') == null) {
       for (int i = 1; i <= widget.levelsAmount; i++) {
@@ -69,6 +84,11 @@ class _LevelScreenState extends State<LevelScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final uid = userId;
+    final user = uid != null ? LocalSaves.getUser(uid) : null;
+    final int streak = user?.stats.currentStreak ?? 0;
+    final int totalPoints = user?.stats.totalPoints ?? 0;
+
     return Scaffold(
       appBar: AppBar(
         title: Row(
@@ -88,9 +108,9 @@ class _LevelScreenState extends State<LevelScreen> {
               size: AppSizes.iconMedium,
             ),
             const SizedBox(width: AppSizes.spacingTiny),
-            const Text(
-              '3',
-              style: TextStyle(
+            Text(
+              '$streak',
+              style: const TextStyle(
                 fontSize: AppSizes.fontSizeStats,
                 color: AppColors.orange,
               ),
@@ -102,9 +122,9 @@ class _LevelScreenState extends State<LevelScreen> {
               size: AppSizes.iconMedium,
             ),
             const SizedBox(width: AppSizes.spacingTiny),
-            const Text(
-              '1432 XP',
-              style: TextStyle(
+            Text(
+              '$totalPoints XP',
+              style: const TextStyle(
                 fontSize: AppSizes.fontSizeStats,
                 color: AppColors.blue,
               ),
@@ -117,8 +137,9 @@ class _LevelScreenState extends State<LevelScreen> {
         itemCount: widget.levelsAmount,
         itemBuilder: (BuildContext context, int index) {
           final String levelId = (index + 1).toString();
-
-          final bool unlocked = LocalSaves.isLevelUnlocked("user1", levelId);
+          final uid = userId;
+          final bool isUnlockedByProgress = uid != null ? LocalSaves.isLevelUnlocked(uid, levelId) : false;
+          final bool unlocked = _debugUnlockAll || isUnlockedByProgress;
 
           return InkWell(
             onTap: unlocked
@@ -127,6 +148,16 @@ class _LevelScreenState extends State<LevelScreen> {
             child: LevelWidget(textInside: "× $levelId", isLocked: !unlocked),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _debugUnlockAll = !_debugUnlockAll;
+          });
+        },
+        backgroundColor: Colors.redAccent,
+        tooltip: 'Debug: Unlock All Levels',
+        child: Icon(_debugUnlockAll ? Icons.lock_open : Icons.bug_report),
       ),
     );
   }

@@ -1,38 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../user/user_profile.dart';
+part of 'stage_result.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UserProfileAdapter extends TypeAdapter<UserProfile> {
+class StageResultAdapter extends TypeAdapter<StageResult> {
   @override
-  final int typeId = 0;
+  final int typeId = 21;
 
   @override
-  UserProfile read(BinaryReader reader) {
+  StageResult read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UserProfile(
-      displayName: fields[0] as String?,
-      age: fields[1] as int,
-      nick: fields[2] as String? ?? 'unknown',
+    return StageResult(
+      isCorrect: fields[0] as bool,
+      skipped: fields[1] as bool,
+      answerTime: fields[2] as int?,
+      userAnswer: fields[3] as dynamic,
+      points: fields[4] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UserProfile obj) {
+  void write(BinaryWriter writer, StageResult obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.displayName)
+      ..write(obj.isCorrect)
       ..writeByte(1)
-      ..write(obj.age)
+      ..write(obj.skipped)
       ..writeByte(2)
-      ..write(obj.nick);
+      ..write(obj.answerTime)
+      ..writeByte(3)
+      ..write(obj.userAnswer)
+      ..writeByte(4)
+      ..write(obj.points);
   }
 
   @override
@@ -41,7 +47,7 @@ class UserProfileAdapter extends TypeAdapter<UserProfile> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserProfileAdapter &&
+      other is StageResultAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }
