@@ -10,7 +10,6 @@ class StreakCalculator {
   /// - Otherwise (missed days): reset to 1
   static UserStats updateStreak(UserStats currentStats, DateTime gamePlayedAt) {
     final nowDay = DateTime(gamePlayedAt.year, gamePlayedAt.month, gamePlayedAt.day);
-    final gameDay = DateTime(gamePlayedAt.year, gamePlayedAt.month, gamePlayedAt.day);
     
     int newStreak = 1;
     
@@ -24,8 +23,8 @@ class StreakCalculator {
       final lastDiffDays = nowDay.difference(lastDay).inDays;
       
       if (lastDiffDays == 0) {
-        // Played today already, keep current streak
-        newStreak = currentStats.currentStreak;
+        // Played today already, keep current streak (or set to 1 if it was 0)
+        newStreak = (currentStats.currentStreak == 0) ? 1 : currentStats.currentStreak;
       } else if (lastDiffDays == 1) {
         // Played yesterday, increment streak
         newStreak = currentStats.currentStreak + 1;
@@ -37,8 +36,8 @@ class StreakCalculator {
     
     // Return updated stats with new streak and last played date
     return UserStats(
-      totalGamesPlayed: currentStats.totalGamesPlayed + 1,
-      totalPoints: currentStats.totalPoints + 0, // Score will be added when result is saved
+      totalGamesPlayed: currentStats.totalGamesPlayed, 
+      totalPoints: currentStats.totalPoints, 
       currentStreak: newStreak,
       lastPlayedAt: gamePlayedAt,
     );

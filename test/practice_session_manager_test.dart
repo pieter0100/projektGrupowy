@@ -289,5 +289,115 @@ void main() {
       expect(typesGenerated, contains(StageType.typed));
       expect(typesGenerated, contains(StageType.pairs));
     });
+
+    // Points System Tests for Practice Mode
+    test('should award 5 points for each correct answer during practice', () {
+      logger.i('Testing points per correct answer during practice...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 3; i++) {
+        manager.nextStage(StageResult(isCorrect: true));
+      }
+
+      expect(manager.totalPoints, equals(15)); // 3 * 5
+      expect(manager.correctCount, equals(3));
+      logger.i('3 correct answers = 15 points');
+      logger.i('Points per answer test passed');
+    });
+
+    test('should award 5 points for each correct answer', () {
+      logger.i('Testing points per correct answer...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 6; i++) {
+        manager.nextStage(StageResult(isCorrect: true));
+      }
+
+      expect(manager.correctCount, equals(6));
+      expect(manager.totalPoints, equals(30)); // 6 * 5
+      logger.i('6 correct answers = 30 points');
+      logger.i('Points per answer test passed');
+    });
+
+    test('should not award points for wrong answers', () {
+      logger.i('Testing points for wrong answers...');
+      manager.start(testLevel);
+
+      manager.nextStage(StageResult(isCorrect: false));
+      expect(manager.totalPoints, equals(0));
+
+      manager.nextStage(StageResult(isCorrect: true));
+      expect(manager.totalPoints, equals(5));
+
+      manager.nextStage(StageResult(isCorrect: false));
+      expect(manager.totalPoints, equals(5)); // Still 5, no change
+
+      logger.i('Wrong answers do not award points');
+      logger.i('Wrong answers test passed');
+    });
+
+    test('should calculate correct points for mixed results', () {
+      logger.i('Testing points with mixed results...');
+      manager.start(testLevel);
+
+      final results = [
+        true, false, true, true, false, true
+      ];
+
+      for (final result in results) {
+        manager.nextStage(StageResult(isCorrect: result));
+      }
+
+      expect(manager.correctCount, equals(4));
+      expect(manager.totalPoints, equals(20)); // 4 * 5
+      logger.i('Mixed results (4/6 correct): 20 points');
+      logger.i('Mixed results test passed');
+    });
+
+    test('should reset points when start() is called again', () {
+      logger.i('Testing points reset on restart...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 3; i++) {
+        manager.nextStage(StageResult(isCorrect: true));
+      }
+
+      expect(manager.totalPoints, equals(15)); // 3 * 5
+
+      manager.start(testLevel);
+
+      expect(manager.totalPoints, equals(0));
+      expect(manager.correctCount, equals(0));
+      logger.i('Points reset on restart');
+      logger.i('Reset test passed');
+    });
+
+    test('should handle perfect score (all correct)', () {
+      logger.i('Testing perfect score...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 6; i++) {
+        manager.nextStage(StageResult(isCorrect: true));
+      }
+
+      expect(manager.correctCount, equals(6));
+      expect(manager.totalPoints, equals(30)); // 6 * 5 = 30 points for practice
+      logger.i('Perfect score: 6/6 = 30 points');
+      logger.i('Perfect score test passed');
+    });
+
+    test('should handle zero score (all wrong)', () {
+      logger.i('Testing zero score...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 6; i++) {
+        manager.nextStage(StageResult(isCorrect: false));
+      }
+
+      expect(manager.correctCount, equals(0));
+      expect(manager.totalPoints, equals(0));
+      logger.i('Zero score: 0/6 = 0 points');
+      logger.i('Zero score test passed');
+    });
   });
 }

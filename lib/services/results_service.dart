@@ -1,7 +1,9 @@
 import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart' as model;
+import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/utils/streak_calculator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../game_logic/models/game_result.dart';
 import 'offline_store.dart';
 import 'sync_service.dart';
@@ -11,6 +13,20 @@ class ResultsService {
   final SyncService _syncService;
 
   ResultsService(this._store, this._syncService);
+
+  Future<void> saveLevelProgress(String uid, LevelProgress progress) async {
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('levelProgress')
+          .doc(progress.levelId)
+          .set(progress.toJson(), SetOptions(merge: true));
+      print('Successfully updated Firestore level progress for user $uid');
+    } catch (e) {
+      print('Error updating Firestore level progress for user $uid: $e');
+    }
+  }
 
   Future<void> saveResult(GameResult result) async {
     await _store.saveResult(result);
@@ -30,10 +46,15 @@ class ResultsService {
       
       if (user != null) {
         // Calculate new streak based on game play
+        print('DEBUG: Before updateStreak - Stats: ${user.stats}');
         final updatedStats = StreakCalculator.updateStreak(user.stats, DateTime.now());
+        print('DEBUG: After updateStreak - Stats: $updatedStats');
         
         // Add the game score
-        final finalStats = StreakCalculator.addGameScore(updatedStats, score);
+        final finalStats = StreakCalculator.addGameScore(updatedStats, score).copyWith(
+          totalGamesPlayed: user.stats.totalGamesPlayed + 1,
+        );
+        print('DEBUG: Final Stats for Firestore: $finalStats');
         
         // Update user with new stats
         final updatedUser = model.User(
@@ -43,6 +64,22 @@ class ResultsService {
         );
         
         await usersBox.put(uid, updatedUser);
+
+        // Update Firestore to sync stats to cloud (replaces missing Cloud Functions)
+        try {
+          print('Attempting to update Firestore for user $uid');
+          await FirebaseFirestore.instance.collection('users').doc(uid).set({
+            'stats': {
+              'totalGamesPlayed': finalStats.totalGamesPlayed,
+              'totalPoints': finalStats.totalPoints,
+              'currentStreak': finalStats.currentStreak,
+              'lastPlayedAt': finalStats.lastPlayedAt?.toIso8601String(),
+            }
+          }, SetOptions(merge: true));
+          print('Successfully updated Firestore for user $uid');
+        } catch (fsError) {
+          print('Error updating Firestore stats for user $uid: $fsError');
+        }
       }
     } catch (e) {
       // Log error but don't fail - streak calculation is best-effort
