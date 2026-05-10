@@ -47,14 +47,14 @@ class ResultsService {
 
         // Update Firestore to sync stats to cloud (replaces missing Cloud Functions)
         try {
-          await FirebaseFirestore.instance.collection('users').doc(uid).update({
+          await FirebaseFirestore.instance.collection('users').doc(uid).set({
             'stats': {
               'totalGamesPlayed': finalStats.totalGamesPlayed,
               'totalPoints': finalStats.totalPoints,
               'currentStreak': finalStats.currentStreak,
               'lastPlayedAt': finalStats.lastPlayedAt?.toIso8601String(),
             }
-          });
+          }, SetOptions(merge: true));
         } catch (fsError) {
           print('Error updating Firestore stats for user $uid: $fsError');
         }
