@@ -21,6 +21,7 @@ class LevelScreen extends StatefulWidget {
 
 class _LevelScreenState extends State<LevelScreen> {
   final String userId = "user1";
+  bool _debugUnlockAll = false;
 
   @override
   void initState() {
@@ -118,7 +119,7 @@ class _LevelScreenState extends State<LevelScreen> {
         itemBuilder: (BuildContext context, int index) {
           final String levelId = (index + 1).toString();
 
-          final bool unlocked = LocalSaves.isLevelUnlocked("user1", levelId);
+          final bool unlocked = _debugUnlockAll || LocalSaves.isLevelUnlocked("user1", levelId);
 
           return InkWell(
             onTap: unlocked
@@ -127,6 +128,16 @@ class _LevelScreenState extends State<LevelScreen> {
             child: LevelWidget(textInside: "× $levelId", isLocked: !unlocked),
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _debugUnlockAll = !_debugUnlockAll;
+          });
+        },
+        backgroundColor: Colors.redAccent,
+        tooltip: 'Debug: Unlock All Levels',
+        child: Icon(_debugUnlockAll ? Icons.lock_open : Icons.bug_report),
       ),
     );
   }

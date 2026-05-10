@@ -18,18 +18,37 @@ class _IntroScreenState extends State<IntroScreen> {
   String _getIntroText() {
     final intLevel = int.tryParse(widget.level ?? '1') ?? 1;
     
-    if (intLevel == 1) {
-      if (_currentStep == 1) {
-        return "When you multiply any number by 1, the answer is always the same number.";
-      } else {
-        return "See? 1 group of 7 apples is just 7 apples!";
+    if (_currentStep == 1) {
+      switch (intLevel) {
+        case 1: return "When you multiply any number by 1, the answer is always the same number.";
+        case 2: return "Multiplying by 2 is just like doubling the number! 2 + 2 = 2 × 2.";
+        case 3: return "Multiplying by 3 means adding the number to itself three times.";
+        case 4: return "To multiply by 4, you can double the number and then double it again!";
+        case 5: return "Multiples of 5 always end in 0 or 5. It's like counting nickels!";
+        case 6: return "Multiply by 6 by multiplying by 5 and adding one more group.";
+        case 7: return "7 is a lucky number! Let's see how many apples we get when we multiply by 7.";
+        case 8: return "Multiply by 8 by doubling three times (double, double, double)!";
+        case 9: return "A cool trick for 9: the digits of the answer always add up to 9!";
+        case 10: return "Multiplying by 10 is the easiest! Just add a zero to the end of the number.";
+        default: return "Let's learn how to multiply by $intLevel!";
       }
-    } else if (intLevel == 2) {
-      return "When you multiply any number by 2, the answer is double the number.";
-    } else if (intLevel == 10) {
-      return "When you multiply any number by 10, just add a zero at the end!";
+    } else {
+      // Step 2 examples
+      final result = intLevel * 7;
+      switch (intLevel) {
+        case 1: return "See? 1 group of 7 apples is just 7 apples!";
+        case 2: return "2 groups of 7 apples makes 14 apples in total. Double 7 is 14!";
+        case 3: return "3 groups of 7 apples is 21. That's 7 + 7 + 7!";
+        case 4: return "4 groups of 7 apples is 28. That's 14 doubled!";
+        case 5: return "5 groups of 7 apples is 35. It ends in a 5!";
+        case 6: return "6 groups of 7 apples is 42. One more than 5 groups!";
+        case 7: return "7 groups of 7 apples is 49. A perfect square!";
+        case 8: return "8 groups of 7 apples is 56. Double of 28!";
+        case 9: return "9 groups of 7 apples is 63. Note that 6 + 3 = 9!";
+        case 10: return "10 groups of 7 apples is 70. Just 7 with a zero at the end!";
+        default: return "So, $intLevel times 7 equals $result!";
+      }
     }
-    return "Let's learn how to multiply by ${widget.level}!";
   }
 
   Widget _buildEquation() {

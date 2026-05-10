@@ -98,7 +98,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/level',
-              builder: (context, state) => const LevelScreen(levelsAmount: 8),
+              builder: (context, state) => const LevelScreen(levelsAmount: 10),
             ),
           ],
         ),
