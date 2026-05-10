@@ -31,6 +31,7 @@ class _ExamTypedEndScreenState extends State<ExamTypedEndScreen> {
   @override
   Widget build(BuildContext context) {
     final bool isPassed = widget.score == 10;
+    final int totalPoints = widget.score * 5; // 5 points per correct answer
 
     return Scaffold(
       backgroundColor: AppColors.white,
@@ -48,6 +49,35 @@ class _ExamTypedEndScreenState extends State<ExamTypedEndScreen> {
             Text(
               "${widget.score}/10 correct",
               style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 20),
+            // Points earned display
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              decoration: BoxDecoration(
+                color: AppColors.orange.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: AppColors.orange, width: 2),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.star,
+                    color: AppColors.orange,
+                    size: 28,
+                  ),
+                  const SizedBox(width: 12),
+                  Text(
+                    'Total Points: $totalPoints',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.orange,
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),

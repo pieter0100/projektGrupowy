@@ -240,6 +240,23 @@ class TypedScreenState extends State<TypedScreen> {
                     textInputAction: TextInputAction.done,
                   ),
 
+                  if (_showFeedback)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Text(
+                        _isCorrect
+                            ? '+5 points!'
+                            : 'No points',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _isCorrect
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                    ),
+
                   if (widget.isPracticeMode && !_showFeedback)
                     Padding(
                       padding: const EdgeInsets.only(top: 8.0),
@@ -283,6 +300,33 @@ class TypedScreenState extends State<TypedScreen> {
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.go('/level/learn?level=${widget.level}'),
         ),
+        actions: [
+          // Points display in AppBar
+          if (sessionManager != null)
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Center(
+                child: Row(
+                  children: [
+                    Icon(
+                      Icons.star,
+                      color: AppColors.orange,
+                      size: 24,
+                    ),
+                    const SizedBox(width: 8),
+                    Text(
+                      '${sessionManager!.totalPoints} pts',
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.orange,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
       body: Column(
         children: [
