@@ -35,7 +35,12 @@ class LearnScreen extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              LearnWidget("intro"),
+              GestureDetector(
+                onTap: () {
+                  context.go('/level/learn/intro?level=$level');
+                },
+                child: LearnWidget("intro"),
+              ),
               const SizedBox(height: AppSizes.learnLabelSpacing),
               const Text("Intro", style: AppTextStyles.learnLabel),
               const SizedBox(height: AppSizes.learnItemSpacing),

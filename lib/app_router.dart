@@ -22,6 +22,7 @@ import 'screens/practice_screen.dart';
 import 'screens/practice_end_screen.dart';
 import 'screens/typed_screen.dart';
 import 'screens/typed_screen_end.dart';
+import 'screens/intro_screen.dart';
 
 // -----------------------------------------------------------------------------
 // KLASA POMOCNICZA: Zamienia Stream z Firebase na Listenable dla GoRoutera
@@ -133,6 +134,14 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final level = state.uri.queryParameters['level'] ?? "1";
         return LearnScreen(level: level);
+      },
+    ),
+
+    GoRoute(
+      path: '/level/learn/intro',
+      builder: (context, state) {
+        final level = state.uri.queryParameters['level'] ?? "1";
+        return IntroScreen(level: level);
       },
     ),
 
