@@ -22,6 +22,7 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
+  bool _debugUnlockAll = false;
   String? get userId => auth.FirebaseAuth.instance.currentUser?.uid;
 
   @override
@@ -137,7 +138,8 @@ class _LevelScreenState extends State<LevelScreen> {
         itemBuilder: (BuildContext context, int index) {
           final String levelId = (index + 1).toString();
           final uid = userId;
-          final bool unlocked = uid != null ? LocalSaves.isLevelUnlocked(uid, levelId) : false;
+          final bool isUnlockedByProgress = uid != null ? LocalSaves.isLevelUnlocked(uid, levelId) : false;
+          final bool unlocked = _debugUnlockAll || isUnlockedByProgress;
 
           return InkWell(
             onTap: unlocked
