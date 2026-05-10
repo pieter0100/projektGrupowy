@@ -4,18 +4,21 @@ class StageResult {
   final bool skipped;
   final int? answerTime;
   final dynamic userAnswer;
+  final int points;
 
   StageResult({
     required this.isCorrect,
     this.skipped = false,
     this.answerTime,
     this.userAnswer,
+    this.points = 0,
   });
 
   factory StageResult.skipped() {
     return StageResult(
       isCorrect: false,
       skipped: true,
+      points: 0,
     );
   }
 
@@ -25,6 +28,7 @@ class StageResult {
       'skipped': skipped,
       'answerTime': answerTime,
       'userAnswer': userAnswer,
+      'points': points,
     };
   }
 
@@ -34,6 +38,7 @@ class StageResult {
       skipped: map['skipped'] ?? false,
       answerTime: map['answerTime'],
       userAnswer: map['userAnswer'],
+      points: map['points'] ?? 0,
     );
   }
 }
