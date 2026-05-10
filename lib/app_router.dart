@@ -165,10 +165,12 @@ final GoRouter appRouter = GoRouter(
       builder: (context, state) {
         final levelStr = state.uri.queryParameters['level'] ?? "1";
         final scoreStr = state.uri.queryParameters['score'] ?? "0";
+        final previousBestStr = state.uri.queryParameters['previousBest'] ?? "0";
 
         return ExamTypedEndScreen(
           level: int.tryParse(levelStr) ?? 1,
           score: int.tryParse(scoreStr) ?? 0,
+          previousBest: int.tryParse(previousBestStr) ?? 0,
         );
       },
     ),

@@ -7,13 +7,26 @@ import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/services/card_generator.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/services/results_service.dart';
+import 'package:projekt_grupowy/game_logic/models/game_result.dart';
 
 class PracticeSessionManager extends GameSessionManager {
   static const int _totalStagesCount = 6;
   static const int _pairsAmount = 3;
+  static const int _pointsPerCorrectAnswer = 5;
+
+  int _correctCount = 0;
+  int _totalPoints = 0;
+  final ResultsService? _resultsService;
+
+  PracticeSessionManager({ResultsService? resultsService}) : _resultsService = resultsService;
 
   @override
   int get totalCount => _totalStagesCount;
+
+  int get correctCount => _correctCount;
+  int get totalPoints => _totalPoints;
 
   // for anti-series logic
   final List<StageType> _typeHistory = [];
@@ -24,7 +37,18 @@ class PracticeSessionManager extends GameSessionManager {
   void start(LevelInfo level) {
     _currentLevel = level;
     _typeHistory.clear();
+    _correctCount = 0;
+    _totalPoints = 0;
     super.start(level);
+  }
+
+  @override
+  void processStageResult(StageResult result) {
+    if (result.isCorrect == true) {
+      _correctCount++;
+      _totalPoints += _pointsPerCorrectAnswer;
+    }
+    super.processStageResult(result);
   }
 
   @override
@@ -160,6 +184,50 @@ class PracticeSessionManager extends GameSessionManager {
       throw Exception(
         'Failed to generate pairs data for level ${level.levelNumber}: $e',
       );
+    }
+  }
+
+  /// Saves practice session progress to Hive and queues for Firebase sync.
+  /// In practice mode, points are awarded per correct answer (5 points each).
+  /// No "best score" restriction like exam mode - all correct answers earn points.
+  Future<void> saveProgress(String userId, String levelId) async {
+    // Update local user stats with earned points
+    final user = LocalSaves.getUser(userId);
+    if (user != null) {
+      final updatedStats = user.stats.copyWith(
+        totalGamesPlayed: user.stats.totalGamesPlayed + 1,
+        totalPoints: user.stats.totalPoints + _totalPoints,
+        lastPlayedAt: DateTime.now(),
+      );
+      await LocalSaves.updateUserStats(userId, updatedStats);
+    }
+
+    // TODO: Create GameResult for Firebase sync when ResultsService is ready
+    // The onResultWrite Cloud Function will then update users/{uid}/stats.totalPoints
+    // final gameResult = GameResult(
+    //   sessionId: 'practice_${userId}_${DateTime.now().millisecondsSinceEpoch}',
+    //   uid: userId,
+    //   timestamp: DateTime.now(),
+    //   stageResults: stageResults,
+    //   score: _totalPoints,
+    //   gameType: 'Practice',
+    // );
+
+    // Create GameResult for Firebase sync
+    // This will be saved via ResultsService (if provided)
+    // The onResultWrite Cloud Function will then update users/{uid}/stats.totalPoints
+    final gameResult = GameResult(
+      sessionId: 'practice_${userId}_${DateTime.now().millisecondsSinceEpoch}',
+      uid: userId,
+      timestamp: DateTime.now(),
+      stageResults: stageResults,
+      score: _totalPoints,
+      gameType: 'Practice',
+    );
+
+    // Save to offline store and queue for Firebase sync
+    if (_resultsService != null) {
+      await _resultsService.saveResult(gameResult);
     }
   }
 }

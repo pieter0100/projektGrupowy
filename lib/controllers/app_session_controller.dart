@@ -14,6 +14,7 @@ import 'package:projekt_grupowy/services/profile_service.dart';
 // Serwisy
 import '../services/sync_service.dart';
 import '../services/offline_store.dart';
+import '../services/results_service.dart';
 
 /// Stany sesji użytkownika
 enum SessionState {
@@ -33,6 +34,7 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
   final FirebaseAuth _auth;
   final SyncService syncService;
   final OfflineStore store;
+  final ResultsService resultsService;
 
   SessionState _state = SessionState.unauthenticated;
   StreamSubscription<User?>? _authSubscription;
@@ -45,7 +47,7 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
   Stream<DataRefreshEvent> get onDataRefreshed => _refreshController.stream;
 
   /// Prywatny konstruktor
-  AppSessionController._(this._auth, this.syncService, this.store) {
+  AppSessionController._(this._auth, this.syncService, this.store, this.resultsService) {
     WidgetsBinding.instance.addObserver(this);
   }
 
@@ -79,7 +81,9 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
       profileService // Pass the new service here
     );
 
-    final controller = AppSessionController._(auth, syncService, store);
+    final resultsService = ResultsService(store, syncService);
+
+    final controller = AppSessionController._(auth, syncService, store, resultsService);
     controller._initialize();
 
     return controller;

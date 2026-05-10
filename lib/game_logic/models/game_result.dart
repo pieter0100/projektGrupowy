@@ -1,12 +1,23 @@
+import 'package:hive/hive.dart';
 import '../../models/level/stage_result.dart';
 
+part 'game_result.g.dart';
+
+@HiveType(typeId: 20)
 class GameResult {
+  @HiveField(0)
   final String sessionId;
+  @HiveField(1)
   final String uid;
+  @HiveField(2)
   final DateTime timestamp;
+  @HiveField(3)
   final List<StageResult> stageResults;
+  @HiveField(4)
   final int score;
+  @HiveField(5)
   final String gameType;
+  @HiveField(6)
   bool syncPending;
 
   GameResult({

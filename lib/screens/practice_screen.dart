@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart' as auth;
 
 import 'package:projekt_grupowy/game_logic/round_managers/practice_session_manager.dart';
 import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
@@ -8,6 +10,8 @@ import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
+import 'package:projekt_grupowy/controllers/app_session_controller.dart';
+import 'package:projekt_grupowy/services/results_service.dart';
 
 import 'package:projekt_grupowy/screens/match_pairs_screen.dart';
 import 'package:projekt_grupowy/screens/mc_screen.dart';
@@ -32,11 +36,28 @@ class _PracticeScreenState extends State<PracticeScreen> {
   @override
   void initState() {
     super.initState();
-    _startNewSession();
+    // Defer provider access to after first frame
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _startNewSession();
+      }
+    });
   }
 
   void _startNewSession() {
-    sessionManager = PracticeSessionManager();
+    // Try to get ResultsService from provider if available
+    ResultsService? resultsService;
+    try {
+      final appSessionController = context.read<AppSessionController>();
+      resultsService = appSessionController.resultsService;
+    } catch (e) {
+      // Provider not available - ResultsService will be optional
+      debugPrint('AppSessionController not available: $e');
+    }
+    
+    sessionManager = PracticeSessionManager(
+      resultsService: resultsService,
+    );
     sessionManager.addListener(_sessionListener);
 
     final int levelNum = int.tryParse(widget.level ?? '1') ?? 1;
@@ -60,9 +81,23 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
   void _sessionListener() {
     if (sessionManager.isFinished) {
-      context.go('/level/learn/practice/end?level=${widget.level}');
+      // Save progress asynchronously and navigate
+      _saveAndNavigate();
     } else {
       setState(() {});
+    }
+  }
+
+  Future<void> _saveAndNavigate() async {
+    final String? userId = auth.FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      debugPrint("User not logged in");
+      return;
+    }
+    await sessionManager.saveProgress(userId, widget.level ?? "1");
+    
+    if (mounted) {
+      context.go('/level/learn/practice/end?level=${widget.level}&points=${sessionManager.totalPoints}');
     }
   }
 
