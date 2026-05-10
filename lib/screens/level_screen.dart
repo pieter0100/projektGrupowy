@@ -147,6 +147,16 @@ class _LevelScreenState extends State<LevelScreen> {
           );
         },
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            _debugUnlockAll = !_debugUnlockAll;
+          });
+        },
+        backgroundColor: Colors.redAccent,
+        tooltip: 'Debug: Unlock All Levels',
+        child: Icon(_debugUnlockAll ? Icons.lock_open : Icons.bug_report),
+      ),
     );
   }
 }
