@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
@@ -155,7 +156,7 @@ class TypedScreenState extends State<TypedScreen> {
       sessionManager!.nextStage(result);
 
       if (sessionManager!.isFinished) {
-        const userId = "user1";
+        final userId = FirebaseAuth.instance.currentUser?.uid ?? "guest";
         await sessionManager!.saveProgress(userId, widget.level.toString());
 
         if (mounted) {

@@ -6,6 +6,8 @@ import 'firebase_options.dart';
 import 'package:projekt_grupowy/controllers/app_session_controller.dart';
 import 'app_router.dart';
 import 'game_logic/local_saves.dart';
+import 'services/achivemnt_seeder.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,10 @@ void main() async {
   } catch (e) {
     debugPrint("Firebase initialization error: $e");
   }
+
+
+  // ODkomentuj poniższą linię, uruchom aplikację RAZ, a potem ją usuń/zakomentuj
+  // await AchievementSeeder.seed(); 
 
   runApp(const MyApp());
 }

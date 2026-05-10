@@ -1,38 +1,44 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../user/user.dart';
+part of 'achievement.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UserAdapter extends TypeAdapter<User> {
+class AchievementAdapter extends TypeAdapter<Achievement> {
   @override
-  final int typeId = 3;
+  final int typeId = 21;
 
   @override
-  User read(BinaryReader reader) {
+  Achievement read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return User(
-      userId: fields[0] as String,
-      profile: fields[1] as UserProfile,
-      stats: fields[2] as UserStats,
+    return Achievement(
+      id: fields[0] as String,
+      title: fields[1] as String,
+      description: fields[2] as String,
+      iconUrl: fields[3] as String,
+      points: fields[4] as int,
     );
   }
 
   @override
-  void write(BinaryWriter writer, User obj) {
+  void write(BinaryWriter writer, Achievement obj) {
     writer
-      ..writeByte(3)
+      ..writeByte(5)
       ..writeByte(0)
-      ..write(obj.userId)
+      ..write(obj.id)
       ..writeByte(1)
-      ..write(obj.profile)
+      ..write(obj.title)
       ..writeByte(2)
-      ..write(obj.stats);
+      ..write(obj.description)
+      ..writeByte(3)
+      ..write(obj.iconUrl)
+      ..writeByte(4)
+      ..write(obj.points);
   }
 
   @override
@@ -41,7 +47,7 @@ class UserAdapter extends TypeAdapter<User> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UserAdapter &&
+      other is AchievementAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:projekt_grupowy/game_logic/round_managers/game_session_manager.dart';
 import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
 import 'package:projekt_grupowy/game_logic/stages/stage_type.dart';
@@ -6,6 +7,7 @@ import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/services/achievement_service.dart';
 
 class ExamSessionManager extends GameSessionManager {
   static const int _totalStagesCount = 10;
@@ -88,5 +90,38 @@ class ExamSessionManager extends GameSessionManager {
     );
 
     await LocalSaves.saveLevelProgress(userId, newProgress);
+
+    // Grant achievements and rewards if passed
+    if (isPassed) {
+      // 1. Grant Achievements
+      await AchievementService.checkAndGrantLevelAchievement(userId, int.parse(levelId));
+      await AchievementService.checkAndGrantExamMaster(userId, correctCount);
+
+      // 2. Grant EXP (Points)
+      final levelInfo = LocalSaves.getLevel(levelId);
+      final user = LocalSaves.getUser(userId);
+      
+      if (levelInfo != null && user != null) {
+        final newStats = user.stats.copyWith(
+          totalPoints: user.stats.totalPoints + levelInfo.rewards.points,
+          totalGamesPlayed: user.stats.totalGamesPlayed + 1,
+        );
+        final updatedUser = user.copyWith(stats: newStats);
+        
+        // Save locally
+        await LocalSaves.saveUser(updatedUser);
+        
+        // Sync to Firestore
+        try {
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(userId)
+              .set(updatedUser.toJson(), SetOptions(merge: true));
+          print('📈 XP GRANTED AND SYNCED: +${levelInfo.rewards.points} points');
+        } catch (e) {
+          print('⚠️ Failed to sync XP to Firestore: $e');
+        }
+      }
+    }
   }
 }

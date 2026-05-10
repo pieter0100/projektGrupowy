@@ -7,6 +7,8 @@ import '../models/level/level.dart';
 import '../models/level/unlock_requirements.dart';
 import '../models/leaderboard/leaderboard.dart';
 import '../models/leaderboard/leaderboard_entry.dart';
+import '../models/achievement/user_achievement.dart';
+import '../models/achievement/achievement.dart';
 import 'package:logger/logger.dart';
 
 class LocalSaves {
@@ -41,6 +43,8 @@ class LocalSaves {
     Hive.registerAdapter(RewardsAdapter());
     Hive.registerAdapter(LeaderboardAdapter());
     Hive.registerAdapter(LeaderboardEntryAdapter());
+    Hive.registerAdapter(UserAchievementAdapter());
+    Hive.registerAdapter(AchievementAdapter());
 
     // Open all boxes
     await Hive.openBox<User>(usersBoxName);

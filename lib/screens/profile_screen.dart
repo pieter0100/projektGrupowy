@@ -3,6 +3,7 @@ import 'package:projekt_grupowy/widgets/profile_stats.dart';
 // Adjust these imports to match your project structure:
 import '../game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
+import '../services/achievement_provider.dart';
 // If using Firebase Auth to get the current user's ID:
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 
@@ -191,6 +192,13 @@ class StatisticsSection extends StatelessWidget {
     // For achievements and leaderboard, you'll need logic to calculate them later.
     // For now, using totalGamesPlayed or placeholders.
     final gamesPlayed = user?.stats.totalGamesPlayed.toString() ?? '0';
+    final achievementsCount = user?.earnedAchievements?.length.toString() ?? '0';
+    
+    // Calculate XP as sum of achievement points
+    final totalXPSum = user?.earnedAchievements?.fold<int>(0, (sum, achievement) {
+      return (sum ?? 0) + AchievementProvider.getPoints(achievement.achievementId);
+    }) ?? 0;
+    final totalXPLabel = totalXPSum.toString();
 
     return Container(
       padding: const EdgeInsets.only(
@@ -228,13 +236,13 @@ class StatisticsSection extends StatelessWidget {
                 children: [
                   StatisticBox(witchBox: 'dayStreak', value: dayStreak),
                   const SizedBox(height: 15.0),
-                  StatisticBox(witchBox: 'achievements', value: gamesPlayed), // Placeholder for achievements
+                  StatisticBox(witchBox: 'achievements', value: achievementsCount),
                 ],
               ),
               const SizedBox(width: 15.0),
               Column(
                 children: [
-                  StatisticBox(witchBox: 'totalXP', value: totalPoints),
+                  StatisticBox(witchBox: 'totalXP', value: totalXPLabel),
                   const SizedBox(height: 15.0),
                   StatisticBox(witchBox: 'leaderBoard', value: 'N/A'), // Placeholder for rank
                 ],

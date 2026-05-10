@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:go_router/go_router.dart';
 import '../game_logic/local_saves.dart';
 
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/level_widget.dart';
 // Imports for initalizing user data
-import 'package:projekt_grupowy/models/user/user.dart';
+import 'package:projekt_grupowy/models/user/user.dart' as model;
 import 'package:projekt_grupowy/models/user/user_stats.dart';
 import 'package:projekt_grupowy/models/user/user_profile.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
@@ -20,7 +21,7 @@ class LevelScreen extends StatefulWidget {
 }
 
 class _LevelScreenState extends State<LevelScreen> {
-  final String userId = "user1";
+  String get userId => FirebaseAuth.instance.currentUser?.uid ?? "guest";
 
   @override
   void initState() {
@@ -30,7 +31,7 @@ class _LevelScreenState extends State<LevelScreen> {
 
   Future<void> _initializeDataIfNeeded() async {
     if (LocalSaves.getUser(userId) == null) {
-      final newUser = User(
+      final newUser = model.User(
         userId: userId,
         stats: UserStats(
           totalGamesPlayed: 0,
@@ -118,7 +119,7 @@ class _LevelScreenState extends State<LevelScreen> {
         itemBuilder: (BuildContext context, int index) {
           final String levelId = (index + 1).toString();
 
-          final bool unlocked = LocalSaves.isLevelUnlocked("user1", levelId);
+          final bool unlocked = LocalSaves.isLevelUnlocked(userId, levelId);
 
           return InkWell(
             onTap: unlocked

@@ -81,20 +81,18 @@ class SyncService {
 
       // 2. IMPORTOWANIE PROFILU DO HIVE
       if (userDoc.exists && userDoc.data() != null) {
-        final data = userDoc.data()!;
+        final data = Map<String, dynamic>.from(userDoc.data()!);
         final usersBox = Hive.box<model.User>(LocalSaves.usersBoxName);
 
-        final profileMap = Map<String, dynamic>.from(data['profile'] ?? {});
-        final statsMap = Map<String, dynamic>.from(data['stats'] ?? {});
+        // Ensure userId is present for User.fromJson
+        if (!data.containsKey('userId')) {
+          data['userId'] = firebaseUser.uid;
+        }
 
-        final userObj = model.User(
-          userId: firebaseUser.uid,
-          profile: UserProfile.fromJson(profileMap),
-          stats: UserStats.fromJson(statsMap),
-        );
+        final userObj = model.User.fromJson(data);
 
         await usersBox.put(firebaseUser.uid, userObj);
-        log('User profile synced to Hive.', name: 'SyncService');
+        log('User profile (including achievements) synced to Hive.', name: 'SyncService');
       } else {
         log('User profile document missing in Firestore.', name: 'SyncService');
       }
