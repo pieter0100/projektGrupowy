@@ -278,5 +278,91 @@ void main() {
       logger.i('Zero score: 0/10 (0%)');
       logger.i('Zero score test passed');
     });
+
+    test('should award 5 points for each correct answer', () {
+      logger.i('Testing points calculation...');
+      manager.start(testLevel);
+
+      expect(manager.totalPoints, equals(0));
+
+      manager.nextStage(StageResult(isCorrect: true));
+      expect(manager.totalPoints, equals(5));
+      logger.i('After 1 correct: ${manager.totalPoints} points');
+
+      manager.nextStage(StageResult(isCorrect: false));
+      expect(manager.totalPoints, equals(5));
+      logger.i('After 1 incorrect: ${manager.totalPoints} points');
+
+      manager.nextStage(StageResult(isCorrect: true));
+      expect(manager.totalPoints, equals(10));
+      logger.i('After 2 correct: ${manager.totalPoints} points');
+
+      logger.i('Points calculation test passed');
+    });
+
+    test('should calculate correct maximum points for perfect score', () {
+      logger.i('Testing maximum points (perfect score)...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 10; i++) {
+        manager.nextStage(StageResult(isCorrect: true));
+      }
+
+      expect(manager.correctCount, equals(10));
+      expect(manager.totalPoints, equals(50)); // 10 * 5
+      expect(manager.getAccuracy(), equals(1.0));
+      logger.i('Perfect score: 10/10 = 50 points');
+      logger.i('Maximum points test passed');
+    });
+
+    test('should calculate correct points for mixed results', () {
+      logger.i('Testing points with mixed results...');
+      manager.start(testLevel);
+
+      final results = [
+        true, false, true, true, false,
+        true, false, true, true, true
+      ];
+
+      for (int i = 0; i < results.length; i++) {
+        manager.nextStage(StageResult(isCorrect: results[i]));
+      }
+
+      expect(manager.correctCount, equals(7));
+      expect(manager.totalPoints, equals(35)); // 7 * 5
+      logger.i('Mixed results: 7/10 correct = 35 points');
+      logger.i('Mixed points test passed');
+    });
+
+    test('should reset points when start() is called again', () {
+      logger.i('Testing points reset on restart...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 5; i++) {
+        manager.nextStage(StageResult(isCorrect: true));
+      }
+
+      expect(manager.totalPoints, equals(25)); // 5 * 5
+
+      manager.start(testLevel);
+
+      expect(manager.totalPoints, equals(0));
+      expect(manager.correctCount, equals(0));
+      logger.i('Points reset test passed');
+    });
+
+    test('should return zero points for zero score', () {
+      logger.i('Testing zero points for zero score...');
+      manager.start(testLevel);
+
+      for (int i = 0; i < 10; i++) {
+        manager.nextStage(StageResult(isCorrect: false));
+      }
+
+      expect(manager.correctCount, equals(0));
+      expect(manager.totalPoints, equals(0));
+      logger.i('Zero score: 0/10 = 0 points');
+      logger.i('Zero points test passed');
+    });
   });
 }
