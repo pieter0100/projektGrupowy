@@ -89,7 +89,9 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
     return controller;
   }
 
-  void _initialize() {
+  void _initialize() async {
+    // Start SyncService immediately to process any pending items (like delete requests)
+    await syncService.start();
     _authSubscription = _auth.authStateChanges().listen(_handleAuthStateChange);
   }
 
@@ -101,9 +103,6 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
       // --- SCENARIUSZ: WYLOGOWANIE (Po stronie Firebase) ---
       log('Auth state: User logged out');
       _state = SessionState.unauthenticated;
-
-      // Zatrzymanie serwisu (fallback, jeśli signOut() nie był wywołany ręcznie)
-      syncService.stop();
 
       // UWAGA ZGODNA ZE SPECYFIKACJĄ:
       // Nie czyścimy tutaj danych (clearSensitiveData).
@@ -118,9 +117,6 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
 
       // Odblokowanie zapisu (jeśli był zablokowany przy wylogowaniu)
       store.disableWrites(false);
-
-      // Uruchomienie serwisu synchronizacji
-      await syncService.start();
 
       // Rozpoczęcie pobierania danych (Bootstrap)
       await syncService.bootstrapAfterLogin();
@@ -192,9 +188,6 @@ class AppSessionController extends ChangeNotifier with WidgetsBindingObserver {
     } catch (e) {
       log('Logout: Unexpected error during pre-signout checks: $e');
     } finally {
-      // 5. Zatrzymanie serwisu synchronizacji (zawsze)
-      syncService.stop();
-
       // 6. Właściwe wylogowanie z Firebase
       // To wywoła listener _handleAuthStateChange, który zmieni stan na unauthenticated
       await _auth.signOut();

@@ -213,4 +213,10 @@ class LocalSaves {
     await Hive.box<Leaderboard>(leaderboardBoxName).clear();
     logger.i('All data cleared');
   }
+
+  static Future<void> clearSession() async {
+    await Hive.box<User>(usersBoxName).clear();
+    await Hive.box<LevelProgress>(levelProgressBoxName).clear();
+    logger.i('User session data cleared');
+  }
 }

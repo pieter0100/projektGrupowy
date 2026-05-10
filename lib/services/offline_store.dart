@@ -168,4 +168,36 @@ class OfflineStore {
       await _progressBox.put(sessionId, progress);
     }
   }
+
+  /// Clear all cached data for a specific user
+  /// Called when user account is deleted to remove local data
+  Future<void> clearUserData(String uid) async {
+    // Remove all user_results for this uid
+    final resultKeys = _resultsBox.keys.where((key) {
+      final result = _resultsBox.get(key) as GameResult?;
+      return result?.uid == uid;
+    }).toList();
+
+    for (final key in resultKeys) {
+      await _resultsBox.delete(key);
+    }
+
+    // Remove all game_progress for this uid
+    final progressKeys = _progressBox.keys.where((key) {
+      final progress = _progressBox.get(key) as GameProgress?;
+      return progress?.uid == uid;
+    }).toList();
+
+    for (final key in progressKeys) {
+      await _progressBox.delete(key);
+    }
+  }
+
+  /// Clear all data from offline cache
+  /// Use with caution - called during full reset or debugging
+  Future<void> clearAllData() async {
+    await _resultsBox.clear();
+    await _progressBox.clear();
+  }
 }
+

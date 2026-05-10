@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
@@ -253,6 +252,94 @@ class AuthService {
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
       throw Exception('An unknown error occurred.');
+    }
+  }
+
+  // Re-authenticate user with password (required for account deletion)
+  Future<void> reauthenticateUser(String password) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user currently logged in.');
+    }
+
+    if (user.email == null) {
+      throw Exception('User email not found.');
+    }
+
+    try {
+      final credential = firebase_auth.EmailAuthProvider.credential(
+        email: user.email!,
+        password: password,
+      );
+      await user.reauthenticateWithCredential(credential);
+      _logger.i('User re-authenticated successfully for: ${user.email}');
+    } on firebase_auth.FirebaseAuthException catch (e) {
+      _logger.e('Re-authentication failed: ${e.code} - ${e.message}');
+      if (e.code == 'wrong-password') {
+        throw Exception('Incorrect password.');
+      }
+      throw Exception(e.message ?? 'Re-authentication failed.');
+    } on firebase_auth.FirebaseException catch (e) {
+      _logger.e('Firebase error during re-auth: $e');
+      throw Exception(e.message ?? 'Firebase error.');
+    } catch (e) {
+      _logger.e('Unexpected error during re-auth: $e');
+      throw Exception('An unknown error occurred during re-authentication.');
+    }
+  }
+
+  // Delete user account - direct client-side deletion (no Cloud Functions required)
+  Future<void> deleteAccount(dynamic syncService) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user currently logged in.');
+    }
+
+    try {
+      final uid = user.uid;
+      _logger.w('=== START DIRECT ACCOUNT DELETION ===');
+
+      // 1. Delete user results from Firestore
+      _logger.i('Deleting user results...');
+      final results = await _firestore.collection('user_results').where('uid', isEqualTo: uid).get();
+      for (var doc in results.docs) {
+        await doc.reference.delete();
+      }
+
+      // 2. Delete game progress from Firestore
+      _logger.i('Deleting game progress...');
+      final progress = await _firestore.collection('game_progress').where('uid', isEqualTo: uid).get();
+      for (var doc in progress.docs) {
+        await doc.reference.delete();
+      }
+
+      // 3. Delete user profile and its subcollections
+      _logger.i('Deleting user profile and subcollections...');
+      // Note: In client SDK, we must delete subcollections manually
+      final levelProgress = await _firestore.collection('users').doc(uid).collection('levelProgress').get();
+      for (var doc in levelProgress.docs) {
+        await doc.reference.delete();
+      }
+      await _firestore.collection('users').doc(uid).delete();
+
+      // 4. Delete Firebase Auth account
+      _logger.i('Deleting Auth account...');
+      try {
+        await user.delete();
+      } on firebase_auth.FirebaseAuthException catch (e) {
+        if (e.code == 'requires-recent-login') {
+          throw Exception('Account deletion requires a recent login. Please sign out and sign in again before deleting your account for security reasons.');
+        }
+        rethrow;
+      }
+
+      // 5. Clear local data
+      await LocalSaves.clearSession();
+      
+      _logger.w('=== ACCOUNT DELETION COMPLETED SUCCESSFULLY ===');
+    } catch (e) {
+      _logger.e('FINAL ERROR - Account deletion failed: $e');
+      throw Exception('Account deletion failed: $e');
     }
   }
 
