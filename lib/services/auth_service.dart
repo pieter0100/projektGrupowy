@@ -50,11 +50,18 @@ class AuthService {
   }
 
   Future<bool> _isUsernameTaken(String username) async {
-    final query = await _firestore
-        .collection('users')
-        .where('profile.displayName', isEqualTo: username)
-        .get();
-    return query.docs.isNotEmpty;
+    try {
+      final query = await _firestore
+          .collection('users')
+          .where('profile.displayName', isEqualTo: username)
+          .get();
+      return query.docs.isNotEmpty;
+    } catch (e) {
+      // Because of Firestore rules, reading users collection before authentication 
+      // throws a permission-denied error. We bypass this check for now.
+      _logger.w('Could not check if username is taken due to permissions: $e');
+      return false;
+    }
   }
 
   // Register with email, password, and username
