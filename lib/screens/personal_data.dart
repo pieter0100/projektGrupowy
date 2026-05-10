@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:io';
+import 'package:projekt_grupowy/services/profile_picture_service.dart';
 
 class PersonalData extends StatefulWidget {
   const PersonalData({super.key});
@@ -102,6 +104,36 @@ class _PersonalDataState extends State<PersonalData> {
     }
   }
 
+  Widget _buildProfilePictureWidget() {
+    // If no profile picture path, show placeholder immediately
+    if (_currentUser?.profile.profilePicturePath == null || 
+        _currentUser!.profile.profilePicturePath!.isEmpty) {
+      return const Center(
+        child: Icon(Icons.person, size: 60, color: Colors.grey),
+      );
+    }
+
+    // If there's a path, try to load the image
+    return FutureBuilder<File?>(
+      future: ProfilePictureService.getProfilePicture(_currentUser!.profile.profilePicturePath!),
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          return ClipOval(
+            child: Image.file(
+              snapshot.data!,
+              fit: BoxFit.cover,
+            ),
+          );
+        }
+
+        // Placeholder: show silhouette icon
+        return const Center(
+          child: Icon(Icons.person, size: 60, color: Colors.grey),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final displayName = _currentUser?.profile.displayName ?? _currentUser?.profile.nick ?? '';
@@ -151,15 +183,11 @@ class _PersonalDataState extends State<PersonalData> {
                         Container(
                           width: 115,
                           height: 115,
-                          decoration: const BoxDecoration(
+                          decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            image: DecorationImage(
-                              image: NetworkImage(
-                                'https://www.krauseschocolates.com/cdn/shop/products/NUMBER_POP_LARGE-_6_7_1024x1024.jpg?v=1496260776',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
+                            color: Colors.grey.shade300,
                           ),
+                          child: _buildProfilePictureWidget(),
                         ),
 
                         // EDIT ICON
