@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/widgets/progress_bar_widget.dart';
 
@@ -9,6 +10,7 @@ import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/controllers/app_session_controller.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
@@ -47,24 +49,33 @@ class TypedScreenState extends State<TypedScreen> {
     if (widget.data != null) {
       questionText = widget.data!.question;
     } else {
-      sessionManager = ExamSessionManager();
-
-      final currentLevelInfo = LevelInfo(
-        levelId: widget.level.toString(),
-        levelNumber: widget.level,
-        name: "Level ${widget.level}",
-        description: "Exam level",
-        unlockRequirements: UnlockRequirements(minPoints: 0),
-        rewards: Rewards(points: 0),
-        isRevision: false,
-      );
-
-      sessionManager!.start(currentLevelInfo);
-      _loadCurrentQuestion();
-
-      sessionManager!.addListener(() {
+      // Get ResultsService from AppSessionController via Provider
+      WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) {
-          setState(() {});
+          final appSessionController = context.read<AppSessionController>();
+          
+          sessionManager = ExamSessionManager(
+            resultsService: appSessionController.resultsService,
+          );
+
+          final currentLevelInfo = LevelInfo(
+            levelId: widget.level.toString(),
+            levelNumber: widget.level,
+            name: "Level ${widget.level}",
+            description: "Exam level",
+            unlockRequirements: UnlockRequirements(minPoints: 0),
+            rewards: Rewards(points: 0),
+            isRevision: false,
+          );
+
+          sessionManager!.start(currentLevelInfo);
+          _loadCurrentQuestion();
+
+          sessionManager!.addListener(() {
+            if (mounted) {
+              setState(() {});
+            }
+          });
         }
       });
     }

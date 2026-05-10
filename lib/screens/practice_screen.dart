@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 import 'package:projekt_grupowy/game_logic/round_managers/practice_session_manager.dart';
 import 'package:projekt_grupowy/game_logic/stages/game_stage.dart';
@@ -8,6 +9,7 @@ import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
+import 'package:projekt_grupowy/controllers/app_session_controller.dart';
 
 import 'package:projekt_grupowy/screens/match_pairs_screen.dart';
 import 'package:projekt_grupowy/screens/mc_screen.dart';
@@ -36,7 +38,11 @@ class _PracticeScreenState extends State<PracticeScreen> {
   }
 
   void _startNewSession() {
-    sessionManager = PracticeSessionManager();
+    final appSessionController = context.read<AppSessionController>();
+    
+    sessionManager = PracticeSessionManager(
+      resultsService: appSessionController.resultsService,
+    );
     sessionManager.addListener(_sessionListener);
 
     final int levelNum = int.tryParse(widget.level ?? '1') ?? 1;

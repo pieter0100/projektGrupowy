@@ -8,6 +8,8 @@ import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/services/card_generator.dart';
 import 'package:projekt_grupowy/services/question_provider.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
+import 'package:projekt_grupowy/services/results_service.dart';
+import 'package:projekt_grupowy/game_logic/models/game_result.dart';
 
 class PracticeSessionManager extends GameSessionManager {
   static const int _totalStagesCount = 6;
@@ -16,6 +18,9 @@ class PracticeSessionManager extends GameSessionManager {
 
   int _correctCount = 0;
   int _totalPoints = 0;
+  final ResultsService? _resultsService;
+
+  PracticeSessionManager({ResultsService? resultsService}) : _resultsService = resultsService;
 
   @override
   int get totalCount => _totalStagesCount;
@@ -207,5 +212,22 @@ class PracticeSessionManager extends GameSessionManager {
     //   score: _totalPoints,
     //   gameType: 'Practice',
     // );
+
+    // Create GameResult for Firebase sync
+    // This will be saved via ResultsService (if provided)
+    // The onResultWrite Cloud Function will then update users/{uid}/stats.totalPoints
+    final gameResult = GameResult(
+      sessionId: 'practice_${userId}_${DateTime.now().millisecondsSinceEpoch}',
+      uid: userId,
+      timestamp: DateTime.now(),
+      stageResults: stageResults,
+      score: _totalPoints,
+      gameType: 'Practice',
+    );
+
+    // Save to offline store and queue for Firebase sync
+    if (_resultsService != null) {
+      await _resultsService.saveResult(gameResult);
+    }
   }
 }

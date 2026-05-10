@@ -7,12 +7,16 @@ import 'package:projekt_grupowy/services/question_provider.dart';
 import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/game_logic/models/game_result.dart';
+import 'package:projekt_grupowy/services/results_service.dart';
 
 class ExamSessionManager extends GameSessionManager {
   static const int _totalStagesCount = 10;
 
   int _correctCount = 0;
   int _totalPoints = 0;
+  final ResultsService? _resultsService;
+
+  ExamSessionManager({ResultsService? resultsService}) : _resultsService = resultsService;
 
   int get correctCount => _correctCount;
 
@@ -114,9 +118,8 @@ class ExamSessionManager extends GameSessionManager {
     }
 
     // Create GameResult for Firebase sync
-    // This should be saved via ResultsService (injected in the app)
+    // This will be saved via ResultsService (if provided)
     // The onResultWrite Cloud Function will then update users/{uid}/stats.totalPoints
-    // ignore: unused_local_variable
     final gameResult = GameResult(
       sessionId: 'exam_${userId}_${DateTime.now().millisecondsSinceEpoch}',
       uid: userId,
@@ -126,8 +129,9 @@ class ExamSessionManager extends GameSessionManager {
       gameType: 'Typed',
     );
 
-    // Store for access by UI/app to sync to Firebase
-    // The app should use: ResultsService.saveResult(gameResult)
-    // which will enqueue it for Firebase sync via SyncService
+    // Save to offline store and queue for Firebase sync
+    if (_resultsService != null) {
+      await _resultsService.saveResult(gameResult);
+    }
   }
 }
