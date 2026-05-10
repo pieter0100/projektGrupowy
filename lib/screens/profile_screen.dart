@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:projekt_grupowy/widgets/profile_stats.dart';
+import 'dart:io';
 // Adjust these imports to match your project structure:
 import '../game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
 // If using Firebase Auth to get the current user's ID:
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:projekt_grupowy/services/profile_picture_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -93,20 +95,64 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
   }
 }
 
-class ProfileHeader extends StatelessWidget {
+class ProfileHeader extends StatefulWidget {
   final User? user;
 
   const ProfileHeader({super.key, required this.user});
 
   @override
+  State<ProfileHeader> createState() => _ProfileHeaderState();
+}
+
+class _ProfileHeaderState extends State<ProfileHeader> {
+  Future<File?> _loadProfilePicture() async {
+    if (widget.user?.profile.profilePicturePath == null || 
+        widget.user!.profile.profilePicturePath!.isEmpty) {
+      return null;
+    }
+    return await ProfilePictureService.getProfilePicture(
+        widget.user!.profile.profilePicturePath!);
+  }
+
+  Widget _buildProfilePictureWidget() {
+    // If no profile picture path, show placeholder immediately
+    if (widget.user?.profile.profilePicturePath == null || 
+        widget.user!.profile.profilePicturePath!.isEmpty) {
+      return const Center(
+        child: Icon(Icons.person, size: 50, color: Colors.white),
+      );
+    }
+
+    // If there's a path, try to load the image
+    return FutureBuilder<File?>(
+      future: _loadProfilePicture(),
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data != null) {
+          return ClipOval(
+            child: Image.file(
+              snapshot.data!,
+              fit: BoxFit.cover,
+            ),
+          );
+        }
+
+        // Placeholder: show silhouette icon
+        return const Center(
+          child: Icon(Icons.person, size: 50, color: Colors.white),
+        );
+      },
+    );
+  }
+
+  @override
   Widget build(BuildContext context) {
     // Extract data with fallbacks
-    final displayName = user?.profile.displayName ?? user?.profile.nick ?? 'Unknown User';
-    final nick = user?.profile.nick ?? 'unknown';
+    final displayName = widget.user?.profile.displayName ?? widget.user?.profile.nick ?? 'Unknown User';
+    final nick = widget.user?.profile.nick ?? 'unknown';
     final nickName = '@$nick'; 
     // Format the date if it exists, otherwise placeholder
-    final joinedDate = user?.stats.lastPlayedAt != null 
-        ? '${user!.stats.lastPlayedAt!.day}/${user!.stats.lastPlayedAt!.month}/${user!.stats.lastPlayedAt!.year}' 
+    final joinedDate = widget.user?.stats.lastPlayedAt != null 
+        ? '${widget.user!.stats.lastPlayedAt!.day}/${widget.user!.stats.lastPlayedAt!.month}/${widget.user!.stats.lastPlayedAt!.year}' 
         : 'Unknown Date';
 
     return Container(
@@ -162,13 +208,11 @@ class ProfileHeader extends StatelessWidget {
               Container(
                 width: 90,
                 height: 90,
-                decoration: const BoxDecoration(
+                decoration: BoxDecoration(
                   color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
-                child: const Center(
-                  child: Icon(Icons.person, size: 50, color: Colors.white),
-                ),
+                child: _buildProfilePictureWidget(),
               ),
             ],
           ),
