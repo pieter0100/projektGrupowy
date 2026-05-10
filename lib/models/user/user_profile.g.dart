@@ -1,35 +1,38 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../level/unlock_requirements.dart';
+part of 'user_profile.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
 // **************************************************************************
 
-class UnlockRequirementsAdapter extends TypeAdapter<UnlockRequirements> {
+class UserProfileAdapter extends TypeAdapter<UserProfile> {
   @override
-  final int typeId = 5;
+  final int typeId = 0;
 
   @override
-  UnlockRequirements read(BinaryReader reader) {
+  UserProfile read(BinaryReader reader) {
     final numOfFields = reader.readByte();
     final fields = <int, dynamic>{
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
-    return UnlockRequirements(
-      minPoints: fields[0] as int,
-      previousLevelId: fields[1] as String?,
+    return UserProfile(
+      displayName: fields[0] as String?,
+      age: fields[1] as int,
+      nick: fields[2] as String,
     );
   }
 
   @override
-  void write(BinaryWriter writer, UnlockRequirements obj) {
+  void write(BinaryWriter writer, UserProfile obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
-      ..write(obj.minPoints)
+      ..write(obj.displayName)
       ..writeByte(1)
-      ..write(obj.previousLevelId);
+      ..write(obj.age)
+      ..writeByte(2)
+      ..write(obj.nick);
   }
 
   @override
@@ -38,7 +41,7 @@ class UnlockRequirementsAdapter extends TypeAdapter<UnlockRequirements> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      other is UnlockRequirementsAdapter &&
+      other is UserProfileAdapter &&
           runtimeType == other.runtimeType &&
           typeId == other.typeId;
 }

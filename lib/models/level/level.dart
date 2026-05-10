@@ -1,7 +1,7 @@
 import 'package:hive/hive.dart';
 import 'unlock_requirements.dart';
 
-part '../generated/level.g.dart';
+part 'level.g.dart';
 
 @HiveType(typeId: 6)
 class Rewards {

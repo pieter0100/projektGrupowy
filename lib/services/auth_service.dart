@@ -101,6 +101,7 @@ class AuthService {
           totalPoints: 0,
           currentStreak: 0,
           lastPlayedAt: DateTime.now(),
+          achievements: [],
         );
 
         // Create user object
@@ -121,6 +122,7 @@ class AuthService {
             'totalPoints': 0,
             'currentStreak': 0,
             'lastPlayedAt': DateTime.now().toIso8601String(),
+            'achievements': [],
           },
           'settings': {},
         });

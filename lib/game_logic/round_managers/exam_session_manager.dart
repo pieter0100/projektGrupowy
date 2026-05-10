@@ -130,7 +130,7 @@ class ExamSessionManager extends GameSessionManager {
       uid: userId,
       timestamp: DateTime.now(),
       stageResults: stageResults,
-      score: totalPoints,
+      score: correctCount, // Report number of correct answers for achievement detection
       gameType: 'Typed',
     );
 
