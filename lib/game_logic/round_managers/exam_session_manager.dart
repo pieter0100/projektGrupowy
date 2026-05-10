@@ -10,7 +10,6 @@ import 'package:projekt_grupowy/game_logic/models/game_result.dart';
 
 class ExamSessionManager extends GameSessionManager {
   static const int _totalStagesCount = 10;
-  static const int _pointsPerCorrectAnswer = 5;
 
   int _correctCount = 0;
   int _totalPoints = 0;
@@ -28,8 +27,8 @@ class ExamSessionManager extends GameSessionManager {
   void processStageResult(result) {
     if (result.isCorrect == true) {
       _correctCount++;
-      _totalPoints += _pointsPerCorrectAnswer;
     }
+    // Note: Do NOT add points during exam - points awarded only on completion
     super.processStageResult(result);
   }
 
@@ -77,6 +76,13 @@ class ExamSessionManager extends GameSessionManager {
         : currentBestScore;
     final bool wasCompleted = existingProgress?.completed ?? false;
 
+    // Award 100 points ONLY if finishing level (10/10) with best score
+    if (isPassed && correctCount > currentBestScore) {
+      _totalPoints = 100;
+    } else {
+      _totalPoints = 0;
+    }
+
     DateTime? firstCompleted;
     if (existingProgress?.firstCompletedAt != null) {
       firstCompleted = existingProgress!.firstCompletedAt;
@@ -110,6 +116,7 @@ class ExamSessionManager extends GameSessionManager {
     // Create GameResult for Firebase sync
     // This should be saved via ResultsService (injected in the app)
     // The onResultWrite Cloud Function will then update users/{uid}/stats.totalPoints
+    // ignore: unused_local_variable
     final gameResult = GameResult(
       sessionId: 'exam_${userId}_${DateTime.now().millisecondsSinceEpoch}',
       uid: userId,
