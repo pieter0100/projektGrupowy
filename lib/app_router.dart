@@ -105,7 +105,7 @@ final GoRouter appRouter = GoRouter(
           routes: [
             GoRoute(
               path: '/leaderboard',
-              builder: (context, state) => const LeaderboardScreen(),
+              builder: (context, state) => const HomeScreen(),
             ),
           ],
         ),
