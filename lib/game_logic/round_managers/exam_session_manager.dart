@@ -9,10 +9,14 @@ import 'package:projekt_grupowy/game_logic/local_saves.dart';
 
 class ExamSessionManager extends GameSessionManager {
   static const int _totalStagesCount = 10;
+  static const int _pointsPerCorrectAnswer = 5;
 
   int _correctCount = 0;
+  int _totalPoints = 0;
 
   int get correctCount => _correctCount;
+
+  int get totalPoints => _totalPoints;
 
   double getAccuracy() {
     if (totalCount == 0) return 0.0;
@@ -23,6 +27,7 @@ class ExamSessionManager extends GameSessionManager {
   void processStageResult(result) {
     if (result.isCorrect == true) {
       _correctCount++;
+      _totalPoints += _pointsPerCorrectAnswer;
     }
     super.processStageResult(result);
   }
@@ -31,6 +36,7 @@ class ExamSessionManager extends GameSessionManager {
   List<GameStage> generateStages(LevelInfo level) {
     final stages = <GameStage>[];
     _correctCount = 0;
+    _totalPoints = 0;
 
     // Get a shuffled set of 10 unique questions for the exam
     final questions = QuestionProvider.getTypedQuestionsSet(
@@ -88,5 +94,16 @@ class ExamSessionManager extends GameSessionManager {
     );
 
     await LocalSaves.saveLevelProgress(userId, newProgress);
+
+    // Update user stats with total points earned
+    final user = LocalSaves.getUser(userId);
+    if (user != null) {
+      final updatedStats = user.stats.copyWith(
+        totalGamesPlayed: user.stats.totalGamesPlayed + 1,
+        totalPoints: user.stats.totalPoints + totalPoints,
+        lastPlayedAt: DateTime.now(),
+      );
+      await LocalSaves.updateUserStats(userId, updatedStats);
+    }
   }
 }
