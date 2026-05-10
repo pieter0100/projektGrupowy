@@ -119,7 +119,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
     if (widget.user?.profile.profilePicturePath == null || 
         widget.user!.profile.profilePicturePath!.isEmpty) {
       return const Center(
-        child: Icon(Icons.person, size: 50, color: Colors.grey),
+        child: Icon(Icons.person, size: 50, color: Colors.white),
       );
     }
 
@@ -138,7 +138,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
         // Placeholder: show silhouette icon
         return const Center(
-          child: Icon(Icons.person, size: 50, color: Colors.grey),
+          child: Icon(Icons.person, size: 50, color: Colors.white),
         );
       },
     );
@@ -209,7 +209,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 width: 90,
                 height: 90,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade300,
+                  color: Colors.blue,
                   shape: BoxShape.circle,
                 ),
                 child: _buildProfilePictureWidget(),

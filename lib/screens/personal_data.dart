@@ -109,7 +109,7 @@ class _PersonalDataState extends State<PersonalData> {
     if (_currentUser?.profile.profilePicturePath == null || 
         _currentUser!.profile.profilePicturePath!.isEmpty) {
       return const Center(
-        child: Icon(Icons.person, size: 60, color: Colors.grey),
+        child: Icon(Icons.person, size: 60, color: Colors.white),
       );
     }
 
@@ -128,7 +128,7 @@ class _PersonalDataState extends State<PersonalData> {
 
         // Placeholder: show silhouette icon
         return const Center(
-          child: Icon(Icons.person, size: 60, color: Colors.grey),
+          child: Icon(Icons.person, size: 60, color: Colors.white),
         );
       },
     );
@@ -185,7 +185,7 @@ class _PersonalDataState extends State<PersonalData> {
                           height: 115,
                           decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.grey.shade300,
+                            color: Colors.blue,
                           ),
                           child: _buildProfilePictureWidget(),
                         ),
