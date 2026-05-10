@@ -279,25 +279,25 @@ void main() {
       logger.i('Zero score test passed');
     });
 
-    test('should award 5 points for each correct answer', () {
-      logger.i('Testing points calculation...');
+    test('should NOT award points during exam (points only on completion)', () {
+      logger.i('Testing no points during exam...');
       manager.start(testLevel);
 
       expect(manager.totalPoints, equals(0));
 
       manager.nextStage(StageResult(isCorrect: true));
-      expect(manager.totalPoints, equals(5));
-      logger.i('After 1 correct: ${manager.totalPoints} points');
+      expect(manager.totalPoints, equals(0)); // No points during exam
+      logger.i('After 1 correct: ${manager.totalPoints} points (0 during exam)');
 
       manager.nextStage(StageResult(isCorrect: false));
-      expect(manager.totalPoints, equals(5));
+      expect(manager.totalPoints, equals(0));
       logger.i('After 1 incorrect: ${manager.totalPoints} points');
 
       manager.nextStage(StageResult(isCorrect: true));
-      expect(manager.totalPoints, equals(10));
+      expect(manager.totalPoints, equals(0)); // Still no points until saved
       logger.i('After 2 correct: ${manager.totalPoints} points');
 
-      logger.i('Points calculation test passed');
+      logger.i('No points during exam test passed');
     });
 
     test('should calculate correct maximum points for perfect score', () {
@@ -309,9 +309,9 @@ void main() {
       }
 
       expect(manager.correctCount, equals(10));
-      expect(manager.totalPoints, equals(50)); // 10 * 5
+      expect(manager.totalPoints, equals(0)); // No points until saveProgress
       expect(manager.getAccuracy(), equals(1.0));
-      logger.i('Perfect score: 10/10 = 50 points');
+      logger.i('Perfect score: 10/10 = 0 points during exam (100 on saveProgress)');
       logger.i('Maximum points test passed');
     });
 
@@ -329,8 +329,8 @@ void main() {
       }
 
       expect(manager.correctCount, equals(7));
-      expect(manager.totalPoints, equals(35)); // 7 * 5
-      logger.i('Mixed results: 7/10 correct = 35 points');
+      expect(manager.totalPoints, equals(0)); // No points until saveProgress
+      logger.i('Mixed results: 7/10 correct = 0 points during exam (0 on saveProgress - not perfect)');
       logger.i('Mixed points test passed');
     });
 
@@ -342,7 +342,7 @@ void main() {
         manager.nextStage(StageResult(isCorrect: true));
       }
 
-      expect(manager.totalPoints, equals(25)); // 5 * 5
+      expect(manager.totalPoints, equals(0)); // No points during exam
 
       manager.start(testLevel);
 
