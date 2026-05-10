@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of '../user/user_stats.dart';
+part of 'user_stats.dart';
 
 // **************************************************************************
 // TypeAdapterGenerator
@@ -21,13 +21,14 @@ class UserStatsAdapter extends TypeAdapter<UserStats> {
       totalPoints: fields[1] as int,
       currentStreak: fields[2] as int,
       lastPlayedAt: fields[3] as DateTime,
+      achievements: (fields[4] as List).cast<Achievement>(),
     );
   }
 
   @override
   void write(BinaryWriter writer, UserStats obj) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(obj.totalGamesPlayed)
       ..writeByte(1)
@@ -35,7 +36,9 @@ class UserStatsAdapter extends TypeAdapter<UserStats> {
       ..writeByte(2)
       ..write(obj.currentStreak)
       ..writeByte(3)
-      ..write(obj.lastPlayedAt);
+      ..write(obj.lastPlayedAt)
+      ..writeByte(4)
+      ..write(obj.achievements);
   }
 
   @override

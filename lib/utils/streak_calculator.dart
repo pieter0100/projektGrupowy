@@ -35,9 +35,7 @@ class StreakCalculator {
     }
     
     // Return updated stats with new streak and last played date
-    return UserStats(
-      totalGamesPlayed: currentStats.totalGamesPlayed, 
-      totalPoints: currentStats.totalPoints, 
+    return currentStats.copyWith(
       currentStreak: newStreak,
       lastPlayedAt: gamePlayedAt,
     );
@@ -45,11 +43,8 @@ class StreakCalculator {
 
   /// Update stats with game score
   static UserStats addGameScore(UserStats stats, int score) {
-    return UserStats(
-      totalGamesPlayed: stats.totalGamesPlayed,
+    return stats.copyWith(
       totalPoints: stats.totalPoints + score,
-      currentStreak: stats.currentStreak,
-      lastPlayedAt: stats.lastPlayedAt,
     );
   }
 }

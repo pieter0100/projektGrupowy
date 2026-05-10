@@ -188,9 +188,7 @@ class StatisticsSection extends StatelessWidget {
     // Extract stats with fallbacks
     final dayStreak = user?.stats.currentStreak.toString() ?? '0';
     final totalPoints = user?.stats.totalPoints.toString() ?? '0';
-    // For achievements and leaderboard, you'll need logic to calculate them later.
-    // For now, using totalGamesPlayed or placeholders.
-    final gamesPlayed = user?.stats.totalGamesPlayed.toString() ?? '0';
+    final achievementsCount = user?.stats.achievements.length.toString() ?? '0';
 
     return Container(
       padding: const EdgeInsets.only(
@@ -228,7 +226,7 @@ class StatisticsSection extends StatelessWidget {
                 children: [
                   StatisticBox(witchBox: 'dayStreak', value: dayStreak),
                   const SizedBox(height: 15.0),
-                  StatisticBox(witchBox: 'achievements', value: gamesPlayed), // Placeholder for achievements
+                  StatisticBox(witchBox: 'achievements', value: achievementsCount),
                 ],
               ),
               const SizedBox(width: 15.0),

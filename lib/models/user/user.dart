@@ -2,7 +2,7 @@ import 'package:hive/hive.dart';
 import 'user_profile.dart';
 import 'user_stats.dart';
 
-part '../generated/user.g.dart';
+part 'user.g.dart';
 
 @HiveType(typeId: 3)
 class User {

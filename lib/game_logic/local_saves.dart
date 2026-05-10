@@ -9,6 +9,7 @@ import '../models/leaderboard/leaderboard.dart';
 import '../models/leaderboard/leaderboard_entry.dart';
 import '../game_logic/models/game_result.dart';
 import '../models/level/stage_result.dart';
+import '../models/achievement/achievement.dart';
 import 'package:logger/logger.dart';
 
 class LocalSaves {
@@ -43,6 +44,7 @@ class LocalSaves {
     Hive.registerAdapter(RewardsAdapter());
     Hive.registerAdapter(LeaderboardAdapter());
     Hive.registerAdapter(LeaderboardEntryAdapter());
+    Hive.registerAdapter(AchievementAdapter());
     Hive.registerAdapter(GameResultAdapter());
     Hive.registerAdapter(StageResultAdapter());
 
