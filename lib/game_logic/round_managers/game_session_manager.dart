@@ -10,6 +10,7 @@ abstract class GameSessionManager extends ChangeNotifier {
   List<GameStage> stages = [];
   int _completedCount = 0;
   bool _isFinished = false;
+  List<StageResult> _stageResults = [];  // Track all stage results for GameResult
     
   // GETTERS
   int? get currentStage => _currentStage;
@@ -19,6 +20,8 @@ abstract class GameSessionManager extends ChangeNotifier {
   int get totalCount => stages.length;  
   
   bool get isFinished => _isFinished;
+
+  List<StageResult> get stageResults => _stageResults;
   
   GameStage? get currentStageObject {
     if (_currentStage == null || _currentStage! >= stages.length) {
@@ -43,6 +46,7 @@ abstract class GameSessionManager extends ChangeNotifier {
     _currentStage = 0;
     _completedCount = 0;
     _isFinished = false;
+    _stageResults = [];  // Reset stage results
     
     notifyListeners();
   }
@@ -72,6 +76,9 @@ abstract class GameSessionManager extends ChangeNotifier {
     if (!result.skipped) {
       _completedCount++;
     }
+    
+    // Track stage result
+    _stageResults.add(result);
     
     // allow subclass to process the result
     processStageResult(result);
