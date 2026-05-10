@@ -60,9 +60,19 @@ class _PracticeScreenState extends State<PracticeScreen> {
 
   void _sessionListener() {
     if (sessionManager.isFinished) {
-      context.go('/level/learn/practice/end?level=${widget.level}');
+      // Save progress asynchronously and navigate
+      _saveAndNavigate();
     } else {
       setState(() {});
+    }
+  }
+
+  Future<void> _saveAndNavigate() async {
+    const String userId = "user1"; // TODO: Get actual user ID from auth context
+    await sessionManager.saveProgress(userId, widget.level ?? "1");
+    
+    if (mounted) {
+      context.go('/level/learn/practice/end?level=${widget.level}&points=${sessionManager.totalPoints}');
     }
   }
 
