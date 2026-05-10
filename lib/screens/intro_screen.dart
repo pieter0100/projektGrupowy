@@ -154,7 +154,7 @@ class _IntroScreenState extends State<IntroScreen> {
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Image.asset(
-                    'assets/images/dino.png',
+                    'assets/images/dragon1.png',
                     height: 120, // Trochę mniejszy, żeby jabłka się zmieściły
                   ),
                   const SizedBox(width: 20),
