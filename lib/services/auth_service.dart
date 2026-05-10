@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/level/level_progress.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
@@ -273,19 +272,19 @@ class AuthService {
     }
 
     try {
-      final credential = EmailAuthProvider.credential(
+      final credential = firebase_auth.EmailAuthProvider.credential(
         email: user.email!,
         password: password,
       );
       await user.reauthenticateWithCredential(credential);
       _logger.i('User re-authenticated successfully for: ${user.email}');
-    } on FirebaseAuthException catch (e) {
+    } on firebase_auth.FirebaseAuthException catch (e) {
       _logger.e('Re-authentication failed: ${e.code} - ${e.message}');
       if (e.code == 'wrong-password') {
         throw Exception('Incorrect password.');
       }
       throw Exception(e.message ?? 'Re-authentication failed.');
-    } on FirebaseException catch (e) {
+    } on firebase_auth.FirebaseException catch (e) {
       _logger.e('Firebase error during re-auth: $e');
       throw Exception(e.message ?? 'Firebase error.');
     } catch (e) {
@@ -294,8 +293,8 @@ class AuthService {
     }
   }
 
-  // Delete user account - requires re-authentication and cleans up all data
-  Future<void> deleteAccount() async {
+  // Delete user account - direct client-side deletion (no Cloud Functions required)
+  Future<void> deleteAccount(dynamic syncService) async {
     final user = _auth.currentUser;
     if (user == null) {
       throw Exception('No user currently logged in.');
@@ -303,96 +302,48 @@ class AuthService {
 
     try {
       final uid = user.uid;
-      _logger.w('=== START ACCOUNT DELETION ===');
-      _logger.w('User UID: $uid');
-      _logger.w('User Email: ${user.email}');
+      _logger.w('=== START DIRECT ACCOUNT DELETION ===');
 
-      // Step 1: Delete user document from Firestore
-      _logger.i('STEP 1: Deleting user document from Firestore...');
-      try {
-        await _firestore.collection('users').doc(uid).delete();
-        _logger.i('✓ User document deleted');
-      } catch (e) {
-        _logger.e('❌ Error deleting user document: $e');
-        rethrow;
+      // 1. Delete user results from Firestore
+      _logger.i('Deleting user results...');
+      final results = await _firestore.collection('user_results').where('uid', isEqualTo: uid).get();
+      for (var doc in results.docs) {
+        await doc.reference.delete();
       }
 
-      // Step 2: Delete all user_results
-      _logger.i('STEP 2: Deleting all user_results...');
-      try {
-        final resultsSnapshot = await _firestore
-            .collection('user_results')
-            .where('uid', isEqualTo: uid)
-            .get();
-
-        if (resultsSnapshot.docs.isNotEmpty) {
-          final batch = _firestore.batch();
-          for (var doc in resultsSnapshot.docs) {
-            batch.delete(doc.reference);
-          }
-          await batch.commit();
-          _logger.i(
-            '✓ Deleted ${resultsSnapshot.docs.length} user_results documents',
-          );
-        } else {
-          _logger.i('✓ No user_results to delete');
-        }
-      } catch (e) {
-        _logger.e('❌ Error deleting user_results: $e');
-        rethrow;
+      // 2. Delete game progress from Firestore
+      _logger.i('Deleting game progress...');
+      final progress = await _firestore.collection('game_progress').where('uid', isEqualTo: uid).get();
+      for (var doc in progress.docs) {
+        await doc.reference.delete();
       }
 
-      // Step 3: Delete all game_progress
-      _logger.i('STEP 3: Deleting all game_progress...');
-      try {
-        final progressSnapshot = await _firestore
-            .collection('game_progress')
-            .where('uid', isEqualTo: uid)
-            .get();
-
-        if (progressSnapshot.docs.isNotEmpty) {
-          final batch = _firestore.batch();
-          for (var doc in progressSnapshot.docs) {
-            batch.delete(doc.reference);
-          }
-          await batch.commit();
-          _logger.i(
-            '✓ Deleted ${progressSnapshot.docs.length} game_progress documents',
-          );
-        } else {
-          _logger.i('✓ No game_progress to delete');
-        }
-      } catch (e) {
-        _logger.e('❌ Error deleting game_progress: $e');
-        rethrow;
+      // 3. Delete user profile and its subcollections
+      _logger.i('Deleting user profile and subcollections...');
+      // Note: In client SDK, we must delete subcollections manually
+      final levelProgress = await _firestore.collection('users').doc(uid).collection('levelProgress').get();
+      for (var doc in levelProgress.docs) {
+        await doc.reference.delete();
       }
+      await _firestore.collection('users').doc(uid).delete();
 
-      // Step 4: Delete Firebase Auth user
-      _logger.i('STEP 4: Deleting Firebase Auth user...');
+      // 4. Delete Firebase Auth account
+      _logger.i('Deleting Auth account...');
       try {
         await user.delete();
-        _logger.i('✓ Firebase Auth user deleted successfully');
-      } on FirebaseAuthException catch (e) {
-        _logger.e('❌ Firebase Auth Exception:');
-        _logger.e('  Code: ${e.code}');
-        _logger.e('  Message: ${e.message}');
-        rethrow;
-      } catch (e) {
-        _logger.e('❌ Unexpected error deleting auth user:');
-        _logger.e('  Type: ${e.runtimeType}');
-        _logger.e('  Error: $e');
+      } on firebase_auth.FirebaseAuthException catch (e) {
+        if (e.code == 'requires-recent-login') {
+          throw Exception('Account deletion requires a recent login. Please sign out and sign in again before deleting your account for security reasons.');
+        }
         rethrow;
       }
 
+      // 5. Clear local data
+      await LocalSaves.clearSession();
+      
       _logger.w('=== ACCOUNT DELETION COMPLETED SUCCESSFULLY ===');
-    } on FirebaseException catch (e) {
-      _logger.e('FINAL ERROR - Firebase error: ${e.message}');
-      throw Exception('Failed to delete account: ${e.message}');
-    } on FirebaseAuthException catch (e) {
-      _logger.e('FINAL ERROR - Auth deletion failed');
-      throw Exception('Account deletion error: ${e.message}');
     } catch (e) {
-      _logger.e('FINAL ERROR - Unexpected error: $e');
+      _logger.e('FINAL ERROR - Account deletion failed: $e');
       throw Exception('Account deletion failed: $e');
     }
   }

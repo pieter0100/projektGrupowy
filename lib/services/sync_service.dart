@@ -172,8 +172,11 @@ class SyncService {
   // Process queue in batches (called periodically or on network change)
   Future<void> processQueue() async {
     if (_isSyncing) return;
-    if (_auth.currentUser == null)
-      return; // Requirement: sync only with active Firebase Auth session
+    if (_auth.currentUser == null) {
+      // Allow syncing delete_requests even if not logged in (e.g. after local logout)
+      final hasDeleteRequest = _syncQueue.any((item) => item.type == 'delete_request');
+      if (!hasDeleteRequest) return;
+    }
     _isSyncing = true;
     try {
       // Process up to _batchSize items from queue
@@ -216,6 +219,28 @@ class SyncService {
       if (progress != null) {
         await _syncSingleProgress(progress);
       }
+    } else if (item.type == 'delete_request') {
+      await _syncDeleteRequest(item);
+    }
+  }
+
+  Future<void> _syncDeleteRequest(SyncQueueItem item) async {
+    final ref = _firestore.collection('delete_requests').doc(item.uid);
+    try {
+      await ref.set({
+        'uid': item.uid,
+        'requestedAt': item.enqueuedAt.toIso8601String(),
+      }, SetOptions(merge: true));
+      log('Delete request synced for user ${item.uid}', name: 'SyncService');
+    } catch (e, stackTrace) {
+      _errorLog.add({
+        'type': 'delete_request',
+        'uid': item.uid,
+        'error': e.toString(),
+        'timestamp': DateTime.now().toIso8601String(),
+      });
+      log('Sync error (delete request ${item.uid})', name: 'SyncService', error: e, stackTrace: stackTrace);
+      rethrow;
     }
   }
 

@@ -4,6 +4,8 @@ import 'package:logger/logger.dart';
 
 import 'package:projekt_grupowy/utils/constants.dart';
 import 'package:projekt_grupowy/services/auth_service.dart';
+import 'package:provider/provider.dart';
+import 'package:projekt_grupowy/controllers/app_session_controller.dart';
 
 class SettingsDeleteWidget extends StatefulWidget {
   final String textInside;
@@ -39,7 +41,8 @@ class _SettingsDeleteWidgetState extends State<SettingsDeleteWidget> {
 
             // Delete account
             _logger.i('Deleting account...');
-            await _authService.deleteAccount();
+            final syncService = Provider.of<AppSessionController>(context, listen: false).syncService;
+            await _authService.deleteAccount(syncService);
             _logger.i('Account deleted successfully');
 
             if (mounted) {

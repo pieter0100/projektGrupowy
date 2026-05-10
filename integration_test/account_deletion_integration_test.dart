@@ -114,7 +114,7 @@ void main() {
 
       // Re-authenticate and delete
       await authService.reauthenticateUser(testPassword);
-      await authService.deleteAccount();
+      await authService.deleteAccount(MockSyncService());
 
       // Verify user is deleted from Auth
       // After deletion, currentUser should be null (app signed out)
@@ -128,7 +128,7 @@ void main() {
 
       // Delete account
       await authService.reauthenticateUser(testPassword);
-      await authService.deleteAccount();
+      await authService.deleteAccount(MockSyncService());
 
       // Wait for Cloud Function to execute (should be quick)
       await Future.delayed(const Duration(seconds: 2));
@@ -158,7 +158,7 @@ void main() {
 
       // Delete account
       await authService.reauthenticateUser(testPassword);
-      await authService.deleteAccount();
+      await authService.deleteAccount(MockSyncService());
 
       // Wait for Cloud Function
       await Future.delayed(const Duration(seconds: 2));
@@ -181,7 +181,7 @@ void main() {
 
       // Delete account
       await authService.reauthenticateUser(testPassword);
-      await authService.deleteAccount();
+      await authService.deleteAccount(MockSyncService());
 
       // Wait for Cloud Function
       await Future.delayed(const Duration(seconds: 2));
@@ -293,4 +293,19 @@ void main() {
       },
     );
   });
+}
+
+class MockSyncService {
+  Future<void> enqueueItem(String sessionId, String type, String uid) async {
+    // In integration test, we simulate SyncService by writing directly to Firestore
+    // so the Cloud Function can trigger.
+    if (type == 'delete_request') {
+      await FirebaseFirestore.instance.collection('delete_requests').doc(uid).set({
+        'uid': uid,
+        'requestedAt': DateTime.now().toIso8601String(),
+      });
+    }
+  }
+
+  void triggerSync() {}
 }
