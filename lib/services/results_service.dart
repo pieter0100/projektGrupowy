@@ -2,6 +2,7 @@ import 'package:hive/hive.dart';
 import 'package:projekt_grupowy/game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart' as model;
 import 'package:projekt_grupowy/utils/streak_calculator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../game_logic/models/game_result.dart';
 import 'offline_store.dart';
 import 'sync_service.dart';
@@ -43,6 +44,20 @@ class ResultsService {
         );
         
         await usersBox.put(uid, updatedUser);
+
+        // Update Firestore to sync stats to cloud (replaces missing Cloud Functions)
+        try {
+          await FirebaseFirestore.instance.collection('users').doc(uid).update({
+            'stats': {
+              'totalGamesPlayed': finalStats.totalGamesPlayed,
+              'totalPoints': finalStats.totalPoints,
+              'currentStreak': finalStats.currentStreak,
+              'lastPlayedAt': finalStats.lastPlayedAt?.toIso8601String(),
+            }
+          });
+        } catch (fsError) {
+          print('Error updating Firestore stats for user $uid: $fsError');
+        }
       }
     } catch (e) {
       // Log error but don't fail - streak calculation is best-effort
