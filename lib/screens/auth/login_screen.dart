@@ -155,14 +155,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                     Align(
                       alignment: Alignment.centerRight,
-                      child: TextButton(
-                        onPressed: () {
+                      child: GestureDetector(
+                        onTap: () {
                           context.go('/login/forgot');
                         },
                         child: const Text(
                           'Forgot Password?',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: linkColor,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
