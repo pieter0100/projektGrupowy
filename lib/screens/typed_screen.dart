@@ -8,6 +8,7 @@ import 'package:projekt_grupowy/game_logic/stages/stage_data.dart';
 import 'package:projekt_grupowy/models/level/stage_result.dart';
 import 'package:projekt_grupowy/models/level/level.dart';
 import 'package:projekt_grupowy/models/level/unlock_requirements.dart';
+import 'package:projekt_grupowy/game_logic/local_saves.dart';
 
 class TypedScreen extends StatefulWidget {
   final int level;
@@ -156,11 +157,12 @@ class TypedScreenState extends State<TypedScreen> {
 
       if (sessionManager!.isFinished) {
         const userId = "user1";
+        final previousBestScore = LocalSaves.getLevelProgress(userId, widget.level.toString())?.bestScore ?? 0;
         await sessionManager!.saveProgress(userId, widget.level.toString());
 
         if (mounted) {
           context.go(
-            '/level/learn/exam/end?level=${widget.level}&score=${sessionManager!.correctCount}',
+            '/level/learn/exam/end?level=${widget.level}&score=${sessionManager!.correctCount}&previousBest=$previousBestScore',
           );
         }
       } else {
@@ -240,13 +242,30 @@ class TypedScreenState extends State<TypedScreen> {
                     textInputAction: TextInputAction.done,
                   ),
 
-                  if (_showFeedback)
+                  if (_showFeedback && widget.isPracticeMode)
                     Padding(
                       padding: const EdgeInsets.only(top: 12.0),
                       child: Text(
                         _isCorrect
                             ? '+5 points!'
                             : 'No points',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: _isCorrect
+                              ? Colors.green
+                              : Colors.red,
+                        ),
+                      ),
+                    ),
+
+                  if (_showFeedback && !widget.isPracticeMode)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 12.0),
+                      child: Text(
+                        _isCorrect
+                            ? 'Correct!'
+                            : 'Incorrect',
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -300,33 +319,6 @@ class TypedScreenState extends State<TypedScreen> {
           icon: const Icon(Icons.arrow_back_ios),
           onPressed: () => context.go('/level/learn?level=${widget.level}'),
         ),
-        actions: [
-          // Points display in AppBar
-          if (sessionManager != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Center(
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.star,
-                      color: AppColors.orange,
-                      size: 24,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      '${sessionManager!.totalPoints} pts',
-                      style: const TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.orange,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-        ],
       ),
       body: Column(
         children: [
