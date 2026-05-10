@@ -56,7 +56,7 @@ class LeaderboardScreen extends StatelessWidget {
       body: StreamBuilder<QuerySnapshot>(
         stream: FirebaseFirestore.instance
             .collection('users')
-            .orderBy('stats.totalPoints', descending: true)
+            .orderBy('stats.currentStreak', descending: true)
             .limit(50)
             .snapshots(),
         builder: (context, snapshot) {
@@ -96,59 +96,60 @@ class LeaderboardScreen extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               
-              // Podium
-              if (users.isNotEmpty)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    // 2nd Place
-                    if (users.length > 1)
-                      _buildPodiumAvatar(users[1].nick, users[1].totalPoints, 2, Colors.teal.shade300, 45, const Color(0xFFF2D1A1)),
-                    if (users.length <= 1) const SizedBox(width: 90),
+                    // Podium
+                  if (users.isNotEmpty)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        // 2nd Place
+                        if (users.length > 1)
+                          _buildPodiumAvatar(users[1].nick, users[1].streak, 2, Colors.teal.shade300, 45, const Color(0xFFF2D1A1)),
+                        if (users.length <= 1) const SizedBox(width: 90),
 
-                    const SizedBox(width: 10),
+                        const SizedBox(width: 10),
 
-                    // 1st Place
-                    if (users.isNotEmpty)
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 20),
-                        child: _buildPodiumAvatar(users[0].nick, users[0].totalPoints, 1, Colors.teal.shade400, 55, const Color(0xFFB1C4D9)),
-                      ),
+                        // 1st Place
+                        if (users.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(bottom: 20),
+                            child: _buildPodiumAvatar(users[0].nick, users[0].streak, 1, Colors.teal.shade400, 55, const Color(0xFFB1C4D9)),
+                          ),
 
-                    const SizedBox(width: 10),
+                        const SizedBox(width: 10),
 
-                    // 3rd Place
-                    if (users.length > 2)
-                      _buildPodiumAvatar(users[2].nick, users[2].totalPoints, 3, Colors.teal.shade300, 45, const Color(0xFFE3CBA8)),
-                    if (users.length <= 2) const SizedBox(width: 90),
-                  ],
-                ),
-              const SizedBox(height: 30),
-              
-              // List of other users
-              Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  itemCount: users.length > 3 ? users.length - 3 : 0,
-                  itemBuilder: (context, index) {
-                    final rank = index + 4; // Zaczynamy od 4. miejsca
-                    final user = users[index + 3];
-                    final isCurrentUser = user.uid == currentUserUid;
+                        // 3rd Place
+                        if (users.length > 2)
+                          _buildPodiumAvatar(users[2].nick, users[2].streak, 3, Colors.teal.shade300, 45, const Color(0xFFE3CBA8)),
+                        if (users.length <= 2) const SizedBox(width: 90),
+                      ],
+                    ),
+                  const SizedBox(height: 30),
+                  
+                  // List of other users
+                  Expanded(
+                    child: ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemCount: users.length > 3 ? users.length - 3 : 0,
+                      itemBuilder: (context, index) {
+                        final rank = index + 4; // Zaczynamy od 4. miejsca
+                        final user = users[index + 3];
+                        final isCurrentUser = user.uid == currentUserUid;
 
-                    // Kilka kolorów teł awatarów dla różnorodności
-                    final bgColors = [
-                      const Color(0xFFF2A1A1), 
-                      const Color(0xFFE2C4E5), 
-                      const Color(0xFFA1C4F2), 
-                      const Color(0xFFA1E2A1)
-                    ];
-                    final avatarBgColor = bgColors[index % bgColors.length];
+                        // Kilka kolorów teł awatarów dla różnorodności
+                        final bgColors = [
+                          const Color(0xFFF2A1A1), 
+                          const Color(0xFFE2C4E5), 
+                          const Color(0xFFA1C4F2), 
+                          const Color(0xFFA1E2A1)
+                        ];
+                        final avatarBgColor = bgColors[index % bgColors.length];
 
-                    return _buildLeaderboardRow(rank, user.nick, user.totalPoints, isCurrentUser, avatarBgColor);
-                  },
-                ),
-              ),
+                        return _buildLeaderboardRow(rank, user.nick, user.streak, isCurrentUser, avatarBgColor);
+                      },
+                    ),
+                  ),
+
             ],
           );
         },

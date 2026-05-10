@@ -15,8 +15,10 @@ service cloud.firestore {
     
     // Users collection - users can only read/write their own data
     match /users/{uid} {
-      // Allow read/write only to the owner
-      allow read: if isOwner(uid);
+      // Allow list to any authenticated user (for leaderboard)
+      allow list: if isAuthenticated();
+      // Allow get only to the owner
+      allow get: if isOwner(uid);
       allow create: if isOwner(uid);
       allow update: if isOwner(uid);
       allow delete: if isOwner(uid); // Allow owner to delete own account
