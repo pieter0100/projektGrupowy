@@ -6,6 +6,7 @@ import '../game_logic/local_saves.dart';
 import 'package:projekt_grupowy/models/user/user.dart';
 // If using Firebase Auth to get the current user's ID:
 import 'package:firebase_auth/firebase_auth.dart' as auth;
+import 'package:projekt_grupowy/services/leaderboard_service.dart';
 import 'package:projekt_grupowy/services/profile_picture_service.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserver {
   User? _currentUser;
+  int? _userRank;
   bool _isLoading = true;
 
   @override
@@ -48,9 +50,11 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
       if (currentUserId != null) {
         // Retrieve the user from Hive
         final user = LocalSaves.getUser(currentUserId);
+        final rank = await LeaderboardService.getUserRank(currentUserId);
         
         setState(() {
           _currentUser = user;
+          _userRank = rank;
           _isLoading = false;
         });
       } else {
@@ -85,7 +89,7 @@ class _ProfileScreenState extends State<ProfileScreen> with WidgetsBindingObserv
               child: Column(
                 children: [
                   ProfileHeader(user: _currentUser),
-                  StatisticsSection(user: _currentUser),
+                  StatisticsSection(user: _currentUser, rank: _userRank),
                   const SizedBox(height: 20),
                   const InviteFriendsCard(),
                 ],
@@ -224,8 +228,9 @@ class _ProfileHeaderState extends State<ProfileHeader> {
 
 class StatisticsSection extends StatelessWidget {
   final User? user;
+  final int? rank;
 
-  const StatisticsSection({super.key, required this.user});
+  const StatisticsSection({super.key, required this.user, this.rank});
 
   @override
   Widget build(BuildContext context) {
@@ -233,6 +238,7 @@ class StatisticsSection extends StatelessWidget {
     final dayStreak = user?.stats.currentStreak.toString() ?? '0';
     final totalPoints = user?.stats.totalPoints.toString() ?? '0';
     final achievementsCount = user?.stats.achievements.length.toString() ?? '0';
+    final leaderboardRank = rank?.toString() ?? 'N/A';
 
     return Container(
       padding: const EdgeInsets.only(
@@ -278,7 +284,7 @@ class StatisticsSection extends StatelessWidget {
                 children: [
                   StatisticBox(witchBox: 'totalXP', value: totalPoints),
                   const SizedBox(height: 15.0),
-                  StatisticBox(witchBox: 'leaderBoard', value: 'N/A'), // Placeholder for rank
+                  StatisticBox(witchBox: 'leaderBoard', value: leaderboardRank),
                 ],
               ),
             ],
