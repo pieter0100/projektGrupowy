@@ -40,7 +40,6 @@ class LeaderboardScreen extends StatelessWidget {
     final currentUserUid = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
         title: const Text(
           'Leader board',
