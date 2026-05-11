@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 
 class LeaderboardUser {
   final String uid;
@@ -142,7 +143,7 @@ class LeaderboardScreen extends StatelessWidget {
                           const Color(0xFFA1C4F2), 
                           const Color(0xFFA1E2A1)
                         ];
-                        final avatarBgColor = bgColors[index % bgColors.length];
+                        final avatarBgColor = isCurrentUser ? AppColors.profilePictureBackground : bgColors[index % bgColors.length];
 
                         return _buildLeaderboardRow(rank, user.nick, user.streak, isCurrentUser, avatarBgColor);
                       },

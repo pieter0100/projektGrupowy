@@ -8,6 +8,7 @@ import 'package:projekt_grupowy/models/user/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as auth;
 import 'package:projekt_grupowy/services/leaderboard_service.dart';
 import 'package:projekt_grupowy/services/profile_picture_service.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -213,7 +214,7 @@ class _ProfileHeaderState extends State<ProfileHeader> {
                 width: 90,
                 height: 90,
                 decoration: BoxDecoration(
-                  color: Colors.blue,
+                  color: AppColors.profilePictureBackground,
                   shape: BoxShape.circle,
                 ),
                 child: _buildProfilePictureWidget(),

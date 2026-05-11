@@ -85,7 +85,6 @@ class _IntroScreenState extends State<IntroScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
         leading: IconButton(
           onPressed: () {

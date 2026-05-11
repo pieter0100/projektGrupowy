@@ -72,6 +72,7 @@ class AppColors {
   static const Color white = Colors.white;
   static const Color black = Colors.black;
   static const Color appBarBackground = Color(0xFFE5E5E5);
+  static const Color profilePictureBackground = Colors.blue;
 }
 
 class AppSizes {
