@@ -103,7 +103,7 @@ class _PasswordChangeConfirmationScreenState
                 width: double.infinity,
                 alignment: Alignment.bottomCenter,
                 child: Image.asset(
-                  'assets/images/dragon1.png',
+                  'assets/images/dino.png',
                   fit: BoxFit.contain,
                 ),
               ),
