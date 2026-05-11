@@ -223,14 +223,15 @@ class LeaderboardScreen extends StatelessWidget {
   }
 
   Widget _buildLeaderboardRow(int rank, String name, int score, bool isCurrentUser, Color avatarBgColor) {
+    final bool shouldHighlight = isCurrentUser && rank > 3;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isCurrentUser ? const Color(0xFFD4E5E3) : const Color(0xFFFAF9F6),
+        color: shouldHighlight ? const Color(0xFFdbe8e8) : const Color(0xFFFAF9F6),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isCurrentUser ? Colors.transparent : const Color(0xFFE8E5DF),
+          color: shouldHighlight ? Colors.transparent : const Color(0xFFE8E5DF),
           width: 1.5,
         ),
       ),
