@@ -228,7 +228,7 @@ class LeaderboardScreen extends StatelessWidget {
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: shouldHighlight ? const Color(0xFFdbe8e8) : const Color(0xFFFAF9F6),
+        color: shouldHighlight ? const Color(0xFFdbe8e8) : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: shouldHighlight ? Colors.transparent : const Color(0xFFE8E5DF),
