@@ -120,8 +120,6 @@ class _PracticeScreenState extends State<PracticeScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppColors.white,
-
       appBar: AppBar(
         backgroundColor: AppColors.practiceAppBarBackground,
         elevation: 0,

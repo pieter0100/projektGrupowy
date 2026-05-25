@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:projekt_grupowy/utils/constants.dart';
 
 class LeaderboardUser {
   final String uid;
@@ -40,7 +41,6 @@ class LeaderboardScreen extends StatelessWidget {
     final currentUserUid = FirebaseAuth.instance.currentUser?.uid;
 
     return Scaffold(
-      backgroundColor: const Color(0xFFFAF9F6),
       appBar: AppBar(
         title: const Text(
           'Leader board',
@@ -143,7 +143,7 @@ class LeaderboardScreen extends StatelessWidget {
                           const Color(0xFFA1C4F2), 
                           const Color(0xFFA1E2A1)
                         ];
-                        final avatarBgColor = bgColors[index % bgColors.length];
+                        final avatarBgColor = isCurrentUser ? AppColors.profilePictureBackground : bgColors[index % bgColors.length];
 
                         return _buildLeaderboardRow(rank, user.nick, user.streak, isCurrentUser, avatarBgColor);
                       },
@@ -223,14 +223,15 @@ class LeaderboardScreen extends StatelessWidget {
   }
 
   Widget _buildLeaderboardRow(int rank, String name, int score, bool isCurrentUser, Color avatarBgColor) {
+    final bool shouldHighlight = isCurrentUser && rank > 3;
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
       decoration: BoxDecoration(
-        color: isCurrentUser ? const Color(0xFFD4E5E3) : const Color(0xFFFAF9F6),
+        color: shouldHighlight ? const Color(0xFFdbe8e8) : Colors.transparent,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: isCurrentUser ? Colors.transparent : const Color(0xFFE8E5DF),
+          color: shouldHighlight ? Colors.transparent : const Color(0xFFE8E5DF),
           width: 1.5,
         ),
       ),
